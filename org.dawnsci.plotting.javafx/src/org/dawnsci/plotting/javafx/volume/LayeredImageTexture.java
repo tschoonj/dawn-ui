@@ -36,7 +36,6 @@ public class LayeredImageTexture {
 			double minCulling,
 			double intensity,
 			FunctionContainer functionContainer)
-			
 	{
 		this.maxValue   = maxValue;       
 		this.minValue   = minValue;       
