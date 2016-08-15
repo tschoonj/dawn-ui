@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.dawnsci.plotting.javafx.feature"
+      id="org.dawnsci.javafx.feature"
       label="JavaFX Feature"
       version="1.0.0.qualifier"
       provider-name="Diamond Light Source">
@@ -18,13 +18,14 @@
    </license>
 
    <plugin
-         id="org.dawnsci.plotting.javafx"
+         id="org.dawnsci.javafx"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
-         id="org.dawnsci.plotting.javafx.linux.x86_64"
+         id="org.dawnsci.javafx.linux.x86_64"
          os="linux"
          arch="x86_64"
          download-size="0"
@@ -33,7 +34,7 @@
          fragment="true"/>
 
    <plugin
-         id="org.dawnsci.plotting.javafx.windows.x86_64"
+         id="org.dawnsci.javafx.windows.x86_64"
          os="win32"
          arch="x86_64"
          download-size="0"
@@ -42,7 +43,7 @@
          fragment="true"/>
 
    <plugin
-         id="org.dawnsci.plotting.javafx.macosx.x86_64"
+         id="org.dawnsci.javafx.macosx.x86_64"
          os="macosx"
          arch="x86_64"
          download-size="0"
