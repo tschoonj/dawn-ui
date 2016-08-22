@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.dawnsci.plotting.javafx.linux.x86_64"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.dawnsci.plotting.javafx.macosx.x86_64"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.dawnsci.plotting.javafx.windows.x86_64"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.dawnsci.javafx.linux.x86_64"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.dawnsci.javafx.macosx.x86_64"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.dawnsci.javafx.windows.x86_64"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
