@@ -3,6 +3,9 @@
 	<name>org.dawnsci.javafx</name>
 	<comment></comment>
 	<projects>
+		<project>org.dawnsci.javafx.linux.x86_64</project>
+		<project>org.dawnsci.javafx.macosx.x86_64</project>
+		<project>org.dawnsci.javafx.windows.x86_64</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
