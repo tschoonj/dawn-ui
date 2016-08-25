@@ -10,6 +10,7 @@ import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.dawnsci.plotting.api.region.IROIListener;
 import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
 import org.eclipse.january.dataset.AggregateDataset;
+import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,10 +23,12 @@ import org.eclipse.swt.widgets.Label;
 public class PlotSystem3Composite extends Composite {
 
     private IPlottingSystem<Composite> plotSystem3;
+    private IPlottingSystem<Composite> plotSystem4;
     private IDataset image1;
+    private IDataset image2;
     
     public PlotSystem3Composite(Composite parent, int style
-    		, AggregateDataset aggDat, ExampleModel model) throws Exception {
+    		, AggregateDataset aggDat, ExampleModel model, DataModel dm) throws Exception {
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
 
@@ -33,47 +36,29 @@ public class PlotSystem3Composite extends Composite {
         
         try {
 			plotSystem3 = PlottingFactory.createPlottingSystem();
+			plotSystem4 = PlottingFactory.createPlottingSystem();
 		} 
         catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
         
-        this.createContents(aggDat, model); 
+        this.createContents(aggDat, model, dm); 
         
     }
      
     public void createContents(AggregateDataset aggDat,
-    		ExampleModel model) throws Exception {
+    		ExampleModel model, DataModel dm) throws Exception {
 
     	
     	final GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 1;
+        gridLayout.numColumns = 2;
         setLayout(gridLayout);
         
-        ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);;
+        ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
         
         plotSystem3.createPlotPart(PlotSystem3Composite.this, "ExamplePlot2", actionBarComposite, PlotType.IMAGE, null);
 		
-//		plotSystemComposite.returnSlider().addSelectionListener(new SelectionListener() {
-//			
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				// TODO Auto-generated method stub
-//				IDataset j = plotSystem2Composite.getImage();
-//				image1= j;
-//
-//				plotSystem3.setPlotType(PlotType.SURFACE);
-//				plotSystem3.createPlot2D(j, null, null);
-//			
-//			}
-//			
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
 		
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -85,44 +70,49 @@ public class PlotSystem3Composite extends Composite {
 				plotSystem3.setPlotType(PlotType.SURFACE);
 				plotSystem3.createPlot2D(j, null, null);
 			}
-//
-//			@Override
-//			public void roiChanged(ROIEvent evt) {
-//				// TODO Auto-generated method stub
-//				IDataset j = plotSystem2Composite.getImage();
-//				image1= j;
-//				
-//				plotSystem3.setPlotType(PlotType.SURFACE);
-//				plotSystem3.createPlot2D(j, null, null);
-////				
-//			}
-//
-//			@Override
-//			public void roiSelected(ROIEvent evt) {
-//				// TODO Auto-generated method stub
-//				IDataset j = plotSystem2Composite.getImage();
-//				image1= j;
-//				
-//				plotSystem3.setPlotType(PlotType.SURFACE);
-//				plotSystem3.createPlot2D(j, null, null);
-//				
-//			}
-//
-//				// TODO Auto-generated method stub
-//				
-//			}
+
 		});
         
+
+		
+		plotSystem4.createPlotPart(PlotSystem3Composite.this, "Background Plot", actionBarComposite, PlotType.IMAGE, null);
+		
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				
+				if (dm.getBackgroundDatArray().get(model.getSliderPos()) != null ){
+					
+					IDataset j = dm.getBackgroundDatArray().get(model.getSliderPos());
+					image2 = j;
+					plotSystem4.setPlotType(PlotType.SURFACE);
+					plotSystem4.createPlot2D(j, null, null);
+				}
+				else{
+					IDataset j = DatasetFactory.ones(new int[] {20,20});
+					image2 = j;
+					plotSystem4.setPlotType(PlotType.SURFACE);
+					plotSystem4.createPlot2D(j, null, null);
+
+				}
+			}
+		});
         
         final GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_secondField.grabExcessVerticalSpace = true;
         gd_secondField.grabExcessVerticalSpace = true;
         
-        IDataset image1 = null;
+        
 
-        plotSystem3.createPlotPart(this, "ExamplePlot3", actionBarComposite, PlotType.IMAGE, null);
+        
         plotSystem3.getPlotComposite().setLayoutData(gd_secondField);
         plotSystem3.createPlot2D(image1, null, null);
+        
+        
+        plotSystem4.getPlotComposite().setLayoutData(gd_secondField);
+        plotSystem4.createPlot2D(image2, null, null);
+        
         
 	}
     

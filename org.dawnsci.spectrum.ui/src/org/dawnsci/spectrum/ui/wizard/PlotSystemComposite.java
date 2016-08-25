@@ -76,7 +76,6 @@ public class PlotSystemComposite extends Composite {
         gd_secondField.grabExcessVerticalSpace = true;
         gd_secondField.grabExcessVerticalSpace = true;
         
-
          System.out.println(plotSystem.getClass());
         
         SliceND slice = new SliceND(aggDat.getShape());
@@ -95,6 +94,7 @@ public class PlotSystemComposite extends Composite {
         	
 		public void widgetSelected(SelectionEvent e) {
 			int selection = slider.getSelection();
+			model.setSliderPos(selection);
 			
 		    try {
 				slice.setSlice(0, selection, selection+1, 1);
@@ -146,16 +146,22 @@ public class PlotSystemComposite extends Composite {
 			@Override
 			public void roiDragged(ROIEvent evt) {
 				model.setROI(region.getROI());
+				model.setBox(startROI);
+				
 			}
 
 			@Override
 			public void roiChanged(ROIEvent evt) {
 				// TODO Auto-generated method stub
-				model.setROI(region.getROI());			}
+				model.setROI(region.getROI());			
+				model.setBox(startROI);
+			}
 
 			@Override
 			public void roiSelected(ROIEvent evt) {
-				model.setROI(region.getROI());			}
+				model.setROI(region.getROI());			
+				model.setBox(startROI);
+			}
 
 		});
         

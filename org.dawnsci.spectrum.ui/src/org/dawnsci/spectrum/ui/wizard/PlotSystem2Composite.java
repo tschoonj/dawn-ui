@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.dawb.common.ui.widgets.ActionBarWrapper;
+import org.eclipse.dawnsci.analysis.api.roi.IROI;
+import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
 import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.PlotType;
@@ -65,35 +67,23 @@ public class PlotSystem2Composite extends Composite {
         
         plotSystem2.createPlotPart(PlotSystem2Composite.this, "ExamplePlot2", actionBarComposite, PlotType.IMAGE, null);
 
-        
-        
-        
-//        final GridData gd_firstField = new GridData(SWT.FILL, SWT.LEFT, true, false);
-//        
-//        SliceND slice = new SliceND(aggDat.getShape());
-//		
-        
-//		region =plotSystemComposite.getPlotSystem().createRegion("myRegion", RegionType.BOX);
-//		plotSystemComposite.getPlotSystem().addRegion(region);
-//		
-//		RectangularROI startROI = new RectangularROI(10,10,100,100,0);
-//		region.setROI(startROI);
- 
+
         
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 		
 		
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				// TODO Auto-generated method stub
-			
-				// TODO Auto-generated method stub
-				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getImageNumber(), aggDat, model.getLenPt());
+				IROI box = model.getROI();
+				IRectangularROI roi = box.getBounds();
+				int[] newLen = roi.getIntLengths();
+				int[] newPt = roi.getIntPoint();
+				int[][] newLenPt = {newLen, newPt};
+				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getSliderPos(), aggDat,newLenPt);
 				image1= j;
 				plotSystem2.createPlot2D(j, null, null);
 				model.setCurrentImage(j);
-//				plotSystem3.setPlotType(PlotType.SURFACE);
-//				plotSystem3.createPlot2D(j, null, null);
+
 				
 			}
 		});
@@ -101,41 +91,7 @@ public class PlotSystem2Composite extends Composite {
 		
 		
 
-//		model.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getImageNumber(), aggDat, model.getLenPt());
-//				image1= j;
-//				plotSystem2.createPlot2D(j, null, null);
-////				plotSystem3.setPlotType(PlotType.SURFACE);
-////				plotSystem3.createPlot2D(j, null, null);
-////				
-//			}
-////
-////			@Override
-////			public void roiChanged(ROIEvent evt) {
-////				// TODO Auto-generated method stub
-////				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getImageNumber(), aggDat, model.getLenPt());
-////				image1= j;
-////				plotSystem2.createPlot2D(j, null, null);
-//////				plotSystem3.setPlotType(PlotType.SURFACE);
-//////				plotSystem3.createPlot2D(j, null, null);
-//////				
-////			}
-////
-////			@Override
-////			public void roiSelected(ROIEvent evt) {
-////				// TODO Auto-generated method stub
-////				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getImageNumber(), aggDat, model.getLenPt());
-////				image1= j;
-////				plotSystem2.createPlot2D(j, null, null);
-//////				plotSystem3.setPlotType(PlotType.SURFACE);
-//////				plotSystem3.createPlot2D(j, null, null);
-//////				
-////			}
-//		});
-        
+   
         
         final GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_secondField.grabExcessVerticalSpace = true;

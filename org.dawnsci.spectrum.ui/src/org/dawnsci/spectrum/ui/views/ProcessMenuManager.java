@@ -383,7 +383,7 @@ public class ProcessMenuManager {
 		menu.add(cropWizard);
 		menu.add(combineWizard);
 		menu.add(reflectivity);
-//		menu.add(example);
+		menu.add(example);
 		
 		menuManager.add(menu);
 	}
