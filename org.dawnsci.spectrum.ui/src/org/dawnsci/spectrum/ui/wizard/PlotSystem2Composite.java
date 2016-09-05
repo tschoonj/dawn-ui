@@ -15,6 +15,7 @@ import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
 import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
 import org.eclipse.january.dataset.AggregateDataset;
+import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,11 +36,15 @@ public class PlotSystem2Composite extends Composite {
 
     
     
-    public PlotSystem2Composite(Composite parent, int style
-    		, AggregateDataset aggDat, ExampleModel model) throws Exception {
+    public PlotSystem2Composite(Composite parent, int style) throws Exception {
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
-
+        
+        	
+        if (image1==null){
+        	image1 = DatasetFactory.zeros(new int[] {4,4});
+        }
+        
         new Label(this, SWT.NONE).setText("Region of Interest");
         
         try {
@@ -51,12 +56,12 @@ public class PlotSystem2Composite extends Composite {
 		}
         
 
-        this.createContents(aggDat, model); 
+        this.createContents(); 
 //        System.out.println("Test line");
         
     }
      
-    public void createContents(AggregateDataset aggDat, ExampleModel model) throws Exception {
+    public void createContents() throws Exception {
 
     	
     	final GridLayout gridLayout = new GridLayout();
@@ -68,27 +73,26 @@ public class PlotSystem2Composite extends Composite {
         plotSystem2.createPlotPart(PlotSystem2Composite.this, "ExamplePlot2", actionBarComposite, PlotType.IMAGE, null);
 
 
-        
-		model.addPropertyChangeListener(new PropertyChangeListener() {
+//		model.addPropertyChangeListener(new PropertyChangeListener() {
+//		
+//		
+//			@Override
+//			public void propertyChange(PropertyChangeEvent evt) {
+//				IROI box = model.getROI();
+//				IRectangularROI roi = box.getBounds();
+//				int[] newLen = roi.getIntLengths();
+//				int[] newPt = roi.getIntPoint();
+//				int[][] newLenPt = {newLen, newPt};
+//				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getSliderPos(), aggDat,newLenPt);
+//				image1= j;
+//				plotSystem2.createPlot2D(j, null, null);
+//				model.setCurrentImage(j);
+//
+//				
+//			}
+//		});
 		
-		
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				IROI box = model.getROI();
-				IRectangularROI roi = box.getBounds();
-				int[] newLen = roi.getIntLengths();
-				int[] newPt = roi.getIntPoint();
-				int[][] newLenPt = {newLen, newPt};
-				IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getSliderPos(), aggDat,newLenPt);
-				image1= j;
-				plotSystem2.createPlot2D(j, null, null);
-				model.setCurrentImage(j);
-
-				
-			}
-		});
-		
-		
+		plotSystem2.createPlot2D(image1, null, null);
 		
 
    
@@ -123,8 +127,18 @@ public class PlotSystem2Composite extends Composite {
 //	   return region;
 //   }
    
+   public void setData(IDataset input){
+	   this.image1 = input;
+   }
    
    
+   public void setImage(IDataset input){
+	   plotSystem2.updatePlot2D(input,  null, null);
+   }
+   
+   public void plotSystem2Redraw(){
+	   plotSystem2.repaint();
+   }
    
 
 }

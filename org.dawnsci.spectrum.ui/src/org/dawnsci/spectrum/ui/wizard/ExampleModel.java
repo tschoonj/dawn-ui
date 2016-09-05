@@ -28,6 +28,7 @@ public class ExampleModel {
 	private int boundaryBox;
 	private Methodology methodology;
 	private double[] trackerCoordinates = {100,100,110,100,110,100,110,110};
+	private String[] filepaths;
 	
 	public IDataset getInput() {
 		return input;
@@ -131,6 +132,7 @@ public class ExampleModel {
 		firePropertyChange("ROI", this.ROI, this.ROI= ROI);
 		this.setLenPt(lenpt);
 		firePropertyChange("lenpt", this.lenpt, this.lenpt= lenpt);
+		
 	}
 	
 	public int[][] getLenPt(){
@@ -171,6 +173,14 @@ public class ExampleModel {
 			Object newValue) {
 		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
 				newValue);
+	}
+
+	public String[] getFilepaths() {
+		return filepaths;
+	}
+
+	public void setFilepaths(String[] filepaths) {
+		this.filepaths = filepaths;
 	}
 	
 }

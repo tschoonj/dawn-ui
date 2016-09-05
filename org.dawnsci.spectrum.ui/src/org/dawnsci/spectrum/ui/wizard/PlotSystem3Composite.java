@@ -9,6 +9,7 @@ import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.dawnsci.plotting.api.region.IROIListener;
 import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
+import org.eclipse.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.january.dataset.AggregateDataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
@@ -52,8 +53,8 @@ public class PlotSystem3Composite extends Composite {
 
     	
     	final GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 2;
-        setLayout(gridLayout);
+        gridLayout.numColumns = 1;
+        this.setLayout(gridLayout);
         
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
         
@@ -81,25 +82,29 @@ public class PlotSystem3Composite extends Composite {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				
-				if (dm.getBackgroundDatArray().get(model.getSliderPos()) != null ){
-					
-					IDataset j = dm.getBackgroundDatArray().get(model.getSliderPos());
-					image2 = j;
-					plotSystem4.setPlotType(PlotType.SURFACE);
-					plotSystem4.createPlot2D(j, null, null);
-				}
-				else{
-					IDataset j = DatasetFactory.ones(new int[] {20,20});
-					image2 = j;
-					plotSystem4.setPlotType(PlotType.SURFACE);
-					plotSystem4.createPlot2D(j, null, null);
-
-				}
+			
+//				if (dm.getBackgroundDatArray() == null ){
+//					
+//					IDataset j = DatasetFactory.ones(new int[] {20,20});
+//					image2 = j;
+//					plotSystem4.setPlotType(PlotType.SURFACE);
+//					plotSystem4.createPlot2D(j, null, null);
+//
+//					
+//					
+//					
+//				}
+//				else{
+//					IDataset j = dm.getBackgroundDatArray().get(model.getSliderPos());
+//					image2 = j;
+//					plotSystem4.setPlotType(PlotType.SURFACE);
+//					ITrace surf = plotSystem4.createPlot2D(j, null, null);
+//				}
 			}
 		});
         
-        final GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
+        GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
+
         gd_secondField.grabExcessVerticalSpace = true;
         gd_secondField.grabExcessVerticalSpace = true;
         

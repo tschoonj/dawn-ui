@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 public class OutputCurves extends Composite {
@@ -76,9 +77,18 @@ public class OutputCurves extends Composite {
 				else{
 					lt.setData(dm.xIDataset(), dm.yIDataset());
 				}	
-				plotSystem4.clear();
-				plotSystem4.addTrace(lt);
-				plotSystem4.repaint();
+				
+				Display.getDefault().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						plotSystem4.clear();
+						plotSystem4.addTrace(lt);
+						plotSystem4.repaint();
+						
+					}
+				
+				});
 			}
 		});
 

@@ -2,8 +2,16 @@ package org.dawnsci.spectrum.ui.wizard;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.dawb.common.ui.widgets.ActionBarWrapper;
+import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
+import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
@@ -11,21 +19,28 @@ import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.AggregateDataset;
+import org.eclipse.january.dataset.DatasetUtils;
+import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.SliceND;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlotSystem1Composite  extends Composite {
+public class PlotSystem1Composite extends Composite {
 
 	private final static Logger logger = LoggerFactory.getLogger(PlotSystem1Composite.class);
 
@@ -34,20 +49,23 @@ public class PlotSystem1Composite  extends Composite {
     private Button button; 
     private Button button1;
     private Button button2;
-    
+    private Combo comboDropDown0;
+	private Combo comboDropDown1;
+    private Text boundaryBoxText;
+    private ExampleModel model;
     
     public PlotSystem1Composite(Composite parent, int style
-    		, AggregateDataset aggDat, String test0, String test1, ExampleModel model, DataModel dm) {
+    		, AggregateDataset aggDat, ExampleModel model, DataModel dm, GeometricParametersModel gm) {
     	
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
 
         new Label(this, SWT.NONE).setText("Operation Window");
+
+        this.model = model;
         
-        
-        new Label(this, SWT.NONE).setText("test0: " + test0);
-        new Label(this, SWT.NONE).setText("test1: " + test1);
         try {
+        	
 			plotSystem1 = PlottingFactory.createPlottingSystem();
 		} catch (Exception e2) {
 			logger.error("Can't make plotting system", e2);
@@ -55,13 +73,78 @@ public class PlotSystem1Composite  extends Composite {
         
         
         
-        this.createContents(aggDat, model, dm); 
+        this.createContents(aggDat, model, dm, gm); 
 //        System.out.println("Test line");
         
     }
      
-    public void createContents(AggregateDataset aggDat, ExampleModel model, DataModel dm) {
+    public void createContents(AggregateDataset aggDat, ExampleModel model, DataModel dm
+    		, GeometricParametersModel gm) {
         
+        
+        Group methodSetting = new Group(this, SWT.NULL);
+        GridLayout methodSettingLayout = new GridLayout(3, true);
+//		methodSettingLayout.numColumns = 3;
+	    GridData methodSettingData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+	    methodSettingData .minimumWidth = 50;
+	    methodSetting.setLayout(methodSettingLayout);
+	    methodSetting.setLayoutData(methodSettingData);
+	    
+	    
+	    new Label(methodSetting, SWT.LEFT).setText("Methodology");
+	    new Label(methodSetting, SWT.LEFT).setText("Fit Power");
+	    new Label(methodSetting, SWT.LEFT).setText("Boundary Box");
+	    //Combo comboSimple = new Combo(this, SWT.SIMPLE | SWT.BORDER);
+	    
+	    comboDropDown0 = new Combo(methodSetting, SWT.DROP_DOWN | SWT.BORDER | SWT.LEFT);
+	   	comboDropDown1 = new Combo(methodSetting, SWT.DROP_DOWN | SWT.BORDER | SWT.RIGHT);
+	    boundaryBoxText = new Text(methodSetting, SWT.SINGLE);
+	    
+	    
+	    
+	    for(Methodology  t: AnalaysisMethodologies.Methodology.values()){
+	    	comboDropDown0.add(AnalaysisMethodologies.toString(t));
+	    }
+	    
+	    for(FitPower  i: AnalaysisMethodologies.FitPower.values()){
+	    	comboDropDown1.add(String.valueOf(AnalaysisMethodologies.toInt(i)));
+	    }
+	    
+	    comboDropDown0.addSelectionListener(new SelectionListener() {
+	    	@Override
+	    	public void widgetSelected(SelectionEvent e) {
+	          int selection = comboDropDown0.getSelectionIndex();
+	          model.setMethodology(Methodology.values()[selection]);
+	        }
+	    	@Override
+	        public void widgetDefaultSelected(SelectionEvent e) {
+	          
+	        }
+
+	      });
+	    
+	    comboDropDown1.addSelectionListener(new SelectionListener() {
+	    	@Override
+	    	public void widgetSelected(SelectionEvent e) {
+	          int selection1 = comboDropDown1.getSelectionIndex();
+	          model.setFitPower(FitPower.values()[selection1]);
+	        }
+	    	@Override
+	        public void widgetDefaultSelected(SelectionEvent e) {
+	          
+	        }
+
+	      });
+	    
+	    boundaryBoxText.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				model.setBoundaryBox(Integer.parseInt(boundaryBoxText.getText()));
+			}
+	    	
+	    });
+	    
         Group controlButtons = new Group(this, SWT.NULL);
         controlButtons.setText("Control Buttons");
         GridLayout gridLayoutButtons = new GridLayout();
@@ -105,7 +188,7 @@ public class PlotSystem1Composite  extends Composite {
 			if (button.getGrayed()) {
 //				System.out.println("Grayed");
 			} else {
-				if (button.getSelection()) {
+//				if (button.getSelection()) {
 //				
 					int selection = model.getImageNumber();
 					slice.setSlice(0, selection, selection+1, 1);
@@ -118,10 +201,10 @@ public class PlotSystem1Composite  extends Composite {
 					}
 					j.squeeze();
 					IDataset image1 = j;
-					IDataset output = DummyProcessingClass.DummyProcess(j, model, dm);
+					IDataset output = DummyProcessingClass.DummyProcess(j, model, dm, gm);
 					plotSystem1.createPlot2D(output, null, null);
-				} else {
-				}
+//				} else {
+//				}
 			}
 		});
         
@@ -138,7 +221,7 @@ public class PlotSystem1Composite  extends Composite {
 			    		IDataset i = aggDat.getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm);
+						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm);
 						plotSystem1.createPlot2D(output, null, null);
 			    	}
 				
@@ -161,7 +244,7 @@ public class PlotSystem1Composite  extends Composite {
 			    		IDataset i = aggDat.getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm);
+						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm);
 						plotSystem1.createPlot2D(output, null, null);
 						plotSystem1.repaint();
 			    	}
@@ -177,21 +260,81 @@ public class PlotSystem1Composite  extends Composite {
 	       
         button1.setText("Run");
         
-        button1.addSelectionListener(new SelectionListener() {
+//        operationJob oJ = new operationJob();
+        
+//        button1.addSelectionListener(new SelectionListener() {
+//
+//            public void widgetSelected(SelectionEvent event) {
+////            	SliceIterationRunner SR = new SliceIterationRunner();
+////            	SR.sliceIterationRunner1(model, dm, plotSystem1);
+//            	
+//            	
+//            	for (int k = model.getSliderPos(); k<model.getAggDat().getShape()[0]; k++){
+//    				dm.addxList((double) k);
+//    				IDataset j = null;
+//    				SliceND slice = new SliceND(model.getAggDat().getShape());
+//    				slice.setSlice(0, k, k+1, 1);
+//    				try {
+//    					j = model.getAggDat().getSlice(slice);
+//    					} 
+//    					catch (Exception e1) {
+//    					}
+//    					
+//    				j.squeeze();
+//    				
+//    				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model, dm);
+//    				
+//
+//					Display.getDefault().syncExec(new Runnable() {
+//					public void run() {
+//					// Update UI here
+//						plotSystem1.clear();
+////		    			plotSystem.createPlot2D(output1, null, null);
+//		    			plotSystem1.updatePlot2D(output1, null,null);
+//		        		plotSystem1.repaint(true);
+//					}
+//					});
+//    			
+//        		try {
+//    				Thread.sleep(1000);
+//    			} catch (InterruptedException e) {
+//    				// TODO Auto-generated catch block
+//    				e.printStackTrace();
+//        		System.out.println("~~~~~~~~~~~~~~Trying this now.############");
+//            	}
+//        		
+//        		
+//            }
+//              dm.addPropertyChangeListener(new PropertyChangeListener() {
+//				
+//				@Override
+//				public void propertyChange(PropertyChangeEvent evt) {
+//					if (dm.getOutputDatArray() != null){
+//						IDataset output = dm.getOutputDatArray().get((dm.getOutputDatArray().size() -1));
+//						oJ.setData(output);
+//						if(oJ.getState() == Job.RUNNING) {
+//							oJ.cancel();
+//						}
+//						oJ.schedule();
 
-            public void widgetSelected(SelectionEvent event) {
-              SliceIterationRunner.sliceIterationRunner1(model, dm);
-              
-            }
+			
+						
+//						plotSystem1.createPlot2D(output, null, null);
+//					}
+//				}
 
-            public void widgetDefaultSelected(SelectionEvent event) {
-              
-            }
-        });
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//		     
+//        });
          
-        final GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 1;
-        setLayout(gridLayout);
+//        GridLayout gridLayout = new GridLayout();
+//        gridLayout.numColumns = 1;
+//        void setLayout(gridLayout);
          
          
         button2.setText("Reset Tracker");
@@ -200,10 +343,11 @@ public class PlotSystem1Composite  extends Composite {
             public void widgetSelected(SelectionEvent event) {
 	            int selection = model.getSliderPos();
 	            System.out.println("Slider position in reset:  " + selection);
+	            SliceND slice = new SliceND(model.getAggDat().getShape());
 	            slice.setSlice(0, selection, selection+1, 1);
 				IDataset i = null;
 				try {
-					i = aggDat.getSlice(slice);
+					i = model.getAggDat().getSlice(slice);
 				} catch (DatasetException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -221,7 +365,7 @@ public class PlotSystem1Composite  extends Composite {
              	model.setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
              	model.setLenPt(currentLenPt);
              	
-             	IDataset j = DummyProcessingClass.DummyProcess(i, model, dm);
+             	IDataset j = DummyProcessingClass.DummyProcess(i, model, dm, gm);
              	
              	plotSystem1.createPlot2D(j, null, null);
              	dm.resetAll();
@@ -263,5 +407,38 @@ public class PlotSystem1Composite  extends Composite {
 	   return image1;
    }
    
-}
+   public Button getRunButton(){
+	   return button1;
+   }
 
+   
+class operationJob extends Job {
+
+	private IDataset input;
+	
+
+	public operationJob() {
+		super("updating image...");
+	}
+
+	public void setData(IDataset input) {
+		this.input = input;
+	}
+
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+			plotSystem1.clear();
+			plotSystem1.updatePlot2D(input, null, monitor);
+    		plotSystem1.repaint(true);
+			}
+    	
+		});	
+	
+		return Status.OK_STATUS;
+	}
+   }
+}
