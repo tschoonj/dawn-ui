@@ -386,13 +386,9 @@ public class PlotSystem1Composite extends Composite {
         gd_firstField.heightHint = 100;
         gd_firstField.horizontalSpan = 2;
 
-//        plotSystem1.createPlotPart(this, "ExamplePlot1", actionBarComposite, PlotType.IMAGE, null);
-        
         plotSystem1.getPlotComposite().setLayoutData(gd_firstField);
         
         
-       // plotSystem1.createPlot2D(image1, null, null);
-   
 		}
     
    public Composite getComposite(){   	
@@ -410,6 +406,10 @@ public class PlotSystem1Composite extends Composite {
    public Button getRunButton(){
 	   return button1;
    }
+   
+	public Button getButton2() {
+		return button2;
+	}
 
    
 class operationJob extends Job {
@@ -425,6 +425,8 @@ class operationJob extends Job {
 		this.input = input;
 	}
 
+
+	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		Display.getDefault().asyncExec(new Runnable() {

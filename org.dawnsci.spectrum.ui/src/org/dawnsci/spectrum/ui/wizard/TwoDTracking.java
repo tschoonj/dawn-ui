@@ -178,7 +178,7 @@ public class TwoDTracking{
 		
 		Dataset output = DatasetUtils.cast(pBackgroundSubtracted, Dataset.FLOAT64);
 		
-		dm.addOutputDatArray(output);
+		//dm.addOutputDatArray(output);
 		
 		output.setName("Region of Interest, polynomial background removed");
 		

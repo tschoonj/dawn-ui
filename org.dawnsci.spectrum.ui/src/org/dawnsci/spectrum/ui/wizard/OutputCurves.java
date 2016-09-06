@@ -3,9 +3,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.dawb.common.ui.widgets.ActionBarWrapper;
+import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
+import org.eclipse.dawnsci.plotting.api.region.IRegion;
+import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
 import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -17,7 +20,9 @@ import org.eclipse.swt.widgets.Label;
 public class OutputCurves extends Composite {
 
     private IPlottingSystem<Composite> plotSystem4;
-     
+    private IRegion imageNo;
+    private ILineTrace lt;
+    
     public OutputCurves(Composite parent, int style, DataModel dm) {
         super(parent, style);
         
@@ -52,7 +57,7 @@ public class OutputCurves extends Composite {
         
         
 		
-		ILineTrace lt = plotSystem4.createLineTrace("Output Curve");
+		lt = plotSystem4.createLineTrace("Output Curve");
 		if (dm.getyList() == null || dm.getxList() == null ){
 			lt.setData(dm.backupDataset(), dm.backupDataset());
 		}
@@ -61,7 +66,12 @@ public class OutputCurves extends Composite {
 		}	
 			
 		plotSystem4.addTrace(lt);
-		
+		try {
+			imageNo = plotSystem4.createRegion("Image", RegionType.XAXIS_LINE);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 			
 		
 		
@@ -105,6 +115,17 @@ public class OutputCurves extends Composite {
    public IPlottingSystem<Composite> getPlotSystem(){
 	   return plotSystem4;
    }
+   
+   public IRegion getRegionNo(){
+	   return imageNo;
+   }
+   
+   public void resetCurve(){
+	   lt.setData(null, null);
+   }
+   
+
+   
    
 }
 

@@ -33,120 +33,14 @@ public class SliceIterationRunner {
 		plotSystem.clear();
 		SliceND slice = new SliceND(model.getAggDat().getShape());
 		operationJob oJ = new operationJob();
-//		operationJob oJ = new operationJob();
-//		oJ.wakeUp();
+
+
 		oJ.setDm(dm);
 		oJ.setModel(model);
 		oJ.setPlotSystem(plotSystem);
 		oJ.schedule();
 		
-		
-//		for (k = model.getSliderPos(); k<model.getAggDat().getShape()[0]; k++){
-//			dm.addxList((double) k);
-//			IDataset j = null;
-//			slice.setSlice(0, k, k+1, 1);
-//			try {
-//				j = model.getAggDat().getSlice(slice);
-//				} 
-//				catch (Exception e1) {
-//				}
-//				
-//			j.squeeze();
-//			
-//			final IDataset output = DummyProcessingClass.DummyProcess(j, model, dm);
-//			this.output1= output;
-//			
-////			oJ.setData(output);
-////			
-////			if(oJ.getState() == Job.RUNNING) {
-////				oJ.cancel();
-////			}
-////			oJ.setPriority(Job.INTERACTIVE);
-////			
-////			oJ.schedule();
-//			Display.getDefault().syncExec(new Runnable() {
-//
-//				public void run() {
-//				plotSystem.clear();
-//				plotSystem.updatePlot2D(output, null,null);
-//	    		plotSystem.repaint(true);
-//	    		System.out.println("~~~~~~~~~~~~~~In oj############");
-//	    		try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				}
-//				
-//			});
-//			try {
-//				oJ.join(10000, null);
-//			} catch (OperationCanceledException | InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			
-//			try {
-//				TimeUnit.MILLISECONDS.sleep(2000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			UISynchronize sync = new UISynchronize() {
-//				
-//				@Override
-//				public void syncExec(Runnable runnable) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//				
-//				@Override
-//				public void asyncExec(Runnable runnable) {
-//					// TODO Auto-generated method stub
-//					plotSystem.clear();
-//					plotSystem.updatePlot2D(output1, null, null);
-//					plotSystem.repaint();
-//				}
-//			};
-			
-			
-				  
-				
-//			Job job = new Job("My Job") {
-//				  @Override
-//				  protected IStatus run(IProgressMonitor monitor) {
-//				    // do something long running
-//				    //... 
-//				            
-//				    // If you want to update the UI
-//				    
-//				      @Override
-//				      public void run() {
-//				    	  Display.getDefault().asyncExec(new Runnable() {
-//							  public void run() {
-//								  	plotSystem.clear();
-//									plotSystem.updatePlot2D(output1, null, null);
-//									plotSystem.repaint();
-//							  }
-//							});
-//						Display.getDefault().syncExec(new Runnable() {
-//							  public void run() {
-//								  	plotSystem.clear();
-//									plotSystem.updatePlot2D(output1, null, null);
-//									plotSystem.repaint();
-//				        // do something in the user interface
-//				        // e.g. set a text field
-//				      }
-//				    });
-//				 }
-//				    return Status.OK_STATUS;
-//				  }
-//				};
-//			plotSystem.updatePlot2D(output, null, null);
-//    		plotSystem.repaint(true);
-		
-		
+
 		
 		
 	

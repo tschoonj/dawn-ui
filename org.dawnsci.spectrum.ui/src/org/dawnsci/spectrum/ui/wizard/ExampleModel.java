@@ -29,6 +29,8 @@ public class ExampleModel {
 	private Methodology methodology;
 	private double[] trackerCoordinates = {100,100,110,100,110,100,110,110};
 	private String[] filepaths;
+	private double outputNo;
+	private AggregateDataset aggDatx;
 	
 	public IDataset getInput() {
 		return input;
@@ -181,6 +183,22 @@ public class ExampleModel {
 
 	public void setFilepaths(String[] filepaths) {
 		this.filepaths = filepaths;
+	}
+
+	public double getOutputNo() {
+		return outputNo;
+	}
+
+	public void setOutputNo(double outputNo) {
+		this.outputNo = outputNo;
+	}
+
+	public AggregateDataset getAggDatx() {
+		return aggDatx;
+	}
+
+	public void setAggDatx(AggregateDataset aggDatx) {
+		this.aggDatx = aggDatx;
 	}
 	
 }

@@ -1,8 +1,5 @@
 package org.dawnsci.spectrum.ui.wizard;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -11,15 +8,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
-import org.eclipse.dawnsci.plotting.api.region.IROIListener;
-import org.eclipse.dawnsci.plotting.api.region.IRegion;
-import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
-import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
-import org.eclipse.january.dataset.AggregateDataset;
 import org.eclipse.january.dataset.DatasetUtils;
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;
@@ -32,7 +23,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -47,6 +37,8 @@ public class OutputMovie extends Composite {
 	private MovieJob movieJob;
 	private MovieProgress movieProgress;
 	private ProgressMonitorDialog dialog;
+	private Button outputControl;
+	private boolean makeColumnsEqualWidth;
 
 
     
@@ -82,12 +74,14 @@ public class OutputMovie extends Composite {
         
         Group controlButtons = new Group(this, SWT.NULL);
         controlButtons.setText("Control Buttons");
-        GridLayout gridLayoutButtons = new GridLayout();
-        gridLayoutButtons.numColumns = 3;
+        GridLayout gridLayoutButtons = new GridLayout(4, false);
+        
         controlButtons.setLayout(gridLayoutButtons);
         GridData gridDataButtons = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-        gridDataButtons.horizontalSpan = 1;
+        //gridDataButtons.horizontalSpan = 1;
         controlButtons.setLayoutData(gridDataButtons);
+        
+        
         
         
         Label timeConstantLabel = new Label(controlButtons, SWT.NULL);
@@ -119,18 +113,7 @@ public class OutputMovie extends Composite {
 					movieJob.cancel();
 				}
 				movieJob.schedule();
-				//with progress
-//				movieProgress.setData(outputDatArray);
-//				movieProgress.setTime(time);
-//				try {
-//					dialog.run(true, true, movieProgress);
-//				} catch (InvocationTargetException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				
 			}
 
 			@Override
@@ -140,6 +123,10 @@ public class OutputMovie extends Composite {
 			}
         });
          
+        outputControl = new Button (controlButtons, SWT.CHECK);
+        outputControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        outputControl.setText("Take Output Marker");
+        
         final GridData gd_firstField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_firstField.grabExcessVerticalSpace = true;
         gd_firstField.grabExcessVerticalSpace = true;
@@ -151,7 +138,11 @@ public class OutputMovie extends Composite {
 
 		}
    
-   
+
+	public Button getOutputControl(){
+		return outputControl;
+	}
+
    public Composite getComposite(){   	
    	return this;
    }
@@ -159,6 +150,16 @@ public class OutputMovie extends Composite {
    public IPlottingSystem<Composite> getPlotSystem(){
 	   return outputMovie;
    }
+   
+   
+   
+   
+   
+   
+   
+   
+////////////////////////////////////////////////////////////////   
+   
    
    class MovieJob extends Job {
 
@@ -176,7 +177,10 @@ public class OutputMovie extends Composite {
 	public void setTime(int time) {
 		this.time = time;
 	}
-
+	
+	
+	
+	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
     	for( IDataset t: outputDatArray){

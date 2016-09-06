@@ -27,12 +27,17 @@ public class PlotSystem3Composite extends Composite {
     private IPlottingSystem<Composite> plotSystem4;
     private IDataset image1;
     private IDataset image2;
+    private ExampleModel model;
+    private DataModel dm;
     
     public PlotSystem3Composite(Composite parent, int style
     		, AggregateDataset aggDat, ExampleModel model, DataModel dm) throws Exception {
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
 
+        this.model=model;
+        this.dm = dm;
+        
         new Label(this, SWT.NONE).setText("Region of Interest 3D");
         
         try {
@@ -53,7 +58,7 @@ public class PlotSystem3Composite extends Composite {
 
     	
     	final GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = 1;
+        gridLayout.numColumns = 2;
         this.setLayout(gridLayout);
         
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
@@ -83,23 +88,23 @@ public class PlotSystem3Composite extends Composite {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 			
-//				if (dm.getBackgroundDatArray() == null ){
-//					
-//					IDataset j = DatasetFactory.ones(new int[] {20,20});
-//					image2 = j;
-//					plotSystem4.setPlotType(PlotType.SURFACE);
-//					plotSystem4.createPlot2D(j, null, null);
-//
-//					
-//					
-//					
-//				}
-//				else{
-//					IDataset j = dm.getBackgroundDatArray().get(model.getSliderPos());
-//					image2 = j;
-//					plotSystem4.setPlotType(PlotType.SURFACE);
-//					ITrace surf = plotSystem4.createPlot2D(j, null, null);
-//				}
+				if (dm.getBackgroundDatArray() == null ){
+					
+					IDataset j = DatasetFactory.ones(new int[] {20,20});
+					image2 = j;
+					plotSystem4.setPlotType(PlotType.SURFACE);
+					plotSystem4.createPlot2D(j, null, null);
+
+					
+					
+					
+				}
+				else{
+					IDataset j = dm.getBackgroundDatArray().get(model.getSliderPos());
+					image2 = j;
+					plotSystem4.setPlotType(PlotType.SURFACE);
+					ITrace surf = plotSystem4.createPlot2D(j, null, null);
+				}
 			}
 		});
         
@@ -133,6 +138,11 @@ public class PlotSystem3Composite extends Composite {
 	   return image1;
    }
    
-
+   public void updateAll(ExampleModel model, DataModel dm, IDataset j){
+	   this.model = model;
+	   this.dm = dm;
+	   plotSystem3.updatePlot2D(j, null, null);
+	   plotSystem4.createPlot2D(dm.getBackgroundDatArray().get(model.getSliderPos()), null, null);
+   }
 
 }
