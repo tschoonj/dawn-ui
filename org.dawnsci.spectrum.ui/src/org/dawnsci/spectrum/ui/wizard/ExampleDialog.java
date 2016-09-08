@@ -18,6 +18,7 @@ import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.AggregateDataset;
+import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
 import org.eclipse.january.dataset.SliceND;
@@ -30,6 +31,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
@@ -42,8 +44,10 @@ public class ExampleDialog extends Dialog {
 	private PlotSystem3Composite customComposite3;
 	private IDataset j;
 	private OutputCurves outputCurves;
-	private double imageNo;
+	private int imageNo;
 	private OutputMovie outputMovie;
+	private AggregateDataset aggDat;
+	
 	
 	public ExampleDialog(Shell parentShell, String[] datFilenames) {
 		super(parentShell);
@@ -111,7 +115,7 @@ public class ExampleDialog extends Dialog {
 			i++;
 		}
 		
-		final AggregateDataset aggDat = new AggregateDataset(false, shouldntneedthisarray);
+		aggDat = new AggregateDataset(false, shouldntneedthisarray);
 		
 		
 		//model.setArrayILD(arrayILD);
@@ -324,7 +328,7 @@ public class ExampleDialog extends Dialog {
 			}
 			
 			public void roiStandard(ROIEvent evt){	
-				imageNo = outputCurves.getRegionNo().getROI().getIntPoint()[0];
+				imageNo = ClosestNoFinder.closestNoPos(outputCurves.getRegionNo().getROI().getPointX(), dm.getxList());
 				model.setOutputNo(imageNo);
 				System.out.println("ImageNo: " + model.getOutputNo());
 			}
@@ -353,7 +357,7 @@ public class ExampleDialog extends Dialog {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				outputMovie.getPlotSystem().updatePlot2D(dm.getOutputDatArray().get(ClosestNoFinder.closestNoPos(model.getOutputNo(), dm.getxList())), null,null);
+				outputMovie.getPlotSystem().updatePlot2D(dm.getOutputDatArray().get(ClosestNoFinder.closestNoPos(outputCurves.getRegionNo().getROI().getPointX(), dm.getxList())), null,null);
 				System.out.println("DatArray size:  " + dm.getOutputDatArray().size());
 			}
 			
@@ -386,12 +390,11 @@ public class ExampleDialog extends Dialog {
 			}
 			
 			public void roiStandard1(ROIEvent evt){	
+				
+				imageNo = ClosestNoFinder.closestNoPos(outputCurves.getRegionNo().getROI().getPointX(), dm.getxList());
+				
 				if (outputMovie.getOutputControl().getSelection() == true){
 				
-					
-					
-					imageNo = ClosestNoFinder.closestNoPos(model.getOutputNo(), dm.getxList());
-					
 					model.setOutputNo(imageNo);
 					System.out.println("ImageNo: " + model.getOutputNo());
 					
@@ -399,36 +402,40 @@ public class ExampleDialog extends Dialog {
 					
 					oJ2.setDm(dm);
 					oJ2.setModel(model);
+				
+					oJ2.setImageNo(imageNo);
+					
+					model.setOutputNo(imageNo);
+					System.out.println("ImageNo: " + model.getOutputNo());
+					
+					oJ2.setDm(dm);
+					oJ2.setModel(model);
 					oJ2.setOutputMovie(outputMovie);
 					oJ2.setPlotSystem(outputMovie.getPlotSystem());
 					
 					oJ2.schedule();
-//					Display.getDefault().asyncExec(new Runnable() {
-//
-//						@Override
-//						public void run() {
-//							outputMovie.getPlotSystem().
-//							updatePlot2D(dm.getOutputDatArray().get(model.getOutputNo()), null, null);
-//						}
-//						
-//					
-//					});
+				}
+				if (customComposite.getOutputControl().getSelection() == true){
+					
+					operationJob3 oJ3 = new operationJob3();
+					
+					oJ3.setDm(dm);
+					oJ3.setModel(model);
+				
+					oJ3.setImageNo(imageNo);
+					oJ3.setPlotSystemComposite(customComposite);
+					
+					oJ3.schedule();
+					
 					
 				}
-			}
-		});
+				}
+	    });
+		
 	    
 /////////////////	    
 	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
+
 	    
 	    
 	    
@@ -457,6 +464,83 @@ public class ExampleDialog extends Dialog {
 	    return true;
 	}
 	
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	class operationJob3 extends Job {
+		
+		private ExampleModel model;
+		private IPlottingSystem<Composite> plotSystem;
+		private PlotSystemComposite plotSystemComposite;
+		private DataModel dm;
+		private int imageNo;
+		
+		public operationJob3() {
+			super("updating image...");
+		}
+		
+		public void setPlotSystemComposite(PlotSystemComposite customComposite) {
+			this.plotSystemComposite = customComposite;
+		}
+		
+		public void setPlotSystem(IPlottingSystem<Composite> plotSystem) {
+			this.plotSystem = plotSystem;
+		}
+		
+
+		public void setDm(DataModel dm) {
+			this.dm = dm;
+		}
+		
+		public void setModel(ExampleModel model) {
+			this.model = model;
+		}
+		
+		public void setImageNo(int imageNo) {
+			this.imageNo = imageNo;
+		}
+		
+		
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+	
+			Display.getDefault().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+			
+				SliceND slice = new SliceND(aggDat.getShape());
+				slice.setSlice(0, imageNo, imageNo+1, 1);
+				
+				
+				try {
+					
+					System.out.println("model.getAggDat().getsize:  " + model.getAggDat().getSize());
+					System.out.println("slice[0]:  " + slice.getShape()[0]);
+					
+					
+					Dataset d = model.getAggDat().getSlice(slice);
+					d.squeeze();
+					
+					plotSystemComposite.getPlotSystem().
+					updatePlot2D(d, null, null);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				}
+			});
+
+			return Status.OK_STATUS;
+
+		}
+	
+	}
+	
+	
+	
+	
 	////////////////////////////////////////////////////////////////////////////////////
 	
 	
@@ -466,6 +550,12 @@ public class ExampleDialog extends Dialog {
 		private IPlottingSystem<Composite> plotSystem;
 		private OutputMovie outputMovie;
 		private DataModel dm;
+		private PlotSystemComposite plotSystemComposite;
+		private int imageNo;
+	
+		public void setPlotSystemComposite(PlotSystemComposite customComposite) {
+			this.plotSystemComposite = customComposite;
+		}
 		
 		public operationJob2() {
 			super("updating image...");
@@ -489,13 +579,46 @@ public class ExampleDialog extends Dialog {
 		}
 		
 		
+		public void setImageNo(int imageNo) {
+			this.imageNo = imageNo;
+		}
+		
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
+			Display.getDefault().asyncExec(new Runnable() {
+				
+			@Override
+			public void run() {
 	
-	
-			outputMovie.getPlotSystem().
-			updatePlot2D(dm.getOutputDatArray().get(ClosestNoFinder.closestNoPos(model.getOutputNo(), dm.getxList())), null, null);
-	
+				outputMovie.getPlotSystem().
+				updatePlot2D(dm.getOutputDatArray().get(ClosestNoFinder.closestNoPos(outputCurves.getRegionNo().getROI().getPointX(), dm.getxList())), null, null);
+			}
+			});
+		
+			
+			
+//			if (plotSystemComposite.getOutputControl().getSelection() == true){
+//
+//				SliceND slice = new SliceND(aggDat.getShape());
+//				slice.setSlice(0, imageNo, imageNo+1, 1);
+//			
+//			
+//				
+//				Display.getDefault().syncExec(new Runnable() {
+//
+//						@Override
+//						public void run() {
+//							try {
+//								plotSystemComposite.getPlotSystem().
+//								updatePlot2D(model.getAggDat().getSlice(slice), null, null);
+//							} catch (DatasetException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//						}
+//					});
+//			}
+			
 			return Status.OK_STATUS;
 
 		}

@@ -25,6 +25,7 @@ public class PlotSystemComposite extends Composite {
     private IPlottingSystem<Composite> plotSystem;
     private IDataset image;
     private IRegion region;
+    private Button outputControl;
     
      
     public PlotSystemComposite(Composite parent, int style
@@ -65,7 +66,9 @@ public class PlotSystemComposite extends Composite {
         final GridData gd_firstField = new GridData(SWT.FILL, SWT.CENTER, true, false);
         slider.setLayoutData(gd_firstField);
         
-        
+        outputControl = new Button (this, SWT.CHECK);
+        outputControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        outputControl.setText("Take Output Marker");
         
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);;
         
@@ -187,6 +190,12 @@ public class PlotSystemComposite extends Composite {
    public IDataset getImage(){
 	   return image;
    }
+   
+
+	public Button getOutputControl(){
+		return outputControl;
+	}
+   
    
 }
     
