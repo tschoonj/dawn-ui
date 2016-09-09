@@ -26,17 +26,25 @@ public class PlotSystemComposite extends Composite {
     private IDataset image;
     private IRegion region;
     private Button outputControl;
+    private ExampleModel model;
+    private DataModel dm;
+    private GeometricParametersModel gm;
     
      
     public PlotSystemComposite(Composite parent, int style
-    		, AggregateDataset aggDat, String title, ExampleModel model) {
+    		,ExampleModel model) {
         super(parent, style);
         
-        new Label(this, SWT.NONE).setText(title);
+        
+        
+        this.model = model;
+        
+        
+        new Label(this, SWT.NONE).setText("Raw Image");
         //composite = new Composite(parent, SWT.NONE);
         slider = new Slider(this, SWT.HORIZONTAL);
         
-        
+     
         try {
 			plotSystem = PlottingFactory.createPlottingSystem();
 		} catch (Exception e2) {
@@ -44,18 +52,18 @@ public class PlotSystemComposite extends Composite {
 			e2.printStackTrace();
 		}
         
-        this.createContents(aggDat, model); 
+        this.createContents(model); 
 //        System.out.println("Test line");
         
     }
      
-    public void createContents(AggregateDataset aggDat, ExampleModel model) {
+    public void createContents(ExampleModel model) {
 
     	
     	final GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
         setLayout(gridLayout);
-         
+        AggregateDataset aggDat  =model.getAggDat();
 //        slider = new Slider(this, SWT.HORIZONTAL);
         
         slider.setMinimum(0);
@@ -196,6 +204,14 @@ public class PlotSystemComposite extends Composite {
 		return outputControl;
 	}
    
+	public void setModels(ExampleModel model1, DataModel dm1, GeometricParametersModel gm1){
+		this.model= model1;
+		this.dm = dm1;
+		this.gm = gm1;
+		this.createContents(model);
+	}
+	
+	
    
 }
     

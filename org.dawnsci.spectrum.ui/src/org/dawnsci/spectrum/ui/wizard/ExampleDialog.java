@@ -39,6 +39,7 @@ import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
 public class ExampleDialog extends Dialog {
 	
 	final private String[] filepaths;
+	private PlotSystemComposite customComposite;
 	private PlotSystem2Composite customComposite2;
 	private PlotSystem1Composite customComposite1;
 	private PlotSystem3Composite customComposite3;
@@ -47,6 +48,13 @@ public class ExampleDialog extends Dialog {
 	private int imageNo;
 	private OutputMovie outputMovie;
 	private AggregateDataset aggDat;
+	private ArrayList<ExampleModel> models;
+	private ArrayList<GeometricParametersModel> gms;
+	private ArrayList<DataModel> dms;
+	private SuperModel sm;
+	
+	
+	
 	
 	
 	public ExampleDialog(Shell parentShell, String[] datFilenames) {
@@ -62,7 +70,7 @@ public class ExampleDialog extends Dialog {
 	    final Composite container = (Composite) super.createDialogArea(parent);
 	    GridLayout gridLayout = new GridLayout(4, true);
 	    container.setLayout(gridLayout);			
-
+	    sm = new SuperModel();
 	    ExampleModel model = new ExampleModel();
 		DataModel dm = new DataModel();
 		GeometricParametersModel gm = new GeometricParametersModel();
@@ -70,6 +78,7 @@ public class ExampleDialog extends Dialog {
 		ArrayList<ILazyDataset> arrayILD = new ArrayList<ILazyDataset>();
 		
 		model.setFilepaths(filepaths);
+		sm.setFilepaths(filepaths);
 		
 		for (String fpath : filepaths){
 			try {
@@ -77,6 +86,11 @@ public class ExampleDialog extends Dialog {
 				ILazyDataset ild =dh1.getLazyDataset(gm.getImageName()); 
 				//DatasetUtils.
 				arrayILD.add(ild);
+				models.add(new ExampleModel());
+				gms.add(new GeometricParametersModel());
+				dms.add(new DataModel());
+				
+				
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -120,10 +134,7 @@ public class ExampleDialog extends Dialog {
 		
 		//model.setArrayILD(arrayILD);
 		model.setAggDat(aggDat);
-		
-		
-		
-		String title = filepaths[0];
+
 		
 		
 		ArrayList<ILazyDataset> arrayILDx = new ArrayList<ILazyDataset>();
@@ -178,18 +189,12 @@ public class ExampleDialog extends Dialog {
 		//model.setArrayILD(arrayILD);
 		model.setAggDatx(aggDatx);
 		
-		
-		
-		
-		
-		
-		
 ///////////////////////////Window 1////////////////////////////////////////////////////
 		try {
 			
-			FileViewer2 fileview = new FileViewer2(container);
-			fileview.setLayout(new GridLayout());
-			fileview.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			DatDisplayer datDisplayer = new DatDisplayer(container, SWT.NONE, sm);
+			datDisplayer.setLayout(new GridLayout());
+			datDisplayer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 			
 		    
 		} catch (Exception e) {
@@ -199,7 +204,7 @@ public class ExampleDialog extends Dialog {
 		
 		
 ///////////////////////////Window 2////////////////////////////////////////////////////
-	    PlotSystemComposite customComposite = new PlotSystemComposite(container, SWT.NONE, aggDat, title, model);
+	    customComposite = new PlotSystemComposite(container, SWT.NONE, model);
 	    customComposite.setLayout(new GridLayout());
 	    customComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	    
@@ -433,10 +438,21 @@ public class ExampleDialog extends Dialog {
 	    });
 		
 	    
-/////////////////	    
+//////////////////////////////////////////////////////////////////////////////////	    
 	    
-
+	    sm.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				int b = sm.getSelection();
+				customComposite = new PlotSystemComposite(parent, SWT.NONE, models.get(b)); 
+				
+			}
+		});
 	    
+	    
+	    
+///////////////////////////////////////////////////////////////////////////////////
 	    
 	    
 	    return container;

@@ -66,9 +66,6 @@ public class StitchedReflectivityCurves extends Composite {
         
         plotSystem.createPlotPart(this, "ExamplePlot", actionBarComposite, PlotType.IMAGE, null);
         
-
-
-        
         
 
 		ILineTrace lt1 = plotSystem.createLineTrace("Concatenated Curve Test");
@@ -81,8 +78,8 @@ public class StitchedReflectivityCurves extends Composite {
 		sortedAttenuatedDatasets[0]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[0], 0));
 		sortedAttenuatedDatasets[1]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[1], 0));
 		
-		DatasetUtils.sort(sortedAttenuatedDatasets[0],
-				sortedAttenuatedDatasets[1]);
+		DatasetUtils.sort(sortedAttenuatedDatasets[1],
+				sortedAttenuatedDatasets[0]);
 		
 		
 		lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[0]);
@@ -107,8 +104,8 @@ public class StitchedReflectivityCurves extends Composite {
 				sortedAttenuatedDatasets[0]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[0], 0));
 				sortedAttenuatedDatasets[1]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[1], 0));
 				
-				DatasetUtils.sort(sortedAttenuatedDatasets[0],
-						sortedAttenuatedDatasets[1]);
+				DatasetUtils.sort(sortedAttenuatedDatasets[1],
+						sortedAttenuatedDatasets[0]);
 								
 				lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[0]);
 				
