@@ -10,6 +10,8 @@ import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
 import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.january.dataset.AggregateDataset;
+import org.eclipse.january.dataset.Dataset;
+import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
 
@@ -20,6 +22,7 @@ public class ExampleModel {
 	private int[][] lenpt;
 	private IDataset currentImage;
 	private ArrayList<ILazyDataset> arrayILD;
+	private ILazyDataset datImages;
 	private int sliderPos;
 	private float iterationMarker =0;
 	private AggregateDataset aggDat;
@@ -28,9 +31,17 @@ public class ExampleModel {
 	private int boundaryBox;
 	private Methodology methodology;
 	private double[] trackerCoordinates = {100,100,110,100,110,100,110,110};
-	private String[] filepaths;
+	private String filepath;
 	private double outputNo;
-	private AggregateDataset aggDatx;
+	private ILazyDataset DatX;
+	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+
+
+
+	
+
+	
 	
 	public IDataset getInput() {
 		return input;
@@ -117,7 +128,6 @@ public class ExampleModel {
 		this.arrayILD = arrayILD;
 	}
 
-	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	public IROI getROI(){
 		return ROI;
@@ -177,12 +187,12 @@ public class ExampleModel {
 				newValue);
 	}
 
-	public String[] getFilepaths() {
-		return filepaths;
+	public String getFilepath() {
+		return filepath;
 	}
 
-	public void setFilepaths(String[] filepaths) {
-		this.filepaths = filepaths;
+	public void setFilepath(String filepath) {
+		this.filepath = filepath;
 	}
 
 	public double getOutputNo() {
@@ -193,12 +203,24 @@ public class ExampleModel {
 		this.outputNo = outputNo;
 	}
 
-	public AggregateDataset getAggDatx() {
-		return aggDatx;
+	public ILazyDataset getDatX() {
+		return DatX;
 	}
 
-	public void setAggDatx(AggregateDataset aggDatx) {
-		this.aggDatx = aggDatx;
+	public void setDatX(ILazyDataset Datx) {
+		this.DatX = Datx;
 	}
+
+	public ILazyDataset getDatImages() {
+		return datImages;
+	}
+
+	public void setDatImages(ILazyDataset datImages) {
+		this.datImages = datImages;
+	}
+	
+	
+
+
 	
 }

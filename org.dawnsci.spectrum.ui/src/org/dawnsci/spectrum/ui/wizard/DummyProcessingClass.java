@@ -10,7 +10,7 @@ public class DummyProcessingClass {
 	
 	
 	@SuppressWarnings("incomplete-switch")
-	public static IDataset DummyProcess(IDataset input, ExampleModel model, DataModel dm, GeometricParametersModel gm){
+	public static IDataset DummyProcess(IDataset input, ExampleModel model,DataModel  dm,  GeometricParametersModel gm){
 		
 		IDataset output =null;
 		

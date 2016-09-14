@@ -34,12 +34,14 @@ public class OutputMovie extends Composite {
     private IPlottingSystem<Composite> outputMovie;
     private IDataset image1;
     private Button button1;
+
 	private MovieJob movieJob;
 	private MovieProgress movieProgress;
 	private ProgressMonitorDialog dialog;
 	private Button outputControl;
 	private boolean makeColumnsEqualWidth;
-
+	private int time;
+	private Text timeConstantText;
 
     
     
@@ -58,7 +60,7 @@ public class OutputMovie extends Composite {
 			e2.printStackTrace();
 		}
         //movie job
-        movieJob = new MovieJob();
+//        movieJob = new MovieJob();
 //        movieProgress = new MovieProgress();
         this.createContents(dm); 
 //        System.out.println("Test line");
@@ -86,12 +88,7 @@ public class OutputMovie extends Composite {
         
         Label timeConstantLabel = new Label(controlButtons, SWT.NULL);
         timeConstantLabel.setText("Time Constant /ms");
-	    Text timeConstantText = new Text(controlButtons, SWT.SINGLE);
-	    
-        
-        
-        
-        
+	    timeConstantText = new Text(controlButtons, SWT.SINGLE);
         button1 = new Button (controlButtons, SWT.PUSH);
         button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         
@@ -101,28 +98,29 @@ public class OutputMovie extends Composite {
         
         button1.setText("Play Movie");
         
-        button1.addSelectionListener(new SelectionListener() {
-
-			public void widgetSelected(SelectionEvent event) {
-				List<IDataset> outputDatArray = dm.getOutputDatArray();
-				int time = Integer.parseInt(timeConstantText.getText());
+//        button1.addSelectionListener(new SelectionListener() {
+//
+//			public void widgetSelected(SelectionEvent event) {
+//				List<IDataset> outputDatArray = dm.getOutputDatArray();
+//				time = Integer.parseInt(timeConstantText.getText());
 				//with job
-				movieJob.setData(outputDatArray);
-				movieJob.setTime(time);
-				if(movieJob.getState() == Job.RUNNING) {
-					movieJob.cancel();
-				}
-				movieJob.schedule();
+//				movieJob.setData(outputDatArray);
+//				movieJob.setTime(time);
+//				if(movieJob.getState() == Job.RUNNING) {
+//					movieJob.cancel();
+//				}
+				//movieJob.schedule();
 				
-			}
+//			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-        });
-         
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//        });
+//         
+    
         outputControl = new Button (controlButtons, SWT.CHECK);
         outputControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         outputControl.setText("Take Output Marker");
@@ -142,6 +140,10 @@ public class OutputMovie extends Composite {
 	public Button getOutputControl(){
 		return outputControl;
 	}
+	
+	public Button getPlayButton(){
+		return button1;
+	}
 
    public Composite getComposite(){   	
    	return this;
@@ -151,11 +153,10 @@ public class OutputMovie extends Composite {
 	   return outputMovie;
    }
    
-   
-   
-   
-   
-   
+   public Text getTimeConstant(){
+	   
+	   return timeConstantText;
+   }
    
    
 ////////////////////////////////////////////////////////////////   

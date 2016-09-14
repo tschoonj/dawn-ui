@@ -2,6 +2,7 @@ package org.dawnsci.spectrum.ui.wizard;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,17 +53,28 @@ public class PlotSystem1Composite extends Composite {
     private Combo comboDropDown0;
 	private Combo comboDropDown1;
     private Text boundaryBoxText;
+    private ArrayList<ExampleModel> models;
+    private SuperModel sm;
+    private GeometricParametersModel gm;
+    private ArrayList<DataModel> dms;
+    private DataModel dm;
+	
     private ExampleModel model;
     
     public PlotSystem1Composite(Composite parent, int style
-    		, AggregateDataset aggDat, ExampleModel model, DataModel dm, GeometricParametersModel gm) {
+    		,ArrayList<ExampleModel> models, ArrayList<DataModel> dms,SuperModel sm, GeometricParametersModel gm) {
     	
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
 
         new Label(this, SWT.NONE).setText("Operation Window");
-
-        this.model = model;
+        
+        this.gm = gm;
+        this.models = models;
+        this.sm =sm;
+        this.model = models.get(sm.getSelection());
+        this.dm =dms.get(sm.getSelection());
+        
         
         try {
         	
@@ -73,12 +85,12 @@ public class PlotSystem1Composite extends Composite {
         
         
         
-        this.createContents(aggDat, model, dm, gm); 
+        this.createContents(model, gm); 
 //        System.out.println("Test line");
         
     }
      
-    public void createContents(AggregateDataset aggDat, ExampleModel model, DataModel dm
+    public void createContents(ExampleModel model
     		, GeometricParametersModel gm) {
         
         
@@ -181,7 +193,7 @@ public class PlotSystem1Composite extends Composite {
 			}
 		});
 		
-		SliceND slice = new SliceND(aggDat.getShape());
+		SliceND slice = new SliceND(model.getDatImages().getShape());
 		
 		/* Read the tri-state button (application code) */
 		button.addListener (SWT.Selection, e -> {
@@ -194,14 +206,14 @@ public class PlotSystem1Composite extends Composite {
 					slice.setSlice(0, selection, selection+1, 1);
 					IDataset j = null;
 					try {
-						j = aggDat.getSlice(slice);
+						j = model.getDatImages().getSlice(slice);
 					} catch (Exception e1) {
 						
 						e1.printStackTrace();
 					}
 					j.squeeze();
 					IDataset image1 = j;
-					IDataset output = DummyProcessingClass.DummyProcess(j, model, dm, gm);
+					IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm);
 					plotSystem1.createPlot2D(output, null, null);
 //				} else {
 //				}
@@ -218,10 +230,10 @@ public class PlotSystem1Composite extends Composite {
 			    try {
 			    	if (button.getSelection()){
 			    		slice.setSlice(0, selection, selection+1, 1);
-			    		IDataset i = aggDat.getSlice(slice);
+			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm);
+						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm,gm);
 						plotSystem1.createPlot2D(output, null, null);
 			    	}
 				
@@ -231,8 +243,6 @@ public class PlotSystem1Composite extends Composite {
 					f.printStackTrace();
 				}
 			}
-			
-
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 
@@ -241,7 +251,7 @@ public class PlotSystem1Composite extends Composite {
 			    try {
 			    	if (button.getSelection()){
 			    		slice.setSlice(0, selection, selection+1, 1);
-			    		IDataset i = aggDat.getSlice(slice);
+			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
 						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm);
@@ -260,122 +270,51 @@ public class PlotSystem1Composite extends Composite {
 	       
         button1.setText("Run");
         
-//        operationJob oJ = new operationJob();
-        
-//        button1.addSelectionListener(new SelectionListener() {
+        button2.setText("Reset Tracker");
+//        button2.addSelectionListener(new SelectionListener() {
 //
 //            public void widgetSelected(SelectionEvent event) {
-////            	SliceIterationRunner SR = new SliceIterationRunner();
-////            	SR.sliceIterationRunner1(model, dm, plotSystem1);
-//            	
-//            	
-//            	for (int k = model.getSliderPos(); k<model.getAggDat().getShape()[0]; k++){
-//    				dm.addxList((double) k);
-//    				IDataset j = null;
-//    				SliceND slice = new SliceND(model.getAggDat().getShape());
-//    				slice.setSlice(0, k, k+1, 1);
-//    				try {
-//    					j = model.getAggDat().getSlice(slice);
-//    					} 
-//    					catch (Exception e1) {
-//    					}
-//    					
-//    				j.squeeze();
-//    				
-//    				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model, dm);
-//    				
-//
-//					Display.getDefault().syncExec(new Runnable() {
-//					public void run() {
-//					// Update UI here
-//						plotSystem1.clear();
-////		    			plotSystem.createPlot2D(output1, null, null);
-//		    			plotSystem1.updatePlot2D(output1, null,null);
-//		        		plotSystem1.repaint(true);
-//					}
-//					});
-//    			
-//        		try {
-//    				Thread.sleep(1000);
-//    			} catch (InterruptedException e) {
-//    				// TODO Auto-generated catch block
-//    				e.printStackTrace();
-//        		System.out.println("~~~~~~~~~~~~~~Trying this now.############");
-//            	}
-//        		
-//        		
-//            }
-//              dm.addPropertyChangeListener(new PropertyChangeListener() {
-//				
-//				@Override
-//				public void propertyChange(PropertyChangeEvent evt) {
-//					if (dm.getOutputDatArray() != null){
-//						IDataset output = dm.getOutputDatArray().get((dm.getOutputDatArray().size() -1));
-//						oJ.setData(output);
-//						if(oJ.getState() == Job.RUNNING) {
-//							oJ.cancel();
-//						}
-//						oJ.schedule();
-
-			
-						
-//						plotSystem1.createPlot2D(output, null, null);
-//					}
+//	            int selection = model.getSliderPos();
+//	            System.out.println("Slider position in reset:  " + selection);
+//	            SliceND slice = new SliceND(model.getDatImages().getShape());
+//	            slice.setSlice(0, selection, selection+1, 1);
+//				IDataset i = null;
+//				try {
+//					i = model.getDatImages().getSlice(slice);
+//				} catch (DatasetException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
 //				}
-
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				// TODO Auto-generated method stub
+//				i.squeeze();
+//             	model.setInput(null);
+//             	IROI region = model.getROI();
+//             	IRectangularROI currentBox = region.getBounds();
+//             	int[] currentLen = currentBox.getIntLengths();
+//             	int[] currentPt = currentBox.getIntPoint();
+//             	int[][] currentLenPt = {currentLen, currentPt};
+//             	double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
+//					(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
+//             	
+//             	int[] ab =getMethodology();
+//				model.setMethodology((Methodology.values()[ab[0]]));
+//				model.setFitPower(FitPower.values()[ab[1]]);
+//				model.setBoundaryBox(ab[2]);
 //				
-//			}
+//             	
+//             	model.setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
+//             	model.setLenPt(currentLenPt);
+//             	
+//             	IDataset j = DummyProcessingClass.DummyProcess(i, model,dm, gm);
+//             	
+//             	plotSystem1.createPlot2D(j, null, null);
+//             	dm.resetAll();
+//             	
+//            }
 //
-//		     
+//            public void widgetDefaultSelected(SelectionEvent event) {
+//              
+//            }
 //        });
-         
-//        GridLayout gridLayout = new GridLayout();
-//        gridLayout.numColumns = 1;
-//        void setLayout(gridLayout);
-         
-         
-        button2.setText("Reset Tracker");
-        button2.addSelectionListener(new SelectionListener() {
-
-            public void widgetSelected(SelectionEvent event) {
-	            int selection = model.getSliderPos();
-	            System.out.println("Slider position in reset:  " + selection);
-	            SliceND slice = new SliceND(model.getAggDat().getShape());
-	            slice.setSlice(0, selection, selection+1, 1);
-				IDataset i = null;
-				try {
-					i = model.getAggDat().getSlice(slice);
-				} catch (DatasetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				i.squeeze();
-             	model.setInput(null);
-             	IROI region = model.getROI();
-             	IRectangularROI currentBox = region.getBounds();
-             	int[] currentLen = currentBox.getIntLengths();
-             	int[] currentPt = currentBox.getIntPoint();
-             	int[][] currentLenPt = {currentLen, currentPt};
-             	double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
-					(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
-             	
-             	model.setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
-             	model.setLenPt(currentLenPt);
-             	
-             	IDataset j = DummyProcessingClass.DummyProcess(i, model, dm, gm);
-             	
-             	plotSystem1.createPlot2D(j, null, null);
-             	dm.resetAll();
-             	
-            }
-
-            public void widgetDefaultSelected(SelectionEvent event) {
-              
-            }
-        });
 
         final GridData gd_firstField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_firstField.grabExcessVerticalSpace = true;
@@ -401,6 +340,22 @@ public class PlotSystem1Composite extends Composite {
 
    public IDataset getImage(){
 	   return image1;
+   }
+   
+   public int[] getMethodology(){
+	   
+	   int[] returns = new int[3]; 
+	   
+	   Display.getDefault().syncExec(new Runnable() {
+		      public void run() {
+		    	  returns[0] = comboDropDown0.getSelectionIndex();
+				   returns[1] = comboDropDown1.getSelectionIndex();
+				   returns[2] = Integer.parseInt(boundaryBoxText.getText());
+		      }
+		    });
+		   
+	   
+	   return returns;
    }
    
    public Button getRunButton(){

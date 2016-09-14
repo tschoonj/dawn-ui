@@ -96,7 +96,7 @@ public class SliceIterationRunner {
 					
 				j.squeeze();
 				
-				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model, dm, gm);
+				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm);
 
 			plotSystem.clear();
 //			plotSystem.createPlot2D(output1, null, null);

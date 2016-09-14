@@ -6,7 +6,7 @@ import java.beans.PropertyChangeSupport;
 public class SuperModel {
 
 	private String[] filepaths;
-	private int selection;
+	private int selection = 0;
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 
@@ -23,7 +23,6 @@ public class SuperModel {
 	}
 
 	public void setSelection(int selection) {
-		this.selection = selection;
 		firePropertyChange("selection", this.selection, this.selection= selection);
 	}
 	

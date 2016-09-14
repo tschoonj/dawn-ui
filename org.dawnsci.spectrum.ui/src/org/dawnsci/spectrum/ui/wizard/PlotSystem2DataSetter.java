@@ -14,7 +14,7 @@ public class PlotSystem2DataSetter {
 		int[] newLen = roi.getIntLengths();
 		int[] newPt = roi.getIntPoint();
 		int[][] newLenPt = {newLen, newPt};
-		IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getSliderPos(), model.getAggDat(),newLenPt);
+		IDataset j = ImageSlicerUtils.ImageSliceUpdate(model.getSliderPos(), model.getDatImages(),newLenPt);
 
 		return j;
     }

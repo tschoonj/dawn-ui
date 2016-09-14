@@ -53,6 +53,7 @@ public class DatDisplayer extends Composite {
 	    	public void widgetSelected(SelectionEvent e) {
 	          int selection = comboDropDown0.getSelectionIndex();
 	          sm.setSelection(selection);
+	          System.out.println("!!!!!!!!!!!!!!selection : " + selection +"  !!!!!!!!!!!!!!!!!!!!!!!!!!1");
 	        }
 	    	@Override
 	        public void widgetDefaultSelected(SelectionEvent e) {

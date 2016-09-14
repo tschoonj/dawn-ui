@@ -110,5 +110,8 @@ public class PlotSystem2Composite extends Composite {
 	   plotSystem2.repaint();
    }
    
+	public void updateImage(IDataset image){
+		plotSystem2.updatePlot2D(image, null, null);
+	}
 
 }

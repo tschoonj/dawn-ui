@@ -18,6 +18,7 @@ import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.IndexIterator;
 import org.eclipse.january.dataset.LinearAlgebra;
 import org.eclipse.january.dataset.Maths;
+import org.eclipse.swt.widgets.Display;
 
 import uk.ac.diamond.scisoft.analysis.fitting.functions.Polynomial2D;
 
@@ -27,10 +28,11 @@ import uk.ac.diamond.scisoft.analysis.fitting.functions.Polynomial2D;
 public class TwoDFitting{
 	
 	//private  Polynomial2D g2;
+	private static Dataset output;
+	private static Polynomial2D g2;
 	
-
-	public static IDataset TwoDFitting1(IDataset input, ExampleModel model){
-		Polynomial2D g2 = null;
+	public static Dataset TwoDFitting1(IDataset input, ExampleModel model){
+		g2 = null;
 		
 		RectangularROI box = model.getBox();
 		
@@ -56,37 +58,47 @@ public class TwoDFitting{
 		Dataset matrix = LinearLeastSquaresServicesForDialog.polynomial2DLinearLeastSquaresMatrixGenerator(
 				AnalaysisMethodologies.toInt(model.getFitPower()), fittingBackground[0], fittingBackground[1]);
 		
-		DoubleDataset test = (DoubleDataset)LinearAlgebra.solveSVD(matrix, intermediateFitTest);
-		double[] params = test.getData();
+		Display.getDefault().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+			DoubleDataset test = (DoubleDataset)LinearAlgebra.solveSVD(matrix, intermediateFitTest);
+			double[] params = test.getData();
+			
+			DoubleDataset in1Background = g2.getOutputValues0(params, len, model.getBoundaryBox(),
+					AnalaysisMethodologies.toInt(model.getFitPower()));
 		
-		DoubleDataset in1Background = g2.getOutputValues0(params, len, model.getBoundaryBox(),
-				AnalaysisMethodologies.toInt(model.getFitPower()));
 	
-		IndexIterator it = in1Background.getIterator();
-	
-		while (it.hasNext()) {
-			double v = in1Background.getElementDoubleAbs(it.index);
-			if (v < 0)
-				in1Background.setObjectAbs(it.index, 0);
-		}
-	
-		Dataset pBackgroundSubtracted = Maths.subtract(in1, in1Background, null);
-	
-		pBackgroundSubtracted.setName("pBackgroundSubtracted");
-	
-		IndexIterator it1 = pBackgroundSubtracted.getIterator();
-	
-		while (it1.hasNext()) {
-			double q = pBackgroundSubtracted.getElementDoubleAbs(it1.index);
-			if (q < 0)
-				pBackgroundSubtracted.setObjectAbs(it1.index, 0);
-		}
+			IndexIterator it = in1Background.getIterator();
 		
-		Dataset output = DatasetUtils.cast(pBackgroundSubtracted, Dataset.FLOAT64);
+			while (it.hasNext()) {
+				double v = in1Background.getElementDoubleAbs(it.index);
+				if (v < 0)
+					in1Background.setObjectAbs(it.index, 0);
+			}
 		
-		output.setName("Region of Interest, polynomial background removed");
+			Dataset pBackgroundSubtracted = Maths.subtract(in1, in1Background, null);
 		
+			pBackgroundSubtracted.setName("pBackgroundSubtracted");
+		
+			IndexIterator it1 = pBackgroundSubtracted.getIterator();
+		
+			while (it1.hasNext()) {
+				double q = pBackgroundSubtracted.getElementDoubleAbs(it1.index);
+				if (q < 0)
+					pBackgroundSubtracted.setObjectAbs(it1.index, 0);
+			}
+			
+			output = DatasetUtils.cast(pBackgroundSubtracted, Dataset.FLOAT64);
+			
+			output.setName("Region of Interest, polynomial background removed");
+		
+		
+			
+			}
+		});
 		return output;
 	}
+	
 
 }

@@ -38,36 +38,20 @@ public class SXRDGeometricCorrections {
 	private static final String CHI = "chi";
 	private static final String PHI = "phi";
 		
-	public static AggregateDataset DiffData (ExampleModel model, String choice) {
+	public static ILazyDataset DiffData (ExampleModel model, String choice) {
 		
-		ArrayList<ILazyDataset> arrayILD = new ArrayList<ILazyDataset>();
-		
-		for (String fpath : model.getFilepaths()){
-			try {
-				IDataHolder dh1 =LoaderFactory.getData(fpath);
-//				String[] names = dh1.getNames();
-				ILazyDataset ild =dh1.getLazyDataset(choice); 
-				//DatasetUtils.
-				arrayILD.add(ild);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		IDataHolder dh1 = null;
+			
+		try {
+				dh1 = LoaderFactory.getData(model.getFilepath());			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
 
-		ILazyDataset[] shouldntneedthisarray = new ILazyDataset[arrayILD.size()];
-		
-		Iterator<ILazyDataset> itr =arrayILD.iterator();
-		int i=0;
+		ILazyDataset ild =dh1.getLazyDataset(choice); 
 
-		while (itr.hasNext()){
-			shouldntneedthisarray[i] = itr.next();
-			i++;
-		}
-		
-		final AggregateDataset aggDat = new AggregateDataset(false, shouldntneedthisarray);		
-		return aggDat;
+		return ild;
 	}
 
 	
@@ -75,15 +59,8 @@ public class SXRDGeometricCorrections {
 		SliceND slice1 = new SliceND(new int[] {1});
 		slice1.setSlice(0, model.getImageNumber(), model.getImageNumber()+1, 1);
 		ILazyDataset arb = null;
-		try {
-			ILazyDataset o =  DiffData(model, choice);
-			
-			arb = o.getSlice(slice1);
-		} catch (DatasetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//arb.squeezeEnds();
+		arb =  DiffData(model, choice);
+//		arb.squeezeEnds();
 		return arb;
 	}
 	

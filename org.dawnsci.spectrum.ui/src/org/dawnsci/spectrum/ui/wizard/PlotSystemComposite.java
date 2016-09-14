@@ -1,4 +1,6 @@
 package org.dawnsci.spectrum.ui.wizard;
+import java.util.ArrayList;
+
 import org.dawb.common.ui.widgets.ActionBarWrapper;
 import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
@@ -29,15 +31,20 @@ public class PlotSystemComposite extends Composite {
     private ExampleModel model;
     private DataModel dm;
     private GeometricParametersModel gm;
+    private ArrayList<ExampleModel> models;
+    private SuperModel sm;
     
      
     public PlotSystemComposite(Composite parent, int style
-    		,ExampleModel model) {
+    		,ArrayList<ExampleModel> models, SuperModel sm , IDataset image) {
         super(parent, style);
         
         
         
-        this.model = model;
+        
+        this.sm=sm;
+        this.models = models;
+        this.model = models.get(sm.getSelection());
         
         
         new Label(this, SWT.NONE).setText("Raw Image");
@@ -52,22 +59,22 @@ public class PlotSystemComposite extends Composite {
 			e2.printStackTrace();
 		}
         
-        this.createContents(model); 
+        this.createContents(model, image); 
 //        System.out.println("Test line");
         
     }
      
-    public void createContents(ExampleModel model) {
+    public void createContents(ExampleModel model, IDataset image) {
 
     	
     	final GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
         setLayout(gridLayout);
-        AggregateDataset aggDat  =model.getAggDat();
+        
 //        slider = new Slider(this, SWT.HORIZONTAL);
         
         slider.setMinimum(0);
-	    slider.setMaximum(aggDat.getShape()[0]);
+	    slider.setMaximum(model.getDatImages().getShape()[0]);
 	    slider.setIncrement(1);
 	    slider.setThumb(1);
         
@@ -89,55 +96,10 @@ public class PlotSystemComposite extends Composite {
         
          System.out.println(plotSystem.getClass());
         
-        SliceND slice = new SliceND(aggDat.getShape());
-        slice.setSlice(0, 1, 2, 1);
-		IDataset i = null;
-		try {
-			i = aggDat.getSlice(slice);
-		} catch (DatasetException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		i.squeeze();
-		image =i;
-		
-        slider.addSelectionListener(new SelectionListener() {
-        	
-		public void widgetSelected(SelectionEvent e) {
-			int selection = slider.getSelection();
-			model.setSliderPos(selection);
-			
-		    try {
-				slice.setSlice(0, selection, selection+1, 1);
-				IDataset i = aggDat.getSlice(slice);
-				i.squeeze();
-				plotSystem.createPlot2D(i, null, null);
-				image = i;
-				model.setImageNumber(selection);
-		    } 
-		    catch (Exception f) {
-				// TODO Auto-generated catch block
-				f.printStackTrace();
-			}
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			// TODO Auto-generated method stub
-			try {
-		    } 
-		    catch (Exception f) {
-				// TODO Auto-generated catch block
-				f.printStackTrace();
-			}
-		}
-			
-		});
-        
 
         plotSystem.createPlotPart(this, "ExamplePlot", actionBarComposite, PlotType.IMAGE, null);
         plotSystem.getPlotComposite().setLayoutData(gd_secondField);
-        plotSystem.createPlot2D(i, null, null);
+        plotSystem.createPlot2D(image, null, null);
         
 
         try {
@@ -156,22 +118,24 @@ public class PlotSystemComposite extends Composite {
 
 			@Override
 			public void roiDragged(ROIEvent evt) {
-				model.setROI(region.getROI());
-				model.setBox(startROI);
+				roiStandard(evt);
 				
 			}
 
 			@Override
 			public void roiChanged(ROIEvent evt) {
-				// TODO Auto-generated method stub
-				model.setROI(region.getROI());			
-				model.setBox(startROI);
+				roiStandard(evt);
 			}
 
 			@Override
 			public void roiSelected(ROIEvent evt) {
-				model.setROI(region.getROI());			
-				model.setBox(startROI);
+				roiStandard(evt);
+			}
+			
+			public void roiStandard(ROIEvent evt) {
+				models.get(sm.getSelection()).setROI(region.getROI());
+				models.get(sm.getSelection()).setBox(startROI);
+				
 			}
 
 		});
@@ -203,16 +167,35 @@ public class PlotSystemComposite extends Composite {
 	public Button getOutputControl(){
 		return outputControl;
 	}
-   
-	public void setModels(ExampleModel model1, DataModel dm1, GeometricParametersModel gm1){
-		this.model= model1;
-		this.dm = dm1;
-		this.gm = gm1;
-		this.createContents(model);
+
+	public Slider getSlider(){
+		return slider;
+	}
+
+	public void getBoxPosition(){
+		models.get(sm.getSelection()).setROI(region.getROI());
 	}
 	
 	
+	
+	public void setModels(ExampleModel model1){
+		this.model= model1;
+//		this.dm = dm1;
+//		this.gm = gm1;
+//		this.createContents(model);
+	}
+	
+	public void updateImage(IDataset image){
+		plotSystem.updatePlot2D(image, null, null);
+	}
+	
    
+	public void sliderReset(ExampleModel model1){
+		slider.setMinimum(0);
+	    slider.setMaximum(model1.getDatImages().getShape()[0]);
+	    slider.setIncrement(1);
+	    slider.setThumb(1);
+	}
 }
     
 

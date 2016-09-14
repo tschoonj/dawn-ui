@@ -1,6 +1,7 @@
 package org.dawnsci.spectrum.ui.wizard;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 import org.dawb.common.ui.widgets.ActionBarWrapper;
 import org.eclipse.dawnsci.analysis.api.roi.IROI;
@@ -10,6 +11,7 @@ import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
 import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
+import org.eclipse.january.DatasetException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,12 +24,17 @@ public class OutputCurves extends Composite {
     private IPlottingSystem<Composite> plotSystem4;
     private IRegion imageNo;
     private ILineTrace lt;
+    private ExampleModel model;
+    private DataModel dm;
     
-    public OutputCurves(Composite parent, int style, DataModel dm) {
+    
+    public OutputCurves(Composite parent, int style, ArrayList<ExampleModel> models,  ArrayList<DataModel> dms, SuperModel sm) {
         super(parent, style);
         
         new Label(this, SWT.NONE).setText("Output Curves");
         
+        this.model = models.get(sm.getSelection());
+        this.dm = dms.get(sm.getSelection());
         try {
 			plotSystem4 = PlottingFactory.createPlottingSystem();
 		} catch (Exception e2) {
@@ -35,12 +42,12 @@ public class OutputCurves extends Composite {
 			e2.printStackTrace();
 		}
         
-        this.createContents(dm); 
+        this.createContents(model); 
 
         
     }
      
-    public void createContents(DataModel dm) {
+    public void createContents(ExampleModel model) {
     	
     	final GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 1;
@@ -88,7 +95,7 @@ public class OutputCurves extends Composite {
 					lt.setData(dm.xIDataset(), dm.yIDataset());
 				}	
 				
-				Display.getDefault().asyncExec(new Runnable() {
+				Display.getDefault().syncExec(new Runnable() {
 
 					@Override
 					public void run() {
@@ -121,7 +128,43 @@ public class OutputCurves extends Composite {
    }
    
    public void resetCurve(){
-	   lt.setData(null, null);
+//	   try{
+//		   lt.setData(null, null);
+//	   } catch (Exception e1) {
+//			// TODO Auto-generated catch block
+//		e1.printStackTrace();
+//	   }
+
+		Display.getDefault().syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+			   plotSystem4.clear();
+			   lt = plotSystem4.createLineTrace("Output Curve");
+			   lt.setData(dm.backupDataset(), dm.backupDataset());
+			   plotSystem4.addTrace(lt);
+			   plotSystem4.repaint();
+			}
+		});
+	   
+   }
+   
+   public void updateCurve(){
+	   
+	   if (lt.getDataName() == null){
+		   lt = plotSystem4.createLineTrace("Output Curve");
+	   }
+	   
+	   if (dm.getyList() == null || dm.getxList() == null ){
+			lt.setData(dm.backupDataset(), dm.backupDataset());
+		}
+		else{
+			lt.setData(dm.xIDataset(), dm.yIDataset());
+		}
+	   plotSystem4.clear();
+	   plotSystem4.addTrace(lt);
+	   plotSystem4.repaint();
+	   
    }
    
 
