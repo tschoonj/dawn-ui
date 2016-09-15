@@ -161,7 +161,7 @@ public class DataModel {
 	
 	public IDataset backupDataset(){
 		
-		IDataset backup = DatasetFactory.createRange(0, 2, 1, Dataset.FLOAT64);
+		IDataset backup = DatasetFactory.createRange(0, 100, 1, Dataset.FLOAT64);
 		return backup;
 	}
 	

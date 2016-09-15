@@ -3,6 +3,7 @@ package org.dawnsci.spectrum.ui.wizard;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -39,11 +40,13 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-
+import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
 import org.eclipse.swt.widgets.Shell;
+import org.w3c.dom.events.EventException;
 
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
 
@@ -54,7 +57,7 @@ public class ExampleDialog extends Dialog {
 	private PlotSystem2Composite customComposite2;
 	private PlotSystem1Composite customComposite1;
 	private PlotSystem3Composite customComposite3;
-	private OutputCurves outputCurves;
+	private MultipleOutputCurves outputCurves;
 	private int imageNo;
 	private OutputMovie outputMovie;
 	private AggregateDataset aggDat;
@@ -62,7 +65,7 @@ public class ExampleDialog extends Dialog {
 	private ArrayList<DataModel> dms;
 	private ArrayList<GeometricParametersModel> gms;
 	private SuperModel sm;
-	
+	private DatDisplayer datDisplayer;
 	
 	
 	
@@ -134,65 +137,11 @@ public class ExampleDialog extends Dialog {
 		
 
 		
-//		
-//		
-//		
-//		ArrayList<ILazyDataset> arrayILDx = new ArrayList<ILazyDataset>();
-//		
-//		for (String fpath : filepaths){
-//			try {
-//				IDataHolder dh1 =LoaderFactory.getData(fpath);
-//				ILazyDataset ild =dh1.getLazyDataset(gm.getxName()); 
-//				//DatasetUtils.
-//				arrayILDx.add(ild);
-//			} catch (Exception e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//			
-//		}
-//		
-//		gm.addPropertyChangeListener(new PropertyChangeListener(){
-//
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				for (String fpath : filepaths){
-//					try {
-//						IDataHolder dh1 =LoaderFactory.getData(fpath);
-//				
-//						ILazyDataset ild =dh1.getLazyDataset(gm.getxName()); 
-//						//DatasetUtils.
-//						arrayILDx.add(ild);
-//					} 
-//					catch (Exception e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//					
-//				}
-//				
-//			}
-//		});
-//		
-//		ILazyDataset[] shouldntneedthisarray1 = new ILazyDataset[arrayILDx.size()];
-//		
-//		Iterator<ILazyDataset> itr1 =arrayILDx.iterator();
-//		int j=0;
-//
-//		while (itr1.hasNext()){
-//			shouldntneedthisarray1[j] = itr1.next();
-//			j++;
-//		}
-//		
-//		final AggregateDataset aggDatx = new AggregateDataset(false, shouldntneedthisarray1);
-//		
-//		
-//		//model.setArrayILD(arrayILD);
-//		models.get(sm.getSelection()).setDatX(aggDatx);
-//		
+
 ///////////////////////////Window 1////////////////////////////////////////////////////
 		try {
 			
-			DatDisplayer datDisplayer = new DatDisplayer(container, SWT.NONE, sm);
+			datDisplayer = new DatDisplayer(container, SWT.NONE, sm);
 			datDisplayer.setLayout(new GridLayout());
 			datDisplayer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 			
@@ -211,19 +160,7 @@ public class ExampleDialog extends Dialog {
 	    customComposite.setLayout(new GridLayout());
 	    customComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	    
-//	    sm.addPropertyChangeListener(new PropertyChangeListener() {
-//			
-//			@Override
-//			public void propertyChange(PropertyChangeEvent evt) {
-//				System.out.println("I got fired off");
-//				int b = sm.getSelection();
-//				customComposite = new PlotSystemComposite(container, SWT.NONE, models.get(b)); 
-//				customComposite.setLayout(new GridLayout());
-//				customComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//				
-//			}
-//	    });
-//	    
+
 ///////////////////////////Window 3////////////////////////////////////////////////////	    
 	    customComposite1 = new PlotSystem1Composite(container, 
 	    		SWT.NONE, models, dms, sm, gm);
@@ -233,7 +170,7 @@ public class ExampleDialog extends Dialog {
 	    
 ///////////////////////////Window 4////////////////////////////////////////////////////
 	    try {
-			outputCurves = new OutputCurves(container, SWT.NONE, models, dms, sm);
+			outputCurves = new MultipleOutputCurves(container, SWT.NONE, models, dms, sm);
 			outputCurves.setLayout(new GridLayout());
 			outputCurves.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		} catch (Exception e) {
@@ -553,6 +490,7 @@ public class ExampleDialog extends Dialog {
 	});
 	    
 	    
+	    
 ///////////////////////////////////////////////////////////////////////////////////	    
 	    
 	    sm.addPropertyChangeListener(new PropertyChangeListener() {
@@ -573,7 +511,40 @@ public class ExampleDialog extends Dialog {
 	    
 ///////////////////////////////////////////////////////////////////////////////////
 	    
+	    for( Button b: outputCurves.getDatSelector()){
+	    	b.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					outputCurves.getPlotSystem().clear();
+					for(Button b :outputCurves.getDatSelector()){
+						if (b.getSelection()){
+							ILineTrace lte = outputCurves.getPlotSystem().createLineTrace(b.getText());
+							lte = outputCurves.getPlotSystem().createLineTrace(b.getText());
+							
+							int p = (Arrays.asList(datDisplayer.getSelector().getItems())).indexOf(b.getText());
+							
+							if (dms.get(p).getyList() == null || dms.get(p).getxList() == null) {
+								
+								IDataset filler  = dms.get(0).backupDataset();
+								lte.setData(filler, filler);
+							} else {
+								lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
+							}
+							
+							outputCurves.getPlotSystem().addTrace(lte);
+						}
+					}
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		}
 	    
+///////////////////////////////////////////////////////////////////////////////////
 	    return container;
 	}
 	
@@ -730,7 +701,7 @@ public class ExampleDialog extends Dialog {
 	
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
 	
 	class operationJob1 extends Job {
 
@@ -740,7 +711,7 @@ public class ExampleDialog extends Dialog {
 		DataModel dm;
 		ExampleModel model;
 		IPlottingSystem<Composite> plotSystem;
-		OutputCurves outputCurves;
+		MultipleOutputCurves outputCurves;
 		GeometricParametersModel gm;
 		SuperModel sm;
 
@@ -748,7 +719,7 @@ public class ExampleDialog extends Dialog {
 			super("updating image...");
 		}
 
-		public void setOutputCurves(OutputCurves outputCurves) {
+		public void setOutputCurves(MultipleOutputCurves outputCurves) {
 			this.outputCurves = outputCurves;
 		}
 		

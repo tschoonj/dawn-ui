@@ -98,28 +98,7 @@ public class OutputMovie extends Composite {
         
         button1.setText("Play Movie");
         
-//        button1.addSelectionListener(new SelectionListener() {
-//
-//			public void widgetSelected(SelectionEvent event) {
-//				List<IDataset> outputDatArray = dm.getOutputDatArray();
-//				time = Integer.parseInt(timeConstantText.getText());
-				//with job
-//				movieJob.setData(outputDatArray);
-//				movieJob.setTime(time);
-//				if(movieJob.getState() == Job.RUNNING) {
-//					movieJob.cancel();
-//				}
-				//movieJob.schedule();
-				
-//			}
-
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//        });
-//         
+   
     
         outputControl = new Button (controlButtons, SWT.CHECK);
         outputControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
