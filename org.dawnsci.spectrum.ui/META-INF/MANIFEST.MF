@@ -29,7 +29,9 @@ Import-Package: antlr;version="1.4.2",
  org.apache.commons.lang;version="2.6.0",
  org.dawb.common.util.text,
  org.dawnsci.boofcv,
+ org.dawnsci.processing.ui.model,
  org.eclipse.e4.ui.di,
+ org.eclipse.nebula.visualization.widgets.figures,
  org.slf4j;version="[1.7.2,2.0.0)"
 Bundle-Vendor: Diamond Light Source
 Export-Package: org.dawnsci.spectrum.ui.file

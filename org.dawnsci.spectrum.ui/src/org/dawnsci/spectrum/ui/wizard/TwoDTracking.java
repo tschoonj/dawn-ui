@@ -81,16 +81,11 @@ public class TwoDTracking{
 		
 		
 		else{
-//			System.out.println("In here!");
-			
 			
 			try {
-//				System.out.println("First tracker line");
-				//tracker = new IImageTracker
-				//IImageTracker tracker1 = null;
+
 				tracker =  BoofCVImageTrackerServiceCreator.createImageTrackerService();
 				tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackerType.TLD);
-				//System.out.println("Now In here!");
 				location = tracker.track(input);
 				if (location != null){
 					model.setTrackerCoordinates(location);
@@ -107,16 +102,7 @@ public class TwoDTracking{
 				System.out.println("~~~~~~~~~~~~~~~~~~~success!~~~~~~~~~~~~~~~~~");
 			} catch (Exception e) {
 				System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Failed to track");// TODO Auto-generated catch block
-//				if (model.getTrackerCoordinates() == initialLocation){
-//					
-//				}
-//				if (model.getTrackerCoordinates() != initialLocation && model.getTrackerCoordinates() != )
-//				
-//				model.setTrackerCoordinates(new double[]{initialLocation[1], initialLocation[0], 
-//						initialLocation[5], initialLocation[0], initialLocation[1], initialLocation[2], 
-//						initialLocation[5], initialLocation[2]});
-//				model.setInput(input);
-//				
+
 				
 			}
 			

@@ -93,12 +93,14 @@ public class DataModel {
 		if (yList==null){
 			yList = new ArrayList<Double>();
 		}
-		
+		System.out.println("Hey, ylist got added to.");
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		yList1 = (ArrayList<Double>) yList.clone();
 		yList1.add(y);
 		firePropertyChange("yList", this.yList,
 				this.yList= yList1);
+		
+		System.out.println("Hey, ylist length is :  " +yList.size());
 	}
 
 

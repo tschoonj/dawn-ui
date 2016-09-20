@@ -10,7 +10,8 @@ public class DummyProcessingClass {
 	
 	
 	@SuppressWarnings("incomplete-switch")
-	public static IDataset DummyProcess(IDataset input, ExampleModel model,DataModel  dm,  GeometricParametersModel gm){
+	public static IDataset DummyProcess(IDataset input, ExampleModel model
+			, DataModel dm, GeometricParametersModel gm){
 		
 		IDataset output =null;
 		
@@ -22,13 +23,8 @@ public class DummyProcessingClass {
 				output = TwoDFitting.TwoDFitting1(input, model);
 		}
 		
-		
-		//Double yValue =(Double) DatasetUtils.cast(output,Dataset.FLOAT64).sum();
-		
-		//(Double) DatasetUtils.cast
-		
-		
 		Dataset correction = null;
+		
 		try {
 			correction = Maths.multiply(SXRDGeometricCorrections.lorentz(model), SXRDGeometricCorrections.areacor(model
 					, gm.getBeamCorrection(), gm.getSpecular(),  gm.getSampleSize()
@@ -40,8 +36,16 @@ public class DummyProcessingClass {
 					SXRDGeometricCorrections.polarisation(model, gm.getInplanePolarisation(), gm.getOutplanePolarisation()),
 					correction);
 		} catch (DatasetException e) {
-			// TODO Auto-generated catch block
+
 		}
+		
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		Dataset yValue = Maths.multiply(output, correction);
 		

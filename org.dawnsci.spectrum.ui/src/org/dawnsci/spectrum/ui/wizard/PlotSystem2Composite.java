@@ -58,28 +58,17 @@ public class PlotSystem2Composite extends Composite {
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);;
         
         plotSystem2.createPlotPart(PlotSystem2Composite.this, "ExamplePlot2", actionBarComposite, PlotType.IMAGE, null);
-
-
-
 		
 		plotSystem2.createPlot2D(image1, null, null);
 		
-
-   
-        
         final GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_secondField.grabExcessVerticalSpace = true;
         gd_secondField.grabExcessVerticalSpace = true;
-        
-
 
         plotSystem2.getPlotComposite().setLayoutData(gd_secondField);
 
-
-
 		}
-   
-   
+      
    public Composite getComposite(){   	
    	return this;
    }

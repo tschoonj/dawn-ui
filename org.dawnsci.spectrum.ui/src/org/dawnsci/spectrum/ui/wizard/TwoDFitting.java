@@ -35,13 +35,10 @@ public class TwoDFitting{
 		g2 = null;
 		
 		RectangularROI box = model.getBox();
-		
-		
-		
+
 		int[] len = model.getLenPt()[0];
 		int[] pt = model.getLenPt()[1];
 		
-	
 		Dataset in1 = BoxSlicerRodScanUtilsForDialog.rOIBox(input,len, pt);
 	
 		if (g2 == null)
@@ -92,8 +89,6 @@ public class TwoDFitting{
 			output = DatasetUtils.cast(pBackgroundSubtracted, Dataset.FLOAT64);
 			
 			output.setName("Region of Interest, polynomial background removed");
-		
-		
 			
 			}
 		});

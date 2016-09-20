@@ -142,7 +142,13 @@ public class PlotSystem3Composite extends Composite {
 	   this.model = model;
 	   this.dm = dm;
 	   plotSystem3.updatePlot2D(j, null, null);
-	   plotSystem4.createPlot2D(dm.getBackgroundDatArray().get(model.getSliderPos()), null, null);
-   }
+	   try{
+		   plotSystem4.createPlot2D(dm.getBackgroundDatArray().get(model.getSliderPos()), null, null);
+	   }
+	   catch (Exception en){
+		   
+	   }
+	   
+	   }
 
 }

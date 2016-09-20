@@ -165,16 +165,16 @@ public class MultipleOutputCurves extends Composite {
 
 	}
 
-	public void updateCurve() {
+	public void updateCurve(DataModel dm1) {
 
 		if (lt.getDataName() == null) {
 			lt = plotSystem4.createLineTrace("Output Curve");
 		}
 
-		if (dm.getyList() == null || dm.getxList() == null) {
-			lt.setData(dm.backupDataset(), dm.backupDataset());
+		if (dm1.getyList() == null || dm1.getxList() == null) {
+			lt.setData(dm1.backupDataset(), dm1.backupDataset());
 		} else {
-			lt.setData(dm.xIDataset(), dm.yIDataset());
+			lt.setData(dm1.xIDataset(), dm1.yIDataset());
 		}
 		plotSystem4.clear();
 		plotSystem4.addTrace(lt);

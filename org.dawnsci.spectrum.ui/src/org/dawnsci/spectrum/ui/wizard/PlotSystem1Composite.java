@@ -166,7 +166,7 @@ public class PlotSystem1Composite extends Composite {
         gridDataButtons.horizontalSpan = 1;
         controlButtons.setLayoutData(gridDataButtons);
         
-        button = new Button (controlButtons, SWT.CHECK);
+        button = new Button (controlButtons, SWT.PUSH);
         button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         button1 = new Button (controlButtons, SWT.PUSH);
         button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -178,45 +178,25 @@ public class PlotSystem1Composite extends Composite {
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
         plotSystem1.createPlotPart(this, "ExamplePlot1", actionBarComposite, PlotType.IMAGE, null);
         
-		button.setText ("Tri-state");
-		/* Make the button toggle between three states */
-		button.addListener (SWT.Selection, e -> {
-			if (button.getSelection()) {
-				if (!button.getGrayed()) {
-					button.setGrayed(true);
-				}
-			} else {
-				if (button.getGrayed()) {
-					button.setGrayed(false);
-					button.setSelection (true);
-				}
+		button.setText ("Proceed?");
+	SliceND slice = new SliceND(model.getDatImages().getShape());
+		
+	button.addListener (SWT.Selection, e -> {
+		if (button.getSelection()) {
+			int selection = model.getImageNumber();
+			slice.setSlice(0, selection, selection+1, 1);
+			IDataset j = null;
+			try {
+				j = model.getDatImages().getSlice(slice);
+			} catch (Exception e1){
+				e1.printStackTrace();
 			}
-		});
-		
-		SliceND slice = new SliceND(model.getDatImages().getShape());
-		
-		/* Read the tri-state button (application code) */
-		button.addListener (SWT.Selection, e -> {
-			if (button.getGrayed()) {
-//				System.out.println("Grayed");
+			
+			j.squeeze();
+			IDataset image1 = j;
+			IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm);
+			plotSystem1.createPlot2D(output, null, null);
 			} else {
-//				if (button.getSelection()) {
-//				
-					int selection = model.getImageNumber();
-					slice.setSlice(0, selection, selection+1, 1);
-					IDataset j = null;
-					try {
-						j = model.getDatImages().getSlice(slice);
-					} catch (Exception e1) {
-						
-						e1.printStackTrace();
-					}
-					j.squeeze();
-					IDataset image1 = j;
-					IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm);
-					plotSystem1.createPlot2D(output, null, null);
-//				} else {
-//				}
 			}
 		});
         
@@ -365,7 +345,12 @@ public class PlotSystem1Composite extends Composite {
 	public Button getButton2() {
 		return button2;
 	}
-
+	
+	
+	public Button getProceedButton(){
+		return button;
+	}
+	
    
 class operationJob extends Job {
 
