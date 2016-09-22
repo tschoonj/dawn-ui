@@ -251,50 +251,7 @@ public class PlotSystem1Composite extends Composite {
         button1.setText("Run");
         
         button2.setText("Reset Tracker");
-//        button2.addSelectionListener(new SelectionListener() {
-//
-//            public void widgetSelected(SelectionEvent event) {
-//	            int selection = model.getSliderPos();
-//	            System.out.println("Slider position in reset:  " + selection);
-//	            SliceND slice = new SliceND(model.getDatImages().getShape());
-//	            slice.setSlice(0, selection, selection+1, 1);
-//				IDataset i = null;
-//				try {
-//					i = model.getDatImages().getSlice(slice);
-//				} catch (DatasetException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				i.squeeze();
-//             	model.setInput(null);
-//             	IROI region = model.getROI();
-//             	IRectangularROI currentBox = region.getBounds();
-//             	int[] currentLen = currentBox.getIntLengths();
-//             	int[] currentPt = currentBox.getIntPoint();
-//             	int[][] currentLenPt = {currentLen, currentPt};
-//             	double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
-//					(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
-//             	
-//             	int[] ab =getMethodology();
-//				model.setMethodology((Methodology.values()[ab[0]]));
-//				model.setFitPower(FitPower.values()[ab[1]]);
-//				model.setBoundaryBox(ab[2]);
-//				
-//             	
-//             	model.setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
-//             	model.setLenPt(currentLenPt);
-//             	
-//             	IDataset j = DummyProcessingClass.DummyProcess(i, model,dm, gm);
-//             	
-//             	plotSystem1.createPlot2D(j, null, null);
-//             	dm.resetAll();
-//             	
-//            }
-//
-//            public void widgetDefaultSelected(SelectionEvent event) {
-//              
-//            }
-//        });
+
 
         final GridData gd_firstField = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd_firstField.grabExcessVerticalSpace = true;

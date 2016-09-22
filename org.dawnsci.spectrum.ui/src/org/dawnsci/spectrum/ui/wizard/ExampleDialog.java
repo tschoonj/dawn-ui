@@ -34,9 +34,12 @@ import org.eclipse.january.dataset.DatasetUtils;
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
+import org.eclipse.january.dataset.Maths;
 import org.eclipse.january.dataset.SliceND;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -47,6 +50,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
+import org.eclipse.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.events.EventException;
 
@@ -476,6 +480,8 @@ public class ExampleDialog extends Dialog {
 		
 	    
 //////////////////////////////////////////////////////////////////////////////////
+	    /////////////////Slider///////////////////////////
+////////////////////////////////////////////////////
 	    customComposite.getSlider().addSelectionListener(new SelectionListener() {
 	    	
 		public void widgetSelected(SelectionEvent e) {
@@ -547,12 +553,26 @@ public class ExampleDialog extends Dialog {
 								IDataset filler  = dms.get(0).backupDataset();
 								lte.setData(filler, filler);
 							} else {
-								lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
+ 								lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
 								System.out.println("Length of xlist " + b.getText()+ "   :" + dms.get(p).getxList().size());
 					    		System.out.println("Length of ylist " + b.getText()+ "   :" + dms.get(p).getyList().size());
+					    		System.out.println("Length of xDataset " + b.getText()+ "   :" + dms.get(p).xIDataset().getSize());
+					    		System.out.println("Length of yDataset " + b.getText()+ "   :" + dms.get(p).yIDataset().getSize());
+					    		for (int co =0; co< dms.get(p).xIDataset().getSize(); co++ ){
+					    			System.out.println("Element  " + co +"  of xDataset " + b.getText() + "  value: " + dms.get(p).xIDataset().getDouble(co));
+					    			System.out.println("Element  " + co +"  of yDataset " + b.getText() + "  value: " + dms.get(p).yIDataset().getDouble(co));
+					    		}
 							}
 							
 							outputCurves.getPlotSystem().addTrace(lte);
+							
+							System.out.println("total number of traces:  " + outputCurves.getPlotSystem().getTraces().size()   );
+							
+							
+							for (ITrace lint : outputCurves.getPlotSystem().getTraces()){
+								System.out.println(lint.getDataName());
+							}
+							
 							
 						}
 					}
@@ -590,37 +610,7 @@ public class ExampleDialog extends Dialog {
 					
 					ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
 					
-//					
-//					IRectangularROI horizontalSliceBounds = customComposite2.getRegions()[0].getROI().getBounds();
-//					
-////					System.out.println("slice moved");
-//					
-//					int[] lenh =horizontalSliceBounds.getIntLengths();
-//					int[] pth = horizontalSliceBounds.getIntPoint();
-//					int[][] lenpth = new int[][] {lenh,pth};
-//					
-//					IDataset iih = ImageSlicerUtils.ImageSliceUpdate(customComposite2.getImage(), lenpth);
-//					
-//					IDataset iihdata  = DatasetFactory.zeros(lenh[0]);
-//					
-//					for(int iy = 0;iy<lenh[0];iy++){
-//						
-////						System.out.println("iy : " +iy);
-//						
-//						double ixsum = 0;
-//						
-//						for(int ix = 0; ix<lenh[1];ix++){
-//							ixsum += iih.getDouble(ix, iy);
-////							System.out.println("ix : " +ix);
-//						}
-//						
-//						iihdata.set(ixsum, iy);
-//					}
-//					
-//					IDataset xhrange = DatasetFactory.createRange(pth[0], pth[0]+lenh[0], 1, Dataset.FLOAT64);
-//					
-//					ILineTrace lt1 = customComposite2.getPlotSystem1().createLineTrace("horizontal slice");
-//					lt1.setData(xhrange, iihdata);
+
 					customComposite2.getPlotSystem1().clear();
 					customComposite2.getPlotSystem1().addTrace(lt1);
 					customComposite2.getPlotSystem1().repaint();
@@ -654,31 +644,7 @@ public class ExampleDialog extends Dialog {
 				
 				ILineTrace lt3 = VerticalHorizontalSlices.verticalslice(customComposite2);
 				
-//				IRectangularROI verticalSliceBounds = customComposite2.getRegions()[1].getROI().getBounds();
-//				
-//				int[] lenv =verticalSliceBounds.getIntLengths();
-//				int[] ptv = verticalSliceBounds.getIntPoint();
-//				int[][] lenptv = new int[][] {lenv,ptv};
-//				
-//				IDataset ii = ImageSlicerUtils.ImageSliceUpdate(customComposite2.getImage(), lenptv);
-//				
-//				IDataset iivdata  = DatasetFactory.zeros(lenv[1]);
-//				
-//				for(int iy = 0;iy<lenv[1];iy++){
-//					
-//					double ixsum = 0;
-//					
-//					for(int ix = 0; ix<lenv[0];ix++){
-//						ixsum += ii.getDouble(iy, ix);
-//					}
-//					
-//					iivdata.set(ixsum, iy);
-//				}
-//				
-//				IDataset xvrange = DatasetFactory.createRange(ptv[1]+lenv[1], ptv[1], -1, Dataset.FLOAT64);
-//				
-//				ILineTrace lt3 = customComposite2.getPlotSystem3().createLineTrace("vertical slice");
-//				lt3.setData(iivdata, xvrange);
+
 				
 				customComposite2.getPlotSystem3().clear();
 				customComposite2.getPlotSystem3().addTrace(lt3);
@@ -696,8 +662,6 @@ public class ExampleDialog extends Dialog {
 ///////////////////////////////////////////////////////////////////////////////////
 	    
 	    customComposite1.getProceedButton().addSelectionListener(new SelectionListener() {
-
-			
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -726,8 +690,83 @@ public class ExampleDialog extends Dialog {
 	    	
 	    });
 	    
+/////////////////////////////////////////////////////////////////////////////////////
+	    customComposite2.getLeft().addControlListener(new ControlListener() {
+			
+			@Override
+			public void controlResized(ControlEvent e) {
+				customComposite2.getRight().setWeights(customComposite2.getLeft().getWeights());
+				
+			}
+			
+			@Override
+			public void controlMoved(ControlEvent e) {
+				customComposite2.getRight().setWeights(customComposite2.getLeft().getWeights());
+				
+			}
+		});
 ////////////////////////////////////////////////////////////////////////////////////
+	    customComposite2.getBackgroundButton().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
+				int selection = models.get(sm.getSelection()).getImageNumber();
+				slice.setSlice(0, selection, selection+1, 1);
+				IDataset j = null;
+				try {
+					j = models.get(sm.getSelection()).getDatImages().getSlice(slice);
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
+				
+				j.squeeze();
+				
+				IDataset background = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
+						dms.get(sm.getSelection()), gms.get(sm.getSelection()));
+				dms.get(sm.getSelection()).setSlicerBackground(background);
+				
+				ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
+				ILineTrace lt2 = VerticalHorizontalSlices.horizontalsliceBackgroundSubtracted(customComposite2, background);
+				
+				IDataset backSubTop = Maths.subtract(lt1.getYData(), lt2.getYData());
+				IDataset xTop = lt1.getXData();
+				ILineTrace lt12BackSub = customComposite2.getPlotSystem1().createLineTrace("background slice");
+				lt12BackSub.setData( xTop, backSubTop);
+				
+				
+				ILineTrace lt3 = VerticalHorizontalSlices.verticalslice(customComposite2);
+				ILineTrace lt4 = VerticalHorizontalSlices.verticalsliceBackgroundSubtracted(customComposite2,background);
+				
+				IDataset backSubSide = Maths.subtract(lt3.getYData(), lt4.getYData());
+				IDataset xSide = lt3.getYData();
+				ILineTrace lt34BackSub = customComposite2.getPlotSystem3().createLineTrace("background slice");
+				lt34BackSub.setData(xSide, backSubSide);
+				
+				customComposite2.getPlotSystem1().clear();
+				customComposite2.getPlotSystem1().addTrace(lt1);
+				customComposite2.getPlotSystem1().addTrace(lt2);
+				customComposite2.getPlotSystem1().addTrace(lt12BackSub);
+				customComposite2.getPlotSystem1().repaint();
+				customComposite2.getPlotSystem1().autoscaleAxes();
+				
+				customComposite2.getPlotSystem3().clear();
+				customComposite2.getPlotSystem3().addTrace(lt3);
+				customComposite2.getPlotSystem3().addTrace(lt4);
+				customComposite2.getPlotSystem3().addTrace(lt34BackSub);
+				customComposite2.getPlotSystem3().repaint();
+				customComposite2.getPlotSystem3().autoscaleAxes();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+	    	
+	    });
 	    
+///////////////////////////////////////////////////////////////////////////////////
 	    return container;
 	}
 	
@@ -974,11 +1013,6 @@ public class ExampleDialog extends Dialog {
 						
 					j.squeeze();
 					
-					
-				
-				
-					
-					
 					customComposite.getBoxPosition();
 					
 					IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm);
@@ -993,7 +1027,7 @@ public class ExampleDialog extends Dialog {
 						plotSystem.updatePlot2D(output1, null,monitor);
 			    		plotSystem.repaint(true);
 			    		outputCurves.updateCurve(dm);
-			    		System.out.println("~~~~~~~~~~~~~~In oj############");	
+			    		
 		    		
 					}
 				});

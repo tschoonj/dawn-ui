@@ -16,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -28,6 +29,9 @@ public class SuperSashPlotSystem2Composite extends Composite{
     private IRegion verticalSlice;
     private IRegion horizontalSlice;
     private IDataset image2;
+    private SashForm right; 
+    private SashForm left;
+    private Button backgroundButton;
 
 	public SuperSashPlotSystem2Composite(Composite parent, int style) throws Exception {
         super(parent, style);
@@ -57,9 +61,9 @@ public class SuperSashPlotSystem2Composite extends Composite{
 		SashForm sashForm= new SashForm(this, SWT.HORIZONTAL);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			
-		SashForm left = new SashForm(sashForm, SWT.VERTICAL);
+		left = new SashForm(sashForm, SWT.VERTICAL);
 		
-		SashForm right = new SashForm(sashForm, SWT.VERTICAL);
+		right = new SashForm(sashForm, SWT.VERTICAL);
 		
 		
 		sashForm.setWeights(new int[]{60,40});
@@ -101,20 +105,20 @@ public class SuperSashPlotSystem2Composite extends Composite{
 		
 	////////////////////////////////////////////////////////////////////////////////////
 	/////////////////Right sashform//////////////////////////////////////////////////////////
-	        
-		Group dudImage = new Group(right, SWT.NONE);
-        
-        GridLayout dudImageLayout = new GridLayout();
-        dudImage.setLayout(dudImageLayout);
-		GridData dudImageData= new GridData(SWT.FILL, SWT.FILL, true, true);
-		dudImage.setLayoutData(dudImageData);
+//	        
+//		Group dudImage = new Group(right, SWT.NONE);
+//        
+//        GridLayout dudImageLayout = new GridLayout();
+//        dudImage.setLayout(dudImageLayout);
+//		GridData dudImageData= new GridData(SWT.FILL, SWT.FILL, true, true);
+//		dudImage.setLayoutData(dudImageData);
 		
 			
-	    Label dud = new Label(dudImage, SWT.NONE);
-	    	        
+	    backgroundButton = new Button(right, SWT.CHECK);
+	    backgroundButton.setText("Background Display");
 	    GridData gd = new GridData(GridData.CENTER, GridData.CENTER, true, false);
 
-        dud.setLayoutData(gd);
+        backgroundButton.setLayoutData(gd);
 //	        
         Group sideImage = new Group(right, SWT.NONE);
         sideImage.setText("Side Image");
@@ -211,6 +215,20 @@ public class SuperSashPlotSystem2Composite extends Composite{
 		public IRegion[] getRegions(){
 			IRegion[] hv = new IRegion[] {horizontalSlice, verticalSlice};
 			return hv;
+		}
+		
+		public SashForm getRight(){
+			return right;
+			
+		}
+		
+		public SashForm getLeft(){
+			return left;
+			
+		}
+		
+		public Button getBackgroundButton(){
+			return backgroundButton;
 		}
 
 }

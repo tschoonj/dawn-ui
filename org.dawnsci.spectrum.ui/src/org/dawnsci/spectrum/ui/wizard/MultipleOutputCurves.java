@@ -176,9 +176,14 @@ public class MultipleOutputCurves extends Composite {
 		} else {
 			lt.setData(dm1.xIDataset(), dm1.yIDataset());
 		}
+		
+		System.out.println("IN MultipleOutput updateCuve");
+		System.out.println("dm1 xIDataset: " + dm1.xIDataset().getSize());
+		System.out.println("dm1 yIDataset: " + dm1.yIDataset().getSize());
 		plotSystem4.clear();
 		plotSystem4.addTrace(lt);
 		plotSystem4.repaint();
+		
 
 	}
 

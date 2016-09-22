@@ -19,6 +19,7 @@ public class DataModel {
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	private ArrayList<IDataset> outputDatArray;
 	private ArrayList<IDataset> backgroundDatArray;
+	private IDataset slicerBackground;
 	
 	public ArrayList<IDataset> getOutputDatArray() {
 		return outputDatArray;
@@ -163,7 +164,7 @@ public class DataModel {
 	
 	public IDataset backupDataset(){
 		
-		IDataset backup = DatasetFactory.createRange(0, 100, 1, Dataset.FLOAT64);
+		IDataset backup = DatasetFactory.createRange(0, 200, 1, Dataset.FLOAT64);
 		return backup;
 	}
 	
@@ -182,6 +183,12 @@ public class DataModel {
 			Object newValue) {
 		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
 				newValue);
+	}
+	public IDataset getSlicerBackground() {
+		return slicerBackground;
+	}
+	public void setSlicerBackground(IDataset slicerBackground) {
+		this.slicerBackground = slicerBackground;
 	}
 	
 	
