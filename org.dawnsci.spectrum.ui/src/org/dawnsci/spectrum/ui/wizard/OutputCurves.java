@@ -82,32 +82,32 @@ public class OutputCurves extends Composite {
 			
 		
 		
-		dm.addPropertyChangeListener(new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				// TODO Auto-generated method stub
-				ILineTrace lt = plotSystem4.createLineTrace("Output Curve");
-				if (dm.getyList() == null || dm.getxList() == null ){
-					lt.setData(dm.backupDataset(), dm.backupDataset());
-				}
-				else{
-					lt.setData(dm.xIDataset(), dm.yIDataset());
-				}	
-				
-				Display.getDefault().syncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						plotSystem4.clear();
-						plotSystem4.addTrace(lt);
-						plotSystem4.repaint();
-						
-					}
-				
-				});
-			}
-		});
+//		dm.addPropertyChangeListener(new PropertyChangeListener() {
+//			
+//			@Override
+//			public void propertyChange(PropertyChangeEvent evt) {
+//				// TODO Auto-generated method stub
+//				ILineTrace lt = plotSystem4.createLineTrace("Output Curve");
+//				if (dm.getyList() == null || dm.getxList() == null ){
+//					lt.setData(dm.backupDataset(), dm.backupDataset());
+//				}
+//				else{
+//					lt.setData(dm.xIDataset(), dm.yIDataset());
+//				}	
+//				
+//				Display.getDefault().syncExec(new Runnable() {
+//
+//					@Override
+//					public void run() {
+//						plotSystem4.clear();
+//						plotSystem4.addTrace(lt);
+//						plotSystem4.repaint();
+//						
+//					}
+//				
+//				});
+//			}
+//		});
 
 		plotSystem4.getPlotComposite().setLayoutData(gd_secondField);
     

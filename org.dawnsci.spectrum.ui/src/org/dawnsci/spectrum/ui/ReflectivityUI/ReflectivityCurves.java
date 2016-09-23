@@ -66,7 +66,7 @@ public class ReflectivityCurves extends Composite {
         
         plotSystem.createPlotPart(this, "ExamplePlot", actionBarComposite, PlotType.IMAGE, null);
         
-        SliceND slice = new SliceND(arrayILDy.get(0).getShape());
+
         
 		IDataset i = null;
 		IDataset j = null;
@@ -81,7 +81,7 @@ public class ReflectivityCurves extends Composite {
 			ArrayList<IDataset> arrayIDy =new ArrayList<>();
 			ArrayList<IDataset> arrayIDx =new ArrayList<>();
 			
-			slice = new SliceND(arrayILDy.get(r).getShape());
+			SliceND slice = new SliceND(arrayILDy.get(r).getShape());
 			
 			try {
 				i = arrayILDy.get(r).getSlice(slice);

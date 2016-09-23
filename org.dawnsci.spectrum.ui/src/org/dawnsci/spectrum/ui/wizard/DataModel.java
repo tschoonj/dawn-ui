@@ -168,6 +168,18 @@ public class DataModel {
 		return backup;
 	}
 	
+	public ArrayList<Double> backupList(){
+		
+		IDataset backup1 = DatasetFactory.createRange(0, 200, 1, Dataset.FLOAT64);
+		ArrayList<Double> backup = new ArrayList<>();
+		
+		for(int i=0; i<200;i++){
+			backup.add((double) backup1.getInt(i));
+		}
+
+		return backup;
+	}
+	
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(listener);

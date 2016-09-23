@@ -1,28 +1,23 @@
 package org.dawnsci.spectrum.ui.wizard;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.dawb.common.ui.widgets.ActionBarWrapper;
-import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
 import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
-import org.eclipse.january.DatasetException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Button;
 
 public class MultipleOutputCurves extends Composite {
 
@@ -31,8 +26,8 @@ public class MultipleOutputCurves extends Composite {
 	private ILineTrace lt;
 	private ExampleModel model;
 	private DataModel dm;
-	private SuperModel sm;
 	private ArrayList<Button> datSelector;
+	private Button overlap;
 
 	public MultipleOutputCurves(Composite parent, int style, ArrayList<ExampleModel> models, ArrayList<DataModel> dms,
 			SuperModel sm) {
@@ -42,6 +37,8 @@ public class MultipleOutputCurves extends Composite {
 
 		this.model = models.get(sm.getSelection());
 		this.dm = dms.get(sm.getSelection());
+	
+		
 		try {
 			plotSystem4 = PlottingFactory.createPlottingSystem();
 		} catch (Exception e2) {
@@ -57,7 +54,6 @@ public class MultipleOutputCurves extends Composite {
 
 		Group datSelection = new Group(this, SWT.NULL);
 		GridLayout datSelectionLayout = new GridLayout(4, true);
-		// methodSettingLayout.numColumns = 3;
 		GridData datSelectionData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		datSelectionData.minimumWidth = 50;
 		datSelection.setLayout(datSelectionLayout);
@@ -69,14 +65,23 @@ public class MultipleOutputCurves extends Composite {
 			datSelector.add(new Button(datSelection, SWT.CHECK));
 			datSelector.get(i).setText(StringUtils.substringAfterLast(sm.getFilepaths()[i], "/"));
 		}
+		
+		Group overlapSelection = new Group(this, SWT.NULL);
+		GridLayout overlapSelectionLayout = new GridLayout(4, true);
+		GridData overlapSelectionData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		overlapSelectionData.minimumWidth = 50;
+		overlapSelection.setLayout(overlapSelectionLayout);
+		overlapSelection.setLayoutData(overlapSelectionData);
 
+		overlap = new Button(overlapSelection, SWT.PUSH);
+		overlap.setText("Overlap");
+		
 		final GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		setLayout(gridLayout);
 
 		ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
-		;
-
+		
 		final GridData gd_secondField = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd_secondField.grabExcessVerticalSpace = true;
 		gd_secondField.grabExcessVerticalSpace = true;
@@ -98,33 +103,6 @@ public class MultipleOutputCurves extends Composite {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// dm.addPropertyChangeListener(new PropertyChangeListener() {
-		//
-		// @Override
-		// public void propertyChange(PropertyChangeEvent evt) {
-		// // TODO Auto-generated method stub
-		// ILineTrace lt = plotSystem4.createLineTrace("Output Curve");
-		// if (dm.getyList() == null || dm.getxList() == null ){
-		// lt.setData(dm.backupDataset(), dm.backupDataset());
-		// }
-		// else{
-		// lt.setData(dm.xIDataset(), dm.yIDataset());
-		// }
-		//
-		// Display.getDefault().syncExec(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// plotSystem4.clear();
-		// plotSystem4.addTrace(lt);
-		// plotSystem4.repaint();
-		//
-		// }
-		//
-		// });
-		// }
-		// });
 
 		plotSystem4.getPlotComposite().setLayoutData(gd_secondField);
 
@@ -189,6 +167,10 @@ public class MultipleOutputCurves extends Composite {
 
 	public ArrayList<Button> getDatSelector() {
 		return datSelector;
+	}
+	
+	public Button getOverlap(){
+		return overlap;
 	}
 
 }

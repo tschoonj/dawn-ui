@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -544,8 +545,7 @@ public class ExampleDialog extends Dialog {
 					for(Button b :outputCurves.getDatSelector()){
 						if (b.getSelection()){
 							ILineTrace lte = outputCurves.getPlotSystem().createLineTrace(b.getText());
-							lte = outputCurves.getPlotSystem().createLineTrace(b.getText());
-							
+
 							int p = (Arrays.asList(datDisplayer.getSelector().getItems())).indexOf(b.getText());
 							
 							if (dms.get(p).getyList() == null || dms.get(p).getxList() == null) {
@@ -568,12 +568,6 @@ public class ExampleDialog extends Dialog {
 							
 							System.out.println("total number of traces:  " + outputCurves.getPlotSystem().getTraces().size()   );
 							
-							
-							for (ITrace lint : outputCurves.getPlotSystem().getTraces()){
-								System.out.println(lint.getDataName());
-							}
-							
-							
 						}
 					}
 				}
@@ -585,6 +579,24 @@ public class ExampleDialog extends Dialog {
 			});
 		}
 	    
+/////////////////////////////////////////////////////////////////////////////////////
+	    outputCurves.getOverlap().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				StitchedOutput.curveStitch(outputCurves.getPlotSystem(),
+						outputCurves.getDatSelector(),
+						dms, sm, datDisplayer);
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+
 ////////////////////////////////////////////////////////////////////////////////////
 	    
 	    customComposite2.getRegions()[0].addROIListener(new IROIListener(){
