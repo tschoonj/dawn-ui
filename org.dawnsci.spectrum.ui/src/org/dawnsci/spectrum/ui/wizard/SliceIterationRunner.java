@@ -24,11 +24,13 @@ public class SliceIterationRunner {
 	
 	private IPlottingSystem<Composite> plotSystem;
 	private IDataset output1;
+	private PlotSystemComposite customComposite;
 	
 	
 	public IDataset sliceIterationRunner1 (ExampleModel model, 
-			DataModel dm, IPlottingSystem<Composite> plotSystem){
+			DataModel dm, IPlottingSystem<Composite> plotSystem, PlotSystemComposite customComposite){
 		
+		this.customComposite = customComposite;
 		this.plotSystem = plotSystem;
 		plotSystem.clear();
 		SliceND slice = new SliceND(model.getAggDat().getShape());
@@ -96,7 +98,7 @@ public class SliceIterationRunner {
 					
 				j.squeeze();
 				
-				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm);
+				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite);
 
 			plotSystem.clear();
 //			plotSystem.createPlot2D(output1, null, null);

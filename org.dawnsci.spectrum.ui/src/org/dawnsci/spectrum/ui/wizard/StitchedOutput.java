@@ -20,8 +20,9 @@ public class StitchedOutput {
 		
 		ILineTrace lt1 = plotSystem.createLineTrace("Concatenated Curve Test");
 		
-		IDataset[] xArray= new IDataset[datSelector.size()];
-		IDataset[] yArray= new IDataset[datSelector.size()];
+		ArrayList<IDataset> xArrayList = new ArrayList<>();
+		ArrayList<IDataset> yArrayList = new ArrayList<>();
+		ArrayList<IDataset> yArrayListFhkl = new ArrayList<>();
 		
 		for(int b = 0;b<datSelector.size();b++){
 			if (datSelector.get(b).getSelection()){
@@ -30,25 +31,44 @@ public class StitchedOutput {
 				
 				if (dms.get(p).getyList() == null || dms.get(p).getxList() == null) {
 					
-					//IDataset filler  = dms.get(0).backupDataset();
-					
 				} else {
-						xArray[b] = (dms.get(p).xIDataset());
-						yArray[b] = (dms.get(p).yIDataset());
+						xArrayList.add(dms.get(p).xIDataset());
+						yArrayList.add(dms.get(p).yIDataset());
+						yArrayListFhkl.add(dms.get(p).yIDatasetFhkl());
 		    		}
 				}
 		}
+		
+		IDataset[] xArray= new IDataset[xArrayList.size()];
+		IDataset[] yArray= new IDataset[yArrayList.size()];
+		IDataset[] yArrayFhkl= new IDataset[yArrayListFhkl.size()];
+		
+		for (int b = 0; b< xArrayList.size(); b++){
+			xArray[b] = xArrayList.get(b);
+			yArray[b] = yArrayList.get(b);
+			yArrayFhkl[b] = yArrayListFhkl.get(b);
+		}
+		
 		IDataset[] xArrayCorrected = xArray.clone();
 		IDataset[] yArrayCorrected = yArray.clone();
+		IDataset[] yArrayCorrectedFhkl = yArrayFhkl.clone();
+		
 		
 		IDataset[][] attenuatedDatasets = new IDataset[2][];
-				
+		
+		IDataset[][] attenuatedDatasetsFhkl = new IDataset[2][];
+		
+		
 		double[][] maxMinArray = OverlapFinderSXRD.overlapFinderOperation(xArray);
 				
 		double attenuationFactor =1;
+		double attenuationFactorFhkl =1;
 				
 		double[] correctionRatioArray = new double[xArray.length];
+		double[] correctionRatioArrayFhkl = new double[xArray.length];
+		
 		correctionRatioArray[0]=1;
+		correctionRatioArrayFhkl[0]=1;
 				
 				//TEST
 				for (int k=0; k<xArray.length-1;k++){
@@ -67,56 +87,98 @@ public class StitchedOutput {
 							overlapHigher.add(m);
 						}
 					}
+					
 							
 					Dataset[] xLowerDataset =new Dataset[1];
 					Dataset yLowerDataset =null;
+					Dataset yLowerDatasetFhkl =null;
 					Dataset[] xHigherDataset =new Dataset[1];
 					Dataset yHigherDataset =null;
+					Dataset yHigherDatasetFhkl =null;
 						
 					ArrayList<Double> xLowerList =new ArrayList<>();
 					ArrayList<Double> yLowerList =new ArrayList<>();
+					ArrayList<Double> yLowerListFhkl =new ArrayList<>();
 					ArrayList<Double> xHigherList =new ArrayList<>();
 					ArrayList<Double> yHigherList =new ArrayList<>();
-							
+					ArrayList<Double> yHigherListFhkl =new ArrayList<>();
+					
 					for (int l=0; l<overlapLower.size(); l++){
 						xLowerList.add(xArray[k].getDouble(overlapLower.get(l)));
 						yLowerList.add(yArray[k].getDouble(overlapLower.get(l)));
+						yLowerListFhkl.add(yArrayFhkl[k].getDouble(overlapLower.get(l)));
+						
 						xLowerDataset[0] = DatasetFactory.createFromObject(xLowerList);
 						yLowerDataset = DatasetFactory.createFromObject(yLowerList);
+						yLowerDatasetFhkl = DatasetFactory.createFromObject(yLowerListFhkl);
 					}
 							
 					for (int l=0; l<overlapHigher.size(); l++){
 						xHigherList.add(xArray[k+1].getDouble(overlapHigher.get(l)));
 						yHigherList.add(yArray[k+1].getDouble(overlapHigher.get(l)));
+						yHigherListFhkl.add(yArrayFhkl[k+1].getDouble(overlapHigher.get(l)));
+						
 						xHigherDataset[0] = DatasetFactory.createFromObject(xHigherList);
 						yHigherDataset = DatasetFactory.createFromObject(yHigherList);
+						yHigherDatasetFhkl = DatasetFactory.createFromObject(yHigherListFhkl);
 					}
 						
 					double correctionRatio = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDataset, 
 							xHigherDataset, yHigherDataset, attenuationFactor,4);
 					
+					double correctionRatioFhkl = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDatasetFhkl, 
+							xHigherDataset, yHigherDatasetFhkl, attenuationFactor,4);
+					
 					attenuationFactor = correctionRatio;
+					attenuationFactorFhkl = correctionRatioFhkl;
 						
 					yArrayCorrected[k+1] = Maths.multiply(yArray[k+1],attenuationFactor);
+					yArrayCorrectedFhkl[k+1] = Maths.multiply(yArrayFhkl[k+1],attenuationFactorFhkl);
+					
 						
 					System.out.println("attenuation factor:  " + attenuationFactor + "   k:   " +k);
+					System.out.println("attenuation factor Fhkl:  " + attenuationFactorFhkl + "   k:   " +k);
 						
 					}
 			
 		attenuatedDatasets[0] = yArrayCorrected;
 		attenuatedDatasets[1] = xArrayCorrected;
 			
+		attenuatedDatasetsFhkl[0] = yArrayCorrectedFhkl;
+		attenuatedDatasetsFhkl[1] = xArrayCorrected;
 		
-		Dataset[] sortedAttenuatedDatasets = new Dataset[2];
+		
+		
+		Dataset[] sortedAttenuatedDatasets = new Dataset[3];
 		
 		sortedAttenuatedDatasets[0]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[0], 0));
 		sortedAttenuatedDatasets[1]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[1], 0));
+		sortedAttenuatedDatasets[2]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasetsFhkl[0], 0));
 		
 		DatasetUtils.sort(sortedAttenuatedDatasets[1],
 				sortedAttenuatedDatasets[0]);
+		
+		DatasetUtils.sort(sortedAttenuatedDatasets[2],
+				sortedAttenuatedDatasets[0]);
 
-		lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[0]);
-
+		String b =  CurveStateIdentifier.CurveStateIdentifier1(plotSystem);
+		
+		if (b == "f"){
+				lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[0]);
+				lt1.setName("Spliced Curve_Fhkl");
+		}
+		else{
+			lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[2]);
+			lt1.setName("Spliced Curve_Intensity");
+		}
+		
+		
+		sm.setSplicedCurveY(sortedAttenuatedDatasets[0]);
+		sm.setSplicedCurveX(sortedAttenuatedDatasets[1]);
+		sm.setSplicedCurveYFhkl(sortedAttenuatedDatasets[2]);
+		
+		
+		
 		plotSystem.addTrace(lt1);
 		plotSystem.repaint();	
 		

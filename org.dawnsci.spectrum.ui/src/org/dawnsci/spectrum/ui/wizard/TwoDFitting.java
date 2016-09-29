@@ -27,7 +27,6 @@ import uk.ac.diamond.scisoft.analysis.fitting.functions.Polynomial2D;
  */
 public class TwoDFitting{
 	
-	//private  Polynomial2D g2;
 	private static Dataset output;
 	private static Polynomial2D g2;
 	

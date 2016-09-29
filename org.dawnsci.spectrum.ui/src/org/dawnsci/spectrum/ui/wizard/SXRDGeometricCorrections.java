@@ -17,6 +17,7 @@ import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.AggregateDataset;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
+import org.eclipse.january.dataset.DatasetUtils;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
 import org.eclipse.january.dataset.Maths;
@@ -173,11 +174,17 @@ public class SXRDGeometricCorrections {
 	}
 
 	public static double f_beam(double x, double z, double InPlaneSlits, double OutPlaneSlits, double BeamInPlane, double BeamOutPlane){
-		double w = Math.exp(-2.77 * Math.pow(x, 2)/Math.pow(BeamInPlane, 2)) * Math.exp(-2.77 * Math.pow(z, 2)/Math.pow(BeamOutPlane, 2));
-		if (Math.abs(x) > InPlaneSlits/2);
+		double w = (Math.exp(-2.77 * Math.pow(x, 2)/Math.pow(BeamInPlane, 2)) * Math.exp(-2.77 * Math.pow(z, 2)/Math.pow(BeamOutPlane, 2)));
+		if (Math.abs(x) > InPlaneSlits/2){
 			w = 0; 
-		if (Math.abs(z) > OutPlaneSlits/2);
+		}
+		if (Math.abs(z) > OutPlaneSlits/2){
 			w = 0;
+		}
+		else{
+            w = (Math.exp(((-2.77 * (Math.pow(x,2)))/(Math.pow(BeamInPlane,2))))*Math.exp(((-2.77 * (Math.pow(z,2)))/(Math.pow(BeamOutPlane,2)))));
+		}
+		
 		return w;
 	}
 	
@@ -190,8 +197,13 @@ public class SXRDGeometricCorrections {
 	
 	public static double f_onsample (double x, double y, double sampleSize){
 		double q = 1;
-		if ((Math.pow(x,2) + (Math.pow(y,2)))> (0.25*Math.pow(sampleSize,2)));
+		if ((Math.pow(x,2) + (Math.pow(y,2)))> (0.25*Math.pow(sampleSize,2))){
 			q =0;
+		}
+		else{
+			q = 1;
+		}
+//		Dataset q1 = DatasetFactory.createFromObject(q);
 		return q;
 	}	
 		
@@ -226,7 +238,7 @@ public class SXRDGeometricCorrections {
 		
 		if (BeamCor == true) {
 			if (Specular == true) {
-				double y_sum = 0;
+				Dataset y_sum = DatasetFactory.createFromObject(0);
 				Dataset betain = a;
 				double ylimit = 10;
 								
@@ -248,14 +260,15 @@ public class SXRDGeometricCorrections {
 					}
 							
 					double ystep = (ylimit / 50);
+					Dataset ystep1 = DatasetFactory.createFromObject(ystep);
 						
 					for (double y = (-1* ylimitdat.getDouble(i)); y <= (ylimitdat.getDouble(i) + ystep); y+=ystep) {
-						double c = 	f_onsample(0, y, SampleSize) * f_beam(0,y*Math.sin(betain.getDouble(i)), 
-								 InPlaneSlits, OutPlaneSlits, BeamInPlane, BeamOutPlane);						
-						y_sum = y_sum + c;
+						Dataset c = 	Maths.multiply(f_onsample(0, y, SampleSize) , f_beam(0,y*Math.sin(betain.getDouble(i)), 
+								 InPlaneSlits, OutPlaneSlits, BeamInPlane, BeamOutPlane));						
+						y_sum = Maths.add(y_sum , c);
 					}
 					
-					area_cor.set( 1 / (y_sum * ystep) , i);
+					area_cor.set( (Maths.divide(1, Maths.multiply(y_sum , ystep)).getObject(0)) , i);
 				}
 			}
 				
@@ -264,10 +277,18 @@ public class SXRDGeometricCorrections {
 					Dataset c1 = Maths.sin(betain);
 					Dataset c2 = Maths.cos(d);
 					Dataset c3 = Maths.sin(d);
-					double  xlimit = 1;
+					double  xlimit = 0.1;
 					double ylimit = 10;
 				
 					ylimitdat = Maths.add(ylimitdat, ylimit);
+					
+					if (InPlaneSlits> 0.01){
+	                    xlimit =InPlaneSlits / 2 + 0.01;
+					}
+	                else{
+	                    xlimit = 0.1;
+	                }
+					
 					
 					for (int i=0; i<delta3.getShape()[0]; i++){
 						

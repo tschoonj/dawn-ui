@@ -110,7 +110,7 @@ public class PlotSystemComposite extends Composite {
 		}
 		plotSystem.addRegion(region);
 		
-		RectangularROI startROI = new RectangularROI(10,10,100,100,0);
+		RectangularROI startROI = new RectangularROI(100,100,50,50,0);
 		region.setROI(startROI);
  
         model.setROI(startROI);
@@ -180,9 +180,7 @@ public class PlotSystemComposite extends Composite {
 	
 	public void setModels(ExampleModel model1){
 		this.model= model1;
-//		this.dm = dm1;
-//		this.gm = gm1;
-//		this.createContents(model);
+
 	}
 	
 	public void updateImage(IDataset image){

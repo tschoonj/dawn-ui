@@ -106,14 +106,7 @@ public class SuperSashPlotSystem2Composite extends Composite{
 	////////////////////////////////////////////////////////////////////////////////////
 	/////////////////Right sashform//////////////////////////////////////////////////////////
 //	        
-//		Group dudImage = new Group(right, SWT.NONE);
-//        
-//        GridLayout dudImageLayout = new GridLayout();
-//        dudImage.setLayout(dudImageLayout);
-//		GridData dudImageData= new GridData(SWT.FILL, SWT.FILL, true, true);
-//		dudImage.setLayoutData(dudImageData);
-		
-			
+
 	    backgroundButton = new Button(right, SWT.CHECK);
 	    backgroundButton.setText("Background Display");
 	    GridData gd = new GridData(GridData.CENTER, GridData.CENTER, true, false);
@@ -188,10 +181,6 @@ public class SuperSashPlotSystem2Composite extends Composite{
 	   public IDataset getImage(){
 		   return image2;
 	   }
-	   
-	//   public IRegion returnRegion(){
-//		   return region;
-	//   }
 	   
 	   public void setData(IDataset input){
 		   image2 = input;

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
 import org.dawnsci.spectrum.ui.wizard.OutputMovie.MovieJob;
@@ -53,6 +54,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
 import org.eclipse.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 import org.w3c.dom.events.EventException;
 
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
@@ -107,6 +109,7 @@ public class ExampleDialog extends Dialog {
 				ILazyDataset ild =dh1.getLazyDataset(gm.getImageName());
 				models.add(new ExampleModel());
 				dms.add(new DataModel());
+				dms.get(id).setName(StringUtils.substringAfterLast(sm.getFilepaths()[id], "/"));
 				models.get(id).setDatImages(ild);
 				models.get(id).setFilepath(filepaths[id]);
 				//java.util.List<ILazyDataset> list1 = dh1.getList();
@@ -170,7 +173,7 @@ public class ExampleDialog extends Dialog {
 
 ///////////////////////////Window 3////////////////////////////////////////////////////	    
 	    customComposite1 = new PlotSystem1Composite(container, 
-	    		SWT.NONE, models, dms, sm, gm);
+	    		SWT.NONE, models, dms, sm, gm, customComposite);
 	    customComposite1.setLayout(new GridLayout());
 	    customComposite1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -272,8 +275,10 @@ public class ExampleDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
+				dms.get(sm.getSelection()).resetAll();
 				operationJob1 oJ = new operationJob1();
 				oJ.setOutputCurves(outputCurves);
+				oJ.setSuperModel(sm);
 				oJ.setDm(dms.get(sm.getSelection()));
 				oJ.setModel(models.get(sm.getSelection()));
 				oJ.setGeoModel(gm);;
@@ -342,7 +347,7 @@ public class ExampleDialog extends Dialog {
 					e1.printStackTrace();
 				}
 				i.squeeze();
-				models.get(sm.getSelection()).setInput(null);
+				customComposite.getBoxPosition();
             	IROI region = models.get(sm.getSelection()).getROI();
              	IRectangularROI currentBox = region.getBounds();
              	int[] currentLen = currentBox.getIntLengths();
@@ -360,7 +365,7 @@ public class ExampleDialog extends Dialog {
              	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
              	models.get(sm.getSelection()).setLenPt(currentLenPt);
 		             	
-             	IDataset j = DummyProcessingClass.DummyProcess(i, models.get(sm.getSelection()),dms.get(sm.getSelection()), gm);
+             	IDataset j = DummyProcessingClass.DummyProcess(i, models.get(sm.getSelection()),dms.get(sm.getSelection()), gms.get(sm.getSelection()), customComposite);
 		             	
              	customComposite1.getPlotSystem().createPlot2D(j, null, null);
              	dms.get(sm.getSelection()).resetAll();
@@ -492,18 +497,82 @@ public class ExampleDialog extends Dialog {
 			if (customComposite.getOutputControl().getSelection() == false){
 				IDataset jk = PlotSystemCompositeDataSetter.imageSetter(models.get(sm.getSelection()), selection);
 				customComposite.updateImage(jk);
-			}	
-		}
+				
+				customComposite2.updateImage(PlotSystem2DataSetter.PlotSystem2DataSetter1(models.get(sm.getSelection())));
+				
+				customComposite2.getPlotSystem1().clear();
+				customComposite2.getPlotSystem1().addTrace(VerticalHorizontalSlices.horizontalslice(customComposite2));
+				customComposite2.getPlotSystem1().repaint();
+				customComposite2.getPlotSystem1().autoscaleAxes();
+				
+				customComposite2.getPlotSystem3().clear();
+				customComposite2.getPlotSystem3().addTrace(VerticalHorizontalSlices.verticalslice(customComposite2));
+				customComposite2.getPlotSystem3().repaint();
+				customComposite2.getPlotSystem3().autoscaleAxes();
+				
+				
+				if (customComposite2.getBackgroundButton().getSelection()){
+					
+					
+						SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
+						int sel = models.get(sm.getSelection()).getImageNumber();
+						slice.setSlice(0, sel, sel+1, 1);
+						IDataset j = null;
+						try {
+							j = models.get(sm.getSelection()).getDatImages().getSlice(slice);
+						} catch (Exception e1){
+							e1.printStackTrace();
+						}
+						
+						j.squeeze();
+						
+						IDataset background = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
+								dms.get(sm.getSelection()), gms.get(sm.getSelection()), customComposite);
+						dms.get(sm.getSelection()).setSlicerBackground(background);
+						
+						ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
+						ILineTrace lt2 = VerticalHorizontalSlices.horizontalsliceBackgroundSubtracted(customComposite2, background);
+						
+						IDataset backSubTop = Maths.subtract(lt1.getYData(), lt2.getYData());
+						IDataset xTop = lt1.getXData();
+						ILineTrace lt12BackSub = customComposite2.getPlotSystem1().createLineTrace("background slice");
+						lt12BackSub.setData( xTop, backSubTop);
+						
+						
+						ILineTrace lt3 = VerticalHorizontalSlices.verticalslice(customComposite2);
+						ILineTrace lt4 = VerticalHorizontalSlices.verticalsliceBackgroundSubtracted(customComposite2,background);
+						
+						IDataset backSubSide = Maths.subtract(lt3.getYData(), lt4.getYData());
+						IDataset xSide = lt3.getYData();
+						ILineTrace lt34BackSub = customComposite2.getPlotSystem3().createLineTrace("background slice");
+						lt34BackSub.setData(backSubSide,xSide);
+						
+						customComposite2.getPlotSystem1().clear();
+						customComposite2.getPlotSystem1().addTrace(lt1);
+						customComposite2.getPlotSystem1().addTrace(lt2);
+						customComposite2.getPlotSystem1().addTrace(lt12BackSub);
+						customComposite2.getPlotSystem1().repaint();
+						customComposite2.getPlotSystem1().autoscaleAxes();
+						
+						customComposite2.getPlotSystem3().clear();
+						customComposite2.getPlotSystem3().addTrace(lt3);
+						customComposite2.getPlotSystem3().addTrace(lt4);
+						customComposite2.getPlotSystem3().addTrace(lt34BackSub);
+						customComposite2.getPlotSystem3().repaint();
+						customComposite2.getPlotSystem3().autoscaleAxes();
+				}
+				}
+			}
 
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
 			
-		}			
-			
-	});
-	    
-	    
+		}
+			});
+		
+
+
 	    
 ///////////////////////////////////////////////////////////////////////////////////	    
 	    
@@ -535,12 +604,31 @@ public class ExampleDialog extends Dialog {
 		});
 	    
 ///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Add curves to output curves////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+	    
+	    
+		CharSequence f = "Fhkl";
+		CharSequence i = "Intensity";
 	    
 	    for( Button b: outputCurves.getDatSelector()){
 	    	b.addSelectionListener(new SelectionListener() {
 				
+	    	
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					
+					int det = 0;
+		    		
+		    		for(ITrace tr : outputCurves.getPlotSystem().getTraces()){
+		    			if (tr.getName().contains(f)){
+		    				det +=1;
+		    			}
+		    			else{
+		    				det-=1;
+		    			}
+		    		}
+					
 					outputCurves.getPlotSystem().clear();
 					for(Button b :outputCurves.getDatSelector()){
 						if (b.getSelection()){
@@ -553,33 +641,70 @@ public class ExampleDialog extends Dialog {
 								IDataset filler  = dms.get(0).backupDataset();
 								lte.setData(filler, filler);
 							} else {
- 								lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
-								System.out.println("Length of xlist " + b.getText()+ "   :" + dms.get(p).getxList().size());
-					    		System.out.println("Length of ylist " + b.getText()+ "   :" + dms.get(p).getyList().size());
-					    		System.out.println("Length of xDataset " + b.getText()+ "   :" + dms.get(p).xIDataset().getSize());
-					    		System.out.println("Length of yDataset " + b.getText()+ "   :" + dms.get(p).yIDataset().getSize());
-					    		for (int co =0; co< dms.get(p).xIDataset().getSize(); co++ ){
-					    			System.out.println("Element  " + co +"  of xDataset " + b.getText() + "  value: " + dms.get(p).xIDataset().getDouble(co));
-					    			System.out.println("Element  " + co +"  of yDataset " + b.getText() + "  value: " + dms.get(p).yIDataset().getDouble(co));
-					    		}
+ 								if (det>=0){
+ 									lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDatasetFhkl());
+ 									lte.setName(b.getText() + "_Fhkl");
+ 								}
+ 								else{
+ 									lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
+ 									lte.setName(b.getText() + "_Intensity");
+ 								}
 							}
 							
 							outputCurves.getPlotSystem().addTrace(lte);
-							
-							System.out.println("total number of traces:  " + outputCurves.getPlotSystem().getTraces().size()   );
-							
 						}
 					}
+					
+					
+					try{
+					     if (outputCurves.getSc().getSelection() == true){
+					    	 if (CurveStateIdentifier.CurveStateIdentifier1(outputCurves.getPlotSystem()) == "f"){
+					    		 ILineTrace sct = outputCurves.getPlotSystem().createLineTrace("Spliced Curve_Fhkl");
+						    	 System.out.println("sct name:  " + sct.getName());
+									sct.setData(sm.getSplicedCurveX(), sm.getSplicedCurveYFhkl());
+									outputCurves.getPlotSystem().addTrace(sct);
+					    	 } else{
+					    		 ILineTrace sct = outputCurves.getPlotSystem().createLineTrace("Spliced Curve_Intensity");
+					    		 System.out.println("sct name:  " + sct.getName());
+								 sct.setData(sm.getSplicedCurveX(), sm.getSplicedCurveY());
+								 outputCurves.getPlotSystem().addTrace(sct);
+					    	 }
+					     }
+					    	 
+					     else{
+					    	 
+					    	 CharSequence chsq = "Spliced Curve";
+					     
+					    	 for(ITrace tr : outputCurves.getPlotSystem().getTraces()){
+									if (tr.getName().contains(chsq)){
+										outputCurves.getPlotSystem().removeTrace(tr);
+									}
+									else{
+										
+									}
+					    	 }
+					     }
+					}
+					catch (Exception e1){
+						e1.printStackTrace();
+					}
+					
 				}
+				
+
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					// TODO Auto-generated method stub
 					
 				}
-			});
+	    	});
 		}
 	    
 /////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////Overlap setup////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+	    
+	    
 	    outputCurves.getOverlap().addSelectionListener(new SelectionListener() {
 			
 			@Override
@@ -588,15 +713,78 @@ public class ExampleDialog extends Dialog {
 						outputCurves.getDatSelector(),
 						dms, sm, datDisplayer);
 				
-			}
-			
+				outputCurves.addToDatSelector();
+					
+				String bi =  CurveStateIdentifier.CurveStateIdentifier1(outputCurves.getPlotSystem());
+				
+//				outputCurves.getPlotSystem().clear();
+				
+				CharSequence chsq = "Spliced Curve";
+			     
+		    	 for(ITrace ab : outputCurves.getPlotSystem().getTraces()){
+						
+		    		 if (ab.getName().contains(chsq)){
+							outputCurves.getPlotSystem().removeTrace(ab);
+					}
+					else{
+					}
+		    	 }
+				
+				if (bi =="f"){
+					ILineTrace sct = outputCurves.getPlotSystem().createLineTrace("Spliced Curve_Fhkl");
+					sct.setData(sm.getSplicedCurveX(), sm.getSplicedCurveYFhkl());
+					outputCurves.getPlotSystem().addTrace(sct);
+					outputCurves.getPlotSystem().autoscaleAxes();
+					}
+				else if(bi =="i"){
+					ILineTrace sct = outputCurves.getPlotSystem().createLineTrace("Spliced Curve_Intensity");
+					sct.setData(sm.getSplicedCurveX(), sm.getSplicedCurveY());
+					outputCurves.getPlotSystem().addTrace(sct);
+					outputCurves.getPlotSystem().autoscaleAxes();
+					}
+				else{
+					outputCurves.getPlotSystem().clear();
+				}
+				
+				
+				
+				
+				
+				
+				
+//				for(Button b :outputCurves.getDatSelector()){
+//					if (b.getSelection()){
+//						ILineTrace lte = outputCurves.getPlotSystem().createLineTrace(b.getText());
+//						int p = (Arrays.asList(datDisplayer.getSelector().getItems())).indexOf(b.getText());
+//								
+//							if (dms.get(p).getyList() == null || dms.get(p).getxList() == null) {
+//								
+//								IDataset filler  = dms.get(0).backupDataset();
+//								lte.setData(filler, filler);
+//							} else {
+//								lte.setData(dms.get(p).xIDataset(),dms.get(p).yIDataset());
+//							}
+//								
+//							outputCurves.getPlotSystem().addTrace(lte);
+//							}
+//							outputCurves.getPlotSystem().autoscaleAxes();
+//					}
+				}
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
 		});
+	    
+	    
+	    
+	    
+////////////////////////////////////////////////////////////////////////////
+	    
 
+	    
 ////////////////////////////////////////////////////////////////////////////////////
 	    
 	    customComposite2.getRegions()[0].addROIListener(new IROIListener(){
@@ -678,6 +866,12 @@ public class ExampleDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
+				
+				int[] ab =customComposite1.getMethodology();
+				models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
+				models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
+				models.get(sm.getSelection()).setBoundaryBox(ab[2]);
+	
 				SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
 				int selection = models.get(sm.getSelection()).getImageNumber();
 				slice.setSlice(0, selection, selection+1, 1);
@@ -691,7 +885,7 @@ public class ExampleDialog extends Dialog {
 				j.squeeze();
 				
 				IDataset output = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
-						dms.get(sm.getSelection()), gms.get(sm.getSelection()));
+						dms.get(sm.getSelection()), gms.get(sm.getSelection()), customComposite);
 				customComposite1.getPlotSystem().createPlot2D(output, null, null);
 				}
 
@@ -732,11 +926,10 @@ public class ExampleDialog extends Dialog {
 				} catch (Exception e1){
 					e1.printStackTrace();
 				}
-				
 				j.squeeze();
 				
 				IDataset background = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
-						dms.get(sm.getSelection()), gms.get(sm.getSelection()));
+						dms.get(sm.getSelection()), gms.get(sm.getSelection()), customComposite);
 				dms.get(sm.getSelection()).setSlicerBackground(background);
 				
 				ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
@@ -754,7 +947,7 @@ public class ExampleDialog extends Dialog {
 				IDataset backSubSide = Maths.subtract(lt3.getYData(), lt4.getYData());
 				IDataset xSide = lt3.getYData();
 				ILineTrace lt34BackSub = customComposite2.getPlotSystem3().createLineTrace("background slice");
-				lt34BackSub.setData(xSide, backSubSide);
+				lt34BackSub.setData(backSubSide,xSide);
 				
 				customComposite2.getPlotSystem1().clear();
 				customComposite2.getPlotSystem1().addTrace(lt1);
@@ -762,6 +955,7 @@ public class ExampleDialog extends Dialog {
 				customComposite2.getPlotSystem1().addTrace(lt12BackSub);
 				customComposite2.getPlotSystem1().repaint();
 				customComposite2.getPlotSystem1().autoscaleAxes();
+				customComposite2.getPlotSystem1().clearAnnotations();
 				
 				customComposite2.getPlotSystem3().clear();
 				customComposite2.getPlotSystem3().addTrace(lt3);
@@ -769,16 +963,96 @@ public class ExampleDialog extends Dialog {
 				customComposite2.getPlotSystem3().addTrace(lt34BackSub);
 				customComposite2.getPlotSystem3().repaint();
 				customComposite2.getPlotSystem3().autoscaleAxes();
+				customComposite2.getPlotSystem3().clearAnnotations();
+			
 			}
 
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
-	    	
 	    });
 	    
 ///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Intensity/Fhkl switch///////////////////////
+	    /////////////////////////////////////////////////////////////
+	    
+	    outputCurves.getIntensity().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				String[] dmnames= new String [dms.size()];
+				
+				CharSequence chsq = "Spliced Curve";
+				
+				for (int v = 0; v<dms.size(); v++){
+					dmnames[v] = dms.get(v).getName();
+				}
+				
+				String fr = CurveStateIdentifier.CurveStateIdentifier1(outputCurves.getPlotSystem());
+				
+				for(ITrace tr : outputCurves.getPlotSystem().getTraces()){
+				
+					
+					
+					ILineTrace lt = outputCurves.getPlotSystem().createLineTrace("Holder");
+					
+					if(tr.getName().contains(chsq) == false){
+						if (fr == "f"){
+							lt.setName(tr.getName().replace(f, i));
+							for (int tn = 0 ; tn< dmnames.length; tn++){
+								if (tr.getName().contains(dmnames[tn])){
+									lt.setData(dms.get(tn).xIDataset(), dms.get(tn).yIDataset());
+								}
+							}
+							outputCurves.getIntensity().setText("Fhkl?");
+						}
+						else{
+							lt.setName(tr.getName().replace(i, f));
+							for (int tn = 0 ; tn< dmnames.length; tn++){
+								if (tr.getName().contains(dmnames[tn])){
+									lt.setData(dms.get(tn).xIDataset(), dms.get(tn).yIDatasetFhkl());
+								}
+							}
+							outputCurves.getIntensity().setText("Intensity?");
+						}
+					}
+					else{
+						if (fr == "f"){
+							lt.setName(tr.getName().replace(f, i));
+							for (int tn = 0 ; tn< dmnames.length; tn++){
+								if (tr.getName().contains(dmnames[tn])){
+									lt.setData(sm.getSplicedCurveX(), sm.getSplicedCurveY());
+								}
+							}
+							outputCurves.getIntensity().setText("Fhkl?");
+						}
+						else{
+							lt.setName(tr.getName().replace(i, f));
+							lt.setData(sm.getSplicedCurveX(), sm.getSplicedCurveYFhkl());
+							}
+							outputCurves.getIntensity().setText("Intensity?");
+						}
+					
+					outputCurves.getPlotSystem().addTrace(lt);
+					outputCurves.getPlotSystem().removeTrace(tr);
+							
+					}
+					
+					
+				outputCurves.getPlotSystem().autoscaleAxes();	
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	    
+/////////////////////////////////////////////////////////////////////////////////////	    
 	    return container;
 	}
 	
@@ -989,14 +1263,11 @@ public class ExampleDialog extends Dialog {
 			model.setMethodology((Methodology.values()[ab[0]]));
 			model.setFitPower(FitPower.values()[ab[1]]);
 			model.setBoundaryBox(ab[2]);
-			dm.resetX();
-			dm.resetY();
+			dm.resetAll();
 			
 				outputCurves.resetCurve();
 				int k =0;
 				for ( k = model.getSliderPos(); k<model.getDatImages().getShape()[0]; k++){
-					
-					
 					
 					IDataset j = null;
 					SliceND slice = new SliceND(model.getDatImages().getShape());
@@ -1004,7 +1275,6 @@ public class ExampleDialog extends Dialog {
 					
 					SliceND slicex = new SliceND(model.getDatX().getShape());
 					slicex.setSlice(0, k, k+1, 1);
-					
 					
 					try {
 						//slice.setSlice(0, 0, 1, 1);
@@ -1027,7 +1297,7 @@ public class ExampleDialog extends Dialog {
 					
 					customComposite.getBoxPosition();
 					
-					IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm);
+					IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite);
 						
 					System.out.println("Added to yList:  " + k);
 
@@ -1038,7 +1308,7 @@ public class ExampleDialog extends Dialog {
 						plotSystem.clear();
 						plotSystem.updatePlot2D(output1, null,monitor);
 			    		plotSystem.repaint(true);
-			    		outputCurves.updateCurve(dm);
+			    		outputCurves.updateCurve(dm, outputCurves.getIntensity().getSelection(), sm);
 			    		
 		    		
 					}

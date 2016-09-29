@@ -12,9 +12,9 @@ public class GeometricParametersModel {
 	private Double beamOutPlane = 0.3;
 	private Double covar = 1.0;
 	private Double detectorSlits = 10.0;
-	private Double inPlaneSlits = 0.2;
+	private Double inPlaneSlits = 0.5;
 	private Double inplanePolarisation = 0.0;
-	private Double outPlaneSlits = 0.2;
+	private Double outPlaneSlits = 0.5;
 	private Double outplanePolarisation =1.0;
 	private Double reflectivityA = 1.0;
 	private Double sampleSize = 10.0;

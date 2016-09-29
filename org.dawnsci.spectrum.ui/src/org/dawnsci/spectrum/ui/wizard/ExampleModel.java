@@ -134,7 +134,6 @@ public class ExampleModel {
 	}
 
 	public void setROI(IROI ROI) {
-		firePropertyChange("ROI", this.ROI, this.ROI= ROI);
 		IRectangularROI bounds = ROI.getBounds();
 		int[] len = bounds.getIntLengths();
 		int[] pt = bounds.getIntPoint();

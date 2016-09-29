@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import org.eclipse.dawnsci.analysis.api.roi.IROI;
+import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
+import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
@@ -15,11 +18,35 @@ public class DataModel {
 	
 	private ArrayList<Double> xList;
 	private ArrayList<Double> yList;
+	private ArrayList<Double> yListFhkl;
 	private ArrayList<Double> zList;
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	private ArrayList<IDataset> outputDatArray;
 	private ArrayList<IDataset> backgroundDatArray;
 	private IDataset slicerBackground;
+	private RectangularROI backgroundBox;
+	private int[][] backgroundLenPt;
+	private IROI backgroundROI;
+	private String name;
+	
+	
+	
+	public IROI getBackgroundROI(){
+		return backgroundROI;
+	}
+	
+	public void setBackgroundROI(IROI backgroundROI){
+		IRectangularROI bounds = backgroundROI.getBounds();
+		int[] len = bounds.getIntLengths();
+		int[] pt = bounds.getIntPoint();
+		int[][] lenpt = new int[2][];
+		lenpt[0]=len;
+		lenpt[1]=pt;
+		firePropertyChange("backgroundROI", this.backgroundROI, this.backgroundROI= backgroundROI);
+		this.setBackgroundLenPt(lenpt);
+		firePropertyChange("backgroundLenPt", this.backgroundLenPt, this.backgroundLenPt= lenpt);
+		
+	}
 	
 	public ArrayList<IDataset> getOutputDatArray() {
 		return outputDatArray;
@@ -58,10 +85,7 @@ public class DataModel {
 		firePropertyChange("backgroundDatArray", this.backgroundDatArray,
 				this.backgroundDatArray= backgroundDatArray1);
 	}
-	
-	
-	
-	
+
 	public ArrayList<Double> getzList() {
 		return zList;
 		
@@ -74,11 +98,13 @@ public class DataModel {
 	public ArrayList<Double> getyList() {
 		return yList;
 	}
+	
 	public void setyList(ArrayList<Double> yList) {
 		this.yList = yList;
 		firePropertyChange("yList", this.yList,
 				this.yList= yList);
 	}
+	
 	public ArrayList<Double> getxList() {
 		return xList;
 		
@@ -102,6 +128,20 @@ public class DataModel {
 				this.yList= yList1);
 		
 		System.out.println("Hey, ylist length is :  " +yList.size());
+	}
+	
+	public void addyListFhkl(double y){
+		if (yListFhkl==null){
+			yListFhkl = new ArrayList<Double>();
+		}
+		System.out.println("Hey, ylistFhkl got added to.");
+		ArrayList<Double> yList1 = new ArrayList<Double>();
+		yList1 = (ArrayList<Double>) yListFhkl.clone();
+		yList1.add(y);
+		firePropertyChange("yListFhkl", this.yListFhkl,
+				this.yListFhkl= yList1);
+		
+		System.out.println("Hey, ylistFhkl length is :  " +yListFhkl.size());
 	}
 
 
@@ -134,6 +174,11 @@ public class DataModel {
 	public void resetY(){
 		yList =null;
 	}
+	
+	public void resetYFhkl(){
+		yListFhkl =null;
+	}
+	
 	public void resetZ(){
 		zList =null;
 	}
@@ -142,6 +187,7 @@ public class DataModel {
 		zList =null;
 		xList =null;
 		yList =null;
+		yListFhkl =null;
 		outputDatArray =null;
 		backgroundDatArray = null;
 	}
@@ -151,6 +197,14 @@ public class DataModel {
 			yList = new ArrayList<Double>();
 		}
 		IDataset yOut = DatasetFactory.createFromList(yList);
+		return yOut;
+	}
+	
+	public IDataset yIDatasetFhkl(){
+		if (yListFhkl==null){
+			yListFhkl = new ArrayList<Double>();
+		}
+		IDataset yOut = DatasetFactory.createFromList(yListFhkl);
 		return yOut;
 	}
 	
@@ -201,6 +255,38 @@ public class DataModel {
 	}
 	public void setSlicerBackground(IDataset slicerBackground) {
 		this.slicerBackground = slicerBackground;
+	}
+
+	public int[][] getBackgroundLenPt() {
+		return backgroundLenPt;
+	}
+
+	public void setBackgroundLenPt(int[][] backgroundLenPt) {
+		this.backgroundLenPt = backgroundLenPt;
+	}
+
+	public RectangularROI getBackgroundBox() {
+		return backgroundBox;
+	}
+
+	public void setBackgroundBox(RectangularROI backgroundBox) {
+		this.backgroundBox = backgroundBox;
+	}
+
+	public ArrayList<Double> getyListFhkl() {
+		return yListFhkl;
+	}
+
+	public void setyListFhkl(ArrayList<Double> yListFhkl) {
+		this.yListFhkl = yListFhkl;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	
