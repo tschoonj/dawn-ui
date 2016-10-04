@@ -13,6 +13,7 @@ public class SuperModel {
 	private IDataset splicedCurveX;
 	private IDataset splicedCurveY;
 	private IDataset splicedCurveYFhkl;
+	private int correctionSelection = 0;
 
 	public String[] getFilepaths() {
 		return filepaths;
@@ -69,6 +70,14 @@ public class SuperModel {
 
 	public void setSplicedCurveYFhkl(IDataset splicedCurveYFhkl) {
 		this.splicedCurveYFhkl = splicedCurveYFhkl;
+	}
+
+	public int getCorrectionSelection() {
+		return correctionSelection;
+	}
+
+	public void setCorrectionSelection(int correctionSelection) {
+		this.correctionSelection = correctionSelection;
 	}
 	
 }

@@ -56,7 +56,8 @@ public class PlotSystem1Composite extends Composite {
     
     public PlotSystem1Composite(Composite parent, int style
     		,ArrayList<ExampleModel> models, ArrayList<DataModel> dms,
-    		SuperModel sm, GeometricParametersModel gm, PlotSystemComposite customComposite) {
+    		SuperModel sm, GeometricParametersModel gm, 
+    		PlotSystemComposite customComposite) {
     	
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
@@ -69,7 +70,7 @@ public class PlotSystem1Composite extends Composite {
         this.model = models.get(sm.getSelection());
         this.dm =dms.get(sm.getSelection());
         this.customComposite = customComposite;
-        
+        int correctionSelection = sm.getCorrectionSelection();
         try {
         	
 			plotSystem1 = PlottingFactory.createPlottingSystem();
@@ -79,13 +80,14 @@ public class PlotSystem1Composite extends Composite {
         
         
         
-        this.createContents(model, gm, customComposite); 
+        this.createContents(model, gm, customComposite, correctionSelection); 
 //        System.out.println("Test line");
         
     }
      
     public void createContents(ExampleModel model
-    		, GeometricParametersModel gm,  PlotSystemComposite customComposite) {
+    		, GeometricParametersModel gm, PlotSystemComposite customComposite,
+    		int cS) {
         
         
         Group methodSetting = new Group(this, SWT.NULL);
@@ -187,7 +189,7 @@ public class PlotSystem1Composite extends Composite {
 			}
 			
 			j.squeeze();
-			IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite);
+			IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite, cS);
 			plotSystem1.createPlot2D(output, null, null);
 			} else {
 			}
@@ -206,7 +208,7 @@ public class PlotSystem1Composite extends Composite {
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm,gm, customComposite);
+						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm,gm, customComposite, cS);
 						plotSystem1.createPlot2D(output, null, null);
 			    	}
 				
@@ -226,7 +228,7 @@ public class PlotSystem1Composite extends Composite {
 			    		slice.setSlice(0, selection, selection+1, 1);
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm, customComposite);
+						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm, customComposite, cS);
 						plotSystem1.createPlot2D(output, null, null);
 						plotSystem1.repaint();
 			    	}

@@ -18,7 +18,7 @@ public class StitchedOutput {
 	public  static IDataset[][] curveStitch (IPlottingSystem<Composite> plotSystem, ArrayList<Button> datSelector
 			, ArrayList<DataModel> dms, SuperModel sm, DatDisplayer datDisplayer ){
 		
-		ILineTrace lt1 = plotSystem.createLineTrace("Concatenated Curve Test");
+		//ILineTrace lt1 = plotSystem.createLineTrace("Concatenated Curve Test");
 		
 		ArrayList<IDataset> xArrayList = new ArrayList<>();
 		ArrayList<IDataset> yArrayList = new ArrayList<>();
@@ -127,7 +127,7 @@ public class StitchedOutput {
 							xHigherDataset, yHigherDataset, attenuationFactor,4);
 					
 					double correctionRatioFhkl = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDatasetFhkl, 
-							xHigherDataset, yHigherDatasetFhkl, attenuationFactor,4);
+							xHigherDataset, yHigherDatasetFhkl, attenuationFactorFhkl,4);
 					
 					attenuationFactor = correctionRatio;
 					attenuationFactorFhkl = correctionRatioFhkl;
@@ -154,24 +154,12 @@ public class StitchedOutput {
 		sortedAttenuatedDatasets[0]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[0], 0));
 		sortedAttenuatedDatasets[1]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[1], 0));
 		sortedAttenuatedDatasets[2]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasetsFhkl[0], 0));
-		
+
 		DatasetUtils.sort(sortedAttenuatedDatasets[1],
 				sortedAttenuatedDatasets[0]);
 		
-		DatasetUtils.sort(sortedAttenuatedDatasets[2],
-				sortedAttenuatedDatasets[0]);
-
-		String b =  CurveStateIdentifier.CurveStateIdentifier1(plotSystem);
-		
-		if (b == "f"){
-				lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[0]);
-				lt1.setName("Spliced Curve_Fhkl");
-		}
-		else{
-			lt1.setData(sortedAttenuatedDatasets[1], sortedAttenuatedDatasets[2]);
-			lt1.setName("Spliced Curve_Intensity");
-		}
-		
+		DatasetUtils.sort(sortedAttenuatedDatasets[1],
+				sortedAttenuatedDatasets[2]);
 		
 		sm.setSplicedCurveY(sortedAttenuatedDatasets[0]);
 		sm.setSplicedCurveX(sortedAttenuatedDatasets[1]);
@@ -179,8 +167,8 @@ public class StitchedOutput {
 		
 		
 		
-		plotSystem.addTrace(lt1);
-		plotSystem.repaint();	
+		//plotSystem.addTrace(lt1);
+//		plotSystem.repaint();	
 		
 		return null;
 	}

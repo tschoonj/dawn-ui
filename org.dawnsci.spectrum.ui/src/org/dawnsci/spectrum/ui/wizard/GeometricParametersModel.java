@@ -11,7 +11,7 @@ public class GeometricParametersModel {
 	private Double beamInPlane = 0.3;
 	private Double beamOutPlane = 0.3;
 	private Double covar = 1.0;
-	private Double detectorSlits = 10.0;
+	private Double detectorSlits = 0.2;
 	private Double inPlaneSlits = 0.5;
 	private Double inplanePolarisation = 0.0;
 	private Double outPlaneSlits = 0.5;
@@ -24,6 +24,12 @@ public class GeometricParametersModel {
 	private String xName ="l";
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	private Double ScalingFactor = 10.0;
+	private double beamHeight = 0.06;
+	private double footprint = 190;
+	private double angularFudgeFactor = 0;
+	private String savePath  = "/scratch/runtime-uk.ac.diamond.dawn.product/data/examples";
+	private String fluxPath = "/scratch/233990.dat";
+	
 	
 	public Double getNormalisationFactor() {
 		return normalisationFactor;
@@ -138,5 +144,36 @@ public class GeometricParametersModel {
 	public void setScalingFactor(Double scalingFactor) {
 		ScalingFactor = scalingFactor;
 	}
+	public double getBeamHeight() {
+		return beamHeight;
+	}
+	public void setBeamHeight(double beamHeight) {
+		this.beamHeight = beamHeight;
+	}
+	public double getFootprint() {
+		return footprint;
+	}
+	public void setFootprint(double footprint) {
+		this.footprint = footprint;
+	}
+	public double getAngularFudgeFactor() {
+		return angularFudgeFactor;
+	}
+	public void setAngularFudgeFactor(double angularFudgeFactor) {
+		this.angularFudgeFactor = angularFudgeFactor;
+	}
+	public String getSavePath() {
+		return savePath;
+	}
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
+	}
+	public String getFluxPath() {
+		return fluxPath;
+	}
+	public void setFluxPath(String fluxPath) {
+		this.fluxPath = fluxPath;
+	}
+	
 	
 }

@@ -321,6 +321,31 @@ public class SXRDGeometricCorrections {
 				
 						for ( x = (-1* xlimit); x <= (xlimit + 0.01 + xstep) ; x += xstep){
 							for ( y = -1 * ylimit ;  y <= ylimit + 0.01 + ystep; y += ystep){
+								double fb = f_beam(x, y*c1.getDouble(i), 
+										 InPlaneSlits, OutPlaneSlits, BeamInPlane, BeamOutPlane);
+								double fd = f_detector(x*c2.getDouble(i) - y*c3.getDouble(i), DetectorSlits);
+								
+								double fo = f_onsample(x, y, SampleSize);
+								
+								if (fb!=0 && fo!=0 && fd !=0){
+									
+									System.out.println("@@@@@@@@@@~~~~~~~~~~~~~~~~~~$$$$$$$$$$$$$$$$$$$REALRESULT!{{{{{{}}}}}}}}}}}}}}}}$$$$$$$$$$$$$$$%%%%%%%%%%");
+									
+									if(fb != 0){
+										System.out.println("fb :  " + fb + "  x = " +x + "  y = " +y);
+									}
+									else if(fo != 0){
+										System.out.println("fo :  " + fo +"  x = " +x + "  y = " +y);
+									}
+									else if(fd != 0){
+										System.out.println("fd :  " + fd +"  x = " +x + "  y = " +y);
+									}
+
+								}
+								
+								if(fd != 0){
+									System.out.println("fd :  " + fd +"  x = " +x + "  y = " +y);
+								}
 								area_sum = f_beam(x, y*c1.getDouble(i), 
 										 InPlaneSlits, OutPlaneSlits, BeamInPlane, BeamOutPlane) 
 										* f_detector(x*c2.getDouble(i) - y*c3.getDouble(i), DetectorSlits) * f_onsample(x, y, SampleSize);

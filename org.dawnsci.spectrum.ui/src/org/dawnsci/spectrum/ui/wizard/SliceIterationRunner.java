@@ -28,7 +28,7 @@ public class SliceIterationRunner {
 	
 	
 	public IDataset sliceIterationRunner1 (ExampleModel model, 
-			DataModel dm, IPlottingSystem<Composite> plotSystem, PlotSystemComposite customComposite){
+			DataModel dm, IPlottingSystem<Composite> plotSystem, PlotSystemComposite customComposite, int correctionSelection){
 		
 		this.customComposite = customComposite;
 		this.plotSystem = plotSystem;
@@ -41,6 +41,7 @@ public class SliceIterationRunner {
 		oJ.setModel(model);
 		oJ.setPlotSystem(plotSystem);
 		oJ.schedule();
+		oJ.setCorrectionSelection(correctionSelection);
 		
 
 		
@@ -57,13 +58,18 @@ public class SliceIterationRunner {
 		ExampleModel model;
 		IPlottingSystem<Composite> plotSystem;
 		GeometricParametersModel gm;
-
+		int correctionSelection;
+		
 		public operationJob() {
 			super("updating image...");
 		}
 
 		public void setData(IDataset input) {
 			this.input = input;
+		}
+		
+		public void setCorrectionSelection(int cS) {
+			this.correctionSelection = cS;
 		}
 		
 		public void setDm(DataModel dm) {
@@ -98,7 +104,7 @@ public class SliceIterationRunner {
 					
 				j.squeeze();
 				
-				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite);
+				final IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite, correctionSelection);
 
 			plotSystem.clear();
 //			plotSystem.createPlot2D(output1, null, null);

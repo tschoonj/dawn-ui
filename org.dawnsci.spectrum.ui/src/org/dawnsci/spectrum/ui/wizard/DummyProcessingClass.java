@@ -1,24 +1,20 @@
 package org.dawnsci.spectrum.ui.wizard;
 
-import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
-import org.eclipse.dawnsci.plotting.api.region.IRegion.RegionType;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.Dataset;
+import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DatasetUtils;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.Maths;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 public class DummyProcessingClass {
 	
 	
 	@SuppressWarnings("incomplete-switch")
 	public static IDataset DummyProcess(IDataset input, ExampleModel model
-			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite){
+			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector){
 		
 		IDataset output =null;
 		IPlottingSystem<Composite> pS = customComposite.getPlotSystem();
@@ -49,22 +45,40 @@ public class DummyProcessingClass {
 				break;
 		}
 		
-		Dataset correction = null;
+		Dataset correction = DatasetFactory.zeros(new int[] {1}, Dataset.FLOAT64);
 		
-		try {
-			correction = Maths.multiply(SXRDGeometricCorrections.lorentz(model), SXRDGeometricCorrections.areacor(model
-					, gm.getBeamCorrection(), gm.getSpecular(),  gm.getSampleSize()
-					, gm.getOutPlaneSlits(), gm.getInPlaneSlits(), gm.getBeamInPlane()
-					, gm.getBeamOutPlane(), gm.getDetectorSlits()));
-			correction = Maths.multiply(SXRDGeometricCorrections.polarisation(model, gm.getInplanePolarisation()
-					, gm.getOutplanePolarisation()), correction);
-			correction = Maths.multiply(
-					SXRDGeometricCorrections.polarisation(model, gm.getInplanePolarisation(), gm.getOutplanePolarisation()),
-					correction);
-		} catch (DatasetException e) {
-
+		if (correctionSelector == 0){
+			
+			try {
+				correction = Maths.multiply(SXRDGeometricCorrections.lorentz(model), SXRDGeometricCorrections.areacor(model
+						, gm.getBeamCorrection(), gm.getSpecular(),  gm.getSampleSize()
+						, gm.getOutPlaneSlits(), gm.getInPlaneSlits(), gm.getBeamInPlane()
+						, gm.getBeamOutPlane(), gm.getDetectorSlits()));
+				correction = Maths.multiply(SXRDGeometricCorrections.polarisation(model, gm.getInplanePolarisation()
+						, gm.getOutplanePolarisation()), correction);
+				correction = Maths.multiply(
+						SXRDGeometricCorrections.polarisation(model, gm.getInplanePolarisation(), gm.getOutplanePolarisation()),
+						correction);
+			} catch (DatasetException e) {
+	
+			}
 		}
 		
+		else if (correctionSelector ==1){
+			try {
+				correction = DatasetFactory.createFromObject(GeometricCorrectionsReflectivityMethod.reflectivityCorrectionsBatch(input, gm.getAngularFudgeFactor(), 
+						gm.getBeamHeight(), gm.getFootprint()));
+				correction = Maths.multiply(correction, ReflectivityFluxCorrectionsForDialog.reflectivityFluxCorrections(input, gm.getFluxPath()));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
+		}
+		else{
+			
+		}
 		try {
 			Thread.sleep(250);
 		} catch (InterruptedException e) {

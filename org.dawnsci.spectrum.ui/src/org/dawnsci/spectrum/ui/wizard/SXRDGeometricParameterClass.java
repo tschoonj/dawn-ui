@@ -1,5 +1,7 @@
 package org.dawnsci.spectrum.ui.wizard;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,19 +33,21 @@ public class SXRDGeometricParameterClass extends Composite{
 	private Text imageName;
 	private Text xName;
 	private Text scalingFactor;
+	private GeometricParametersModel gm;
 	
-	public SXRDGeometricParameterClass(Composite parent, int style,GeometricParametersModel gm){
+	public SXRDGeometricParameterClass(Composite parent, int style,ArrayList<GeometricParametersModel> gms, SuperModel sm){
 		
 		super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
-
+		
         new Label(this, SWT.NONE).setText("Geometric Parameters Window");
         
-        this.createContents(gm);
+        this.createContents(gms, sm);
 	}
 	
-	public void createContents(GeometricParametersModel gm) {
+	public void createContents(ArrayList<GeometricParametersModel> gms, SuperModel sm) {
 		
+		gm = gms.get(sm.getSelection());
 		Group geometricParameters = new Group(this, SWT.NULL);
 		GridLayout geometricParametersLayout = new GridLayout(2,true);
 		GridData geometricParametersData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
