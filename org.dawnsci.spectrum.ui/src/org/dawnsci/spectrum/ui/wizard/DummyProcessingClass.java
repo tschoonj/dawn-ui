@@ -1,20 +1,25 @@
 package org.dawnsci.spectrum.ui.wizard;
 
+import org.eclipse.dawnsci.analysis.api.io.IDataHolder;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DatasetUtils;
 import org.eclipse.january.dataset.IDataset;
+import org.eclipse.january.dataset.ILazyDataset;
 import org.eclipse.january.dataset.Maths;
 import org.eclipse.swt.widgets.Composite;
+
+import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
+import uk.ac.diamond.scisoft.analysis.processing.operations.utils.ProcessingUtils;
 
 public class DummyProcessingClass {
 	
 	
 	@SuppressWarnings("incomplete-switch")
-	public static IDataset DummyProcess(IDataset input, ExampleModel model
-			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector){
+	public static IDataset DummyProcess(SuperModel sm, IDataset input, ExampleModel model
+			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector, int k){
 		
 		IDataset output =null;
 		IPlottingSystem<Composite> pS = customComposite.getPlotSystem();
@@ -65,10 +70,16 @@ public class DummyProcessingClass {
 		}
 		
 		else if (correctionSelector ==1){
+			
+			ILazyDataset flux = null;
+			ILazyDataset theta = null;
+			ILazyDataset[] fluxData = new Dataset[2]; 
+			
 			try {
-				correction = DatasetFactory.createFromObject(GeometricCorrectionsReflectivityMethod.reflectivityCorrectionsBatch(input, gm.getAngularFudgeFactor(), 
+				correction = DatasetFactory.createFromObject(GeometricCorrectionsReflectivityMethod.reflectivityCorrectionsBatch(model.getDcdtheta(), k, sm, input, gm.getAngularFudgeFactor(), 
 						gm.getBeamHeight(), gm.getFootprint()));
-				correction = Maths.multiply(correction, ReflectivityFluxCorrectionsForDialog.reflectivityFluxCorrections(input, gm.getFluxPath()));
+				correction = Maths.multiply(correction, 
+						ReflectivityFluxCorrectionsForDialog.reflectivityFluxCorrections(gm.getFluxPath(), model.getQdcdDat().getDouble(k), model));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

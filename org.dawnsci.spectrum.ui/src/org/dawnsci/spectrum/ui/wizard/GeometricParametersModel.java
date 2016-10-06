@@ -28,7 +28,8 @@ public class GeometricParametersModel {
 	private double footprint = 190;
 	private double angularFudgeFactor = 0;
 	private String savePath  = "/scratch/runtime-uk.ac.diamond.dawn.product/data/examples";
-	private String fluxPath = "/scratch/233990.dat";
+	private String fluxPath = "NO"; //"/scratch/233990.dat";
+	private String xNameRef ="qsdcd";
 	
 	
 	public Double getNormalisationFactor() {
@@ -173,6 +174,12 @@ public class GeometricParametersModel {
 	}
 	public void setFluxPath(String fluxPath) {
 		this.fluxPath = fluxPath;
+	}
+	public String getxNameRef() {
+		return xNameRef;
+	}
+	public void setxNameRef(String xNameRef) {
+		this.xNameRef = xNameRef;
 	}
 	
 	

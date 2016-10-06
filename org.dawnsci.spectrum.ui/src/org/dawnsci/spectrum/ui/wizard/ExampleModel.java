@@ -9,11 +9,13 @@ import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
 import org.eclipse.dawnsci.analysis.dataset.roi.RectangularROI;
+import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.AggregateDataset;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
+import org.eclipse.january.dataset.SliceND;
 
 public class ExampleModel {
 	
@@ -35,13 +37,10 @@ public class ExampleModel {
 	private double outputNo;
 	private ILazyDataset DatX;
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-
-
-
-	
-
-	
+	private ILazyDataset dcdtheta;
+	private ILazyDataset qdcd;
+	private ILazyDataset flux;
+	private ILazyDataset theta;
 	
 	public IDataset getInput() {
 		return input;
@@ -216,6 +215,54 @@ public class ExampleModel {
 
 	public void setDatImages(ILazyDataset datImages) {
 		this.datImages = datImages;
+	}
+
+	public ILazyDataset getDcdtheta() {
+		return dcdtheta;
+	}
+
+	public void setDcdtheta(ILazyDataset dcdtheta) {
+		this.dcdtheta = dcdtheta;
+	}
+
+	public ILazyDataset getQdcd() {
+		return qdcd;
+	}
+
+	public Dataset getQdcdDat() {
+		
+		SliceND sl = new SliceND(qdcd.getShape());
+		try {
+			Dataset QdcdDat = (Dataset) qdcd.getSlice(sl);
+			return QdcdDat;
+		} catch (DatasetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+
+	
+
+	public void setQdcd(ILazyDataset qdcd) {
+		this.qdcd = qdcd;
+	}
+
+	public ILazyDataset getFlux() {
+		return flux;
+	}
+
+	public void setFlux(ILazyDataset flux) {
+		this.flux = flux;
+	}
+
+	public ILazyDataset getTheta() {
+		return theta;
+	}
+
+	public void setTheta(ILazyDataset theta) {
+		this.theta = theta;
 	}
 	
 	

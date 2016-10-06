@@ -6,38 +6,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
-import org.dawnsci.spectrum.ui.wizard.OutputMovie.MovieJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.dawnsci.analysis.api.io.IDataHolder;
-import org.eclipse.dawnsci.analysis.api.io.ScanFileHolderException;
-import org.eclipse.dawnsci.analysis.api.processing.OperationException;
 import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.region.IROIListener;
-import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.region.ROIEvent;
+import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
+import org.eclipse.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.AggregateDataset;
@@ -62,14 +54,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
-import org.eclipse.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
-import org.w3c.dom.events.EventException;
 
-import uk.ac.diamond.scisoft.analysis.io.DataHolder;
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
+import uk.ac.diamond.scisoft.analysis.processing.operations.utils.ProcessingUtils;
 
 public class ExampleDialog extends Dialog {
 	
@@ -126,10 +114,36 @@ public class ExampleDialog extends Dialog {
 				models.get(id).setFilepath(filepaths[id]);
 				//java.util.List<ILazyDataset> list1 = dh1.getList();
 				gms.add(new GeometricParametersModel());
-				ILazyDataset ildx =dh1.getLazyDataset(gm.getxName()); 
-				models.get(id).setDatX(ildx);
-				
-			
+				if (sm.getCorrectionSelection() == 0){
+					ILazyDataset ildx =dh1.getLazyDataset(gm.getxName()); 
+					models.get(id).setDatX(ildx);
+				}
+				else if (sm.getCorrectionSelection() == 1){
+					ILazyDataset ildx =dh1.getLazyDataset(gm.getxNameRef()); 
+					models.get(id).setDatX(ildx);
+					
+					ILazyDataset dcdtheta = dh1.getLazyDataset( ReflectivityMetadataTitlesForDialog.getdcdtheta());
+					models.get(id).setDcdtheta(dcdtheta);
+					
+					ILazyDataset qdcd = dh1.getLazyDataset( ReflectivityMetadataTitlesForDialog.getqdcd());
+					models.get(id).setQdcd(qdcd);
+						
+						
+					if (dcdtheta == null){
+						try{
+					    	dcdtheta = dh1.getLazyDataset(ReflectivityMetadataTitlesForDialog.getsdcdtheta());
+					    	models.get(id).setDcdtheta(dcdtheta);
+						} catch (Exception e2){
+							System.out.println("can't get dcdtheta");
+						}
+					}
+					else{
+					}
+					
+					
+				}
+				else{
+				}	
 			} 
 			
 			catch (Exception e1) {
@@ -380,8 +394,8 @@ public class ExampleDialog extends Dialog {
              	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
              	models.get(sm.getSelection()).setLenPt(currentLenPt);
 		             	
-             	IDataset j = DummyProcessingClass.DummyProcess(i, models.get(sm.getSelection()),dms.get(sm.getSelection()), 
-             			gms.get(sm.getSelection()), customComposite, paramField.getTabFolder().getSelectionIndex());
+             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),dms.get(sm.getSelection()), 
+             			gms.get(sm.getSelection()), customComposite, paramField.getTabFolder().getSelectionIndex(), customComposite.getSliderPos());
 		             	
              	customComposite1.getPlotSystem().createPlot2D(j, null, null);
              	dms.get(sm.getSelection()).resetAll();
@@ -542,9 +556,9 @@ public class ExampleDialog extends Dialog {
 						
 						j.squeeze();
 						
-						IDataset background = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
+						IDataset background = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 								dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-								customComposite, paramField.getTabFolder().getSelectionIndex());
+								customComposite, paramField.getTabFolder().getSelectionIndex(), sel);
 						dms.get(sm.getSelection()).setSlicerBackground(background);
 						
 						ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
@@ -954,9 +968,9 @@ public class ExampleDialog extends Dialog {
 				
 				j.squeeze();
 				
-				IDataset output = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
+				IDataset output = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 						dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-						customComposite, paramField.getTabFolder().getSelectionIndex());
+						customComposite, paramField.getTabFolder().getSelectionIndex(), selection);
 				customComposite1.getPlotSystem().createPlot2D(output, null, null);
 				}
 
@@ -999,9 +1013,9 @@ public class ExampleDialog extends Dialog {
 				}
 				j.squeeze();
 				
-				IDataset background = DummyProcessingClass.DummyProcess(j, models.get(sm.getSelection()),
+				IDataset background = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 						dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-						customComposite, paramField.getTabFolder().getSelectionIndex());
+						customComposite, paramField.getTabFolder().getSelectionIndex(), selection);
 				dms.get(sm.getSelection()).setSlicerBackground(background);
 				
 				ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
@@ -1047,12 +1061,67 @@ public class ExampleDialog extends Dialog {
 	    });
 	    
 /////////////////////////////////////////////////////////////////////////////////
-	    
+///////////////////////Reflectivity/SXRD CorrectionSelection////////////////////////
+///////////////////////////////////////////////////////////////////////
 	    paramField.getTabFolder().addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				sm.setCorrectionSelection(paramField.getTabFolder().getSelectionIndex());
+				
+				for (int id = 0; id<filepaths.length; id++){ 
+					try {
+						IDataHolder dh1 =LoaderFactory.getData(filepaths[id]);
+						
+						if (sm.getCorrectionSelection() == 0){
+							ILazyDataset ildx =dh1.getLazyDataset(gm.getxName()); 
+							models.get(id).setDatX(ildx);
+						}
+						else if (sm.getCorrectionSelection() == 1){
+							ILazyDataset ildx =dh1.getLazyDataset(gm.getxNameRef()); 
+							models.get(id).setDatX(ildx);
+							
+							ILazyDataset dcdtheta = dh1.getLazyDataset(ReflectivityMetadataTitlesForDialog.getdcdtheta());
+							models.get(id).setDcdtheta(dcdtheta);
+							
+							ILazyDataset qdcd = dh1.getLazyDataset( ReflectivityMetadataTitlesForDialog.getqsdcd());
+							models.get(id).setQdcd(qdcd);
+							
+							if ((boolean) (gms.get(id).getFluxPath().equalsIgnoreCase("NO") 
+									||(gm.getFluxPath().equalsIgnoreCase(null)))) {
+								try { 
+									ILazyDataset flux = dh1.getLazyDataset( ReflectivityMetadataTitlesForDialog.getionc1());
+									models.get(id).setFlux(flux);
+									
+									ILazyDataset theta = dh1.getLazyDataset( ReflectivityMetadataTitlesForDialog.getqsdcd());
+									models.get(id).setTheta(theta);
+									
+								}
+								catch (Exception e6){
+									System.out.println("No normalisation data available internally");
+									
+								}
+							}
+							
+							if (dcdtheta == null){
+							    try{
+							    	dcdtheta = dh1.getLazyDataset(ReflectivityMetadataTitlesForDialog.getsdcdtheta());
+							    	models.get(id).setDcdtheta(dcdtheta);
+								} catch (Exception e2){
+									System.out.println("can't get dcdtheta");
+								}
+							}
+							else{
+							}
+						}
+						else{
+						}
+						
+					} 
+					catch (Exception e4 ){
+						
+					}	
+				}
 			}
 			
 			@Override
@@ -1369,15 +1438,29 @@ public class ExampleDialog extends Dialog {
 					SliceND slicex = new SliceND(model.getDatX().getShape());
 					slicex.setSlice(0, k, k+1, 1);
 					
-					try {
-						//slice.setSlice(0, 0, 1, 1);
-						dm.addxList((model.getDatX().getSlice(slicex)).getDouble(0));
-						
-						System.out.println("Added to xList:  " + k);
-						
-					} catch (DatasetException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
+					if(sm.getCorrectionSelection() == 0){
+						try {
+							//slice.setSlice(0, 0, 1, 1);
+							dm.addxList((model.getDatX().getSlice(slicex)).getDouble(0));
+							
+							System.out.println("Added to xList:  " + k);
+							
+						} catch (DatasetException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}
+					else if (sm.getCorrectionSelection() == 1){
+						try {
+							//slice.setSlice(0, 0, 1, 1);
+							dm.addxList((model.getDatX().getSlice(slicex)).getDouble(0));
+							
+							System.out.println("Added to xList:  " + k);
+							
+						} catch (DatasetException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
 					}
 					
 					try {
@@ -1390,7 +1473,7 @@ public class ExampleDialog extends Dialog {
 					
 					customComposite.getBoxPosition();
 					
-					IDataset output1 = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite, correctionSelection);
+					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k);
 						
 					System.out.println("Added to yList:  " + k);
 

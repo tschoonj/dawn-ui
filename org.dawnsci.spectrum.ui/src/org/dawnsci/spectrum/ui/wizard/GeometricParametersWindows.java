@@ -42,6 +42,7 @@ public class GeometricParametersWindows extends Composite{
 	private Text savePath;
 	private Text fluxPath;
 	private TabFolder folder;
+	private Text xNameRef;
 	
 	public GeometricParametersWindows(Composite parent, int style,ArrayList<GeometricParametersModel> gms, SuperModel sm){
 		
@@ -128,8 +129,19 @@ public class GeometricParametersWindows extends Composite{
 		savePath = new Text (geometricParametersReflec, SWT.CHECK);
 		new Label(geometricParametersReflec, SWT.LEFT).setText("fluxPath");
 		fluxPath = new Text (geometricParametersReflec, SWT.CHECK);
+		new Label(geometricParametersReflec, SWT.LEFT).setText("xNameRef");
+		xNameRef = new Text (geometricParametersReflec, SWT.CHECK);
 		
 	    paramsReflec.setControl(geometricParametersReflec);
+	    
+	    xNameRef.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				gm.setFluxPath(xNameRef.getText());
+			}
+	    	
+	    });
 	    
 	    fluxPath.addModifyListener(new ModifyListener(){
 

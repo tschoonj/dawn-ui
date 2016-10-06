@@ -14,6 +14,7 @@ import org.eclipse.dawnsci.analysis.dataset.slicer.SliceFromSeriesMetadata;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.dataset.ILazyDataset;
+import org.eclipse.january.dataset.SliceND;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,41 +29,44 @@ public class ScanMetadataForDialog {
 	private static final Logger logger = LoggerFactory.getLogger(ScanMetadataForDialog.class);
 
 	//
-	public static SliceFromSeriesMetadata getSliceMetadata (IDataset input) {
-		
-		SliceFromSeriesMetadata ssm = input.getFirstMetadata(SliceFromSeriesMetadata.class);
-		return ssm;
-		
-	}
+//	public static SliceFromSeriesMetadata getSliceMetadata (IDataset input) {
+//		
+//		SliceFromSeriesMetadata ssm = input.getFirstMetadata(SliceFromSeriesMetadata.class);
+//		return ssm;
+//		
+//	}
 	
 	
-	public static double getTheta(IDataset input) throws Exception {
+	public static double getTheta(ILazyDataset dcdtheta, int k, IDataset input, SuperModel sm) throws Exception {
 				
-		IDataset dcdtheta = null;
+		IDataset dcdthetaout = null;
 		
-		try{
-
-			ILazyDataset dcdthetaL = ProcessingUtilsForDialog.getLazyDataset(getSliceMetadata(input).getFilePath(), ReflectivityMetadataTitlesForDialog.getdcdtheta());
-			dcdtheta = getSliceMetadata(input).getMatchingSlice(dcdthetaL);
-			
-		} catch (Exception e){
-		    try{
-		    	ILazyDataset dcdthetaL = ProcessingUtilsForDialog.getLazyDataset(getSliceMetadata(input).getFilePath(), ReflectivityMetadataTitlesForDialog.getsdcdtheta());
-				dcdtheta = getSliceMetadata(input).getMatchingSlice(dcdthetaL);
-			} catch (Exception e2){
-				System.out.println("No theta parameter");
-				throw new Exception("No theta parameter");
-			}
-		}
-		double theta = (double) dcdtheta.getDouble(0);
+//		try{
+//
+//			ILazyDataset dcdthetaL = ProcessingUtilsForDialog.getLazyDataset(sm.getFilepaths()[sm.getSelection()], ReflectivityMetadataTitlesForDialog.getdcdtheta());
+//			
+//			dcdtheta = getSliceMetadata(input).getMatchingSlice(dcdthetaL);
+//			
+//		} catch (Exception e){
+//		    try{
+//		    	ILazyDataset dcdthetaL = ProcessingUtilsForDialog.getLazyDataset(sm.getFilepaths()[sm.getSelection()], ReflectivityMetadataTitlesForDialog.getsdcdtheta());
+//				dcdtheta = getSliceMetadata(input).getMatchingSlice(dcdthetaL);
+//			} catch (Exception e2){
+//				System.out.println("No theta parameter");
+//				throw new Exception("No theta parameter");
+//			}
+//		}
+		SliceND slice = new SliceND(dcdtheta.getShape());
+		
+		double theta = (double) dcdtheta.getSlice(slice).getDouble(k);
 		return theta;
 		
 	}
 	
-	public IDataset  getqdcd(IDataset input) {
+	public IDataset  getqdcd(IDataset input, SuperModel sm) {
 		IDataset qdcdDataset=null;
 		try {
-			qdcdDataset = ProcessingUtils.getLazyDataset(null, getSliceMetadata(input).getFilePath(), ReflectivityMetadataTitlesForDialog.getqdcd()).getSlice();
+			qdcdDataset = ProcessingUtils.getLazyDataset(null, sm.getFilepaths()[sm.getSelection()], ReflectivityMetadataTitlesForDialog.getqdcd()).getSlice();
 		} catch (OperationException | DatasetException e) {
 			// TODO Auto-generated catch block
 		}
@@ -71,8 +75,8 @@ public class ScanMetadataForDialog {
 	}
 	
 	
-	public ILazyDataset getqdcdLazy (IDataset input){ 
-		ILazyDataset getqdcdLazy  = ProcessingUtils.getLazyDataset(null, getSliceMetadata(input).getFilePath(), ReflectivityMetadataTitlesForDialog.getqdcd());
+	public ILazyDataset getqdcdLazy (IDataset input, SuperModel sm){ 
+		ILazyDataset getqdcdLazy  = ProcessingUtils.getLazyDataset(null, sm.getFilepaths()[sm.getSelection()], ReflectivityMetadataTitlesForDialog.getqdcd());
 		return getqdcdLazy;
 	}
 	

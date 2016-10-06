@@ -189,7 +189,7 @@ public class PlotSystem1Composite extends Composite {
 			}
 			
 			j.squeeze();
-			IDataset output = DummyProcessingClass.DummyProcess(j, model,dm, gm, customComposite, cS);
+			IDataset output = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, cS, selection);
 			plotSystem1.createPlot2D(output, null, null);
 			} else {
 			}
@@ -208,7 +208,7 @@ public class PlotSystem1Composite extends Composite {
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm,gm, customComposite, cS);
+						IDataset output = DummyProcessingClass.DummyProcess(sm ,i, model, dm,gm, customComposite, cS, selection);
 						plotSystem1.createPlot2D(output, null, null);
 			    	}
 				
@@ -228,7 +228,7 @@ public class PlotSystem1Composite extends Composite {
 			    		slice.setSlice(0, selection, selection+1, 1);
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
-						IDataset output = DummyProcessingClass.DummyProcess(i, model, dm, gm, customComposite, cS);
+						IDataset output = DummyProcessingClass.DummyProcess(sm, i, model, dm, gm, customComposite, cS, selection);
 						plotSystem1.createPlot2D(output, null, null);
 						plotSystem1.repaint();
 			    	}
