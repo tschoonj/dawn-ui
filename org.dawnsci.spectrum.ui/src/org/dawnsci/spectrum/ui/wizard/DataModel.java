@@ -28,8 +28,8 @@ public class DataModel {
 	private int[][] backgroundLenPt;
 	private IROI backgroundROI;
 	private String name;
-	
-	
+	private int[][] initialLenPt;
+	private IDataset initialDataset;
 	
 	public IROI getBackgroundROI(){
 		return backgroundROI;
@@ -70,6 +70,21 @@ public class DataModel {
 		ArrayList<IDataset> outputDatArray1 = new ArrayList<IDataset>();
 		outputDatArray1 = (ArrayList<IDataset>) outputDatArray.clone();
 		outputDatArray1.add(in);
+		firePropertyChange("outputDatArray", this.outputDatArray,
+				this.outputDatArray= outputDatArray1);
+	}
+	
+	public void addOutputDatArray(int l, int k, IDataset in){
+		if (outputDatArray==null){
+			outputDatArray = new ArrayList<IDataset>();
+			for (int i = 0; i < l; i++) {
+				outputDatArray.add(DatasetFactory.zeros(new int[] {2,2}));
+				}
+		}
+		
+		ArrayList<IDataset> outputDatArray1 = new ArrayList<IDataset>();
+		outputDatArray1 = (ArrayList<IDataset>) outputDatArray.clone();
+		outputDatArray1.set(k,in);
 		firePropertyChange("outputDatArray", this.outputDatArray,
 				this.outputDatArray= outputDatArray1);
 	}
@@ -130,6 +145,24 @@ public class DataModel {
 		System.out.println("Hey, ylist length is :  " +yList.size());
 	}
 	
+	public void addyList(int l, int k, double y){
+		if (yList==null){
+			yList = new ArrayList<Double>();
+			for (int i = 0; i < l; i++) {
+				  yList.add(0.0);
+				}
+		}
+		System.out.println("Hey, ylist got added to.");
+		ArrayList<Double> yList1 = new ArrayList<Double>();
+		yList1 = (ArrayList<Double>) yList.clone();
+		yList1.set(k, y);
+		firePropertyChange("yList", this.yList,
+				this.yList= yList1);
+		
+		System.out.println("Hey, ylist length is :  " +yList.size());
+	}
+	
+	
 	public void addyListFhkl(double y){
 		if (yListFhkl==null){
 			yListFhkl = new ArrayList<Double>();
@@ -138,6 +171,25 @@ public class DataModel {
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		yList1 = (ArrayList<Double>) yListFhkl.clone();
 		yList1.add(y);
+		firePropertyChange("yListFhkl", this.yListFhkl,
+				this.yListFhkl= yList1);
+		
+		System.out.println("Hey, ylistFhkl length is :  " +yListFhkl.size());
+	}
+	
+	public void addyListFhkl(int l, int k, double y){
+		if (yListFhkl==null){
+			yListFhkl = new ArrayList<Double>();
+			for (int i = 0; i < l; i++) {
+				  yListFhkl.add(0.0);
+				}
+		}
+		System.out.println("Hey, ylistFhkl got added to.");
+		ArrayList<Double> yList1 = new ArrayList<Double>();
+		
+		yList1 = (ArrayList<Double>) yListFhkl.clone();
+		yList1.set(k,y);
+		
 		firePropertyChange("yListFhkl", this.yListFhkl,
 				this.yListFhkl= yList1);
 		
@@ -155,6 +207,23 @@ public class DataModel {
 		firePropertyChange("xList", this.xList,
 				this.xList= xList1);
 	}
+	
+	
+	public void addxList(int l, int k, double x){
+		if (xList==null){
+			xList = new ArrayList<Double>();
+			for (int i = 0; i < l; i++) {
+				  xList.add(0.0);
+				}
+		}
+		
+		ArrayList<Double> xList1 = new ArrayList<Double>();
+		xList1 = (ArrayList<Double>) xList.clone();
+		xList1.set(k, x);
+		firePropertyChange("xList", this.xList,
+				this.xList= xList1);
+	}
+	
 	
 
 	public void addzList(double z){
@@ -190,13 +259,24 @@ public class DataModel {
 		yListFhkl =null;
 		outputDatArray =null;
 		backgroundDatArray = null;
+		initialDataset = null;
+		initialLenPt = null;
 	}
 
 	public IDataset yIDataset(){
 		if (yList==null){
 			yList = new ArrayList<Double>();
 		}
-		IDataset yOut = DatasetFactory.createFromList(yList);
+
+		ArrayList<Double> yListc = (ArrayList<Double>) yList.clone();
+		
+		ArrayList<Double> zero = new ArrayList<Double>();
+		
+		zero.add(0.0);
+		
+		yListc.removeAll(zero);
+		
+		IDataset yOut = DatasetFactory.createFromList(yListc);
 		return yOut;
 	}
 	
@@ -204,7 +284,17 @@ public class DataModel {
 		if (yListFhkl==null){
 			yListFhkl = new ArrayList<Double>();
 		}
-		IDataset yOut = DatasetFactory.createFromList(yListFhkl);
+
+		ArrayList<Double> yListFhklc =  (ArrayList<Double>) yListFhkl.clone();
+		
+		ArrayList<Double> zero = new ArrayList<Double>();
+		
+		zero.add(0.0);
+		
+		yListFhklc.removeAll(zero);
+		
+		IDataset yOut = DatasetFactory.createFromList(yListFhklc);
+		
 		return yOut;
 	}
 	
@@ -212,7 +302,17 @@ public class DataModel {
 		if (xList==null){
 			xList = new ArrayList<Double>();
 		}
-		IDataset xOut = DatasetFactory.createFromList(xList);
+		
+		ArrayList<Double> xListc = (ArrayList<Double>) xList.clone();
+		
+		ArrayList<Double> zero = new ArrayList<Double>();
+		
+		zero.add(0.0);
+		
+		xListc.removeAll(zero);
+		
+		IDataset xOut = DatasetFactory.createFromList(xListc);
+		
 		return xOut;
 	}
 	
@@ -287,6 +387,22 @@ public class DataModel {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int[][] getInitialLenPt() {
+		return initialLenPt;
+	}
+
+	public void setInitialLenPt(int[][] initialLenPt) {
+		this.initialLenPt = initialLenPt;
+	}
+
+	public IDataset getInitialDataset() {
+		return initialDataset;
+	}
+
+	public void setInitialDataset(IDataset initialDataset) {
+		this.initialDataset = initialDataset;
 	}
 	
 	

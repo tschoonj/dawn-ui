@@ -44,6 +44,7 @@ public class PlotSystem1Composite extends Composite {
     private Button button2;
     private Combo comboDropDown0;
 	private Combo comboDropDown1;
+	private Combo comboDropDown2;
     private Text boundaryBoxText;
     private ArrayList<ExampleModel> models;
     private SuperModel sm;
@@ -57,7 +58,7 @@ public class PlotSystem1Composite extends Composite {
     public PlotSystem1Composite(Composite parent, int style
     		,ArrayList<ExampleModel> models, ArrayList<DataModel> dms,
     		SuperModel sm, GeometricParametersModel gm, 
-    		PlotSystemComposite customComposite) {
+    		PlotSystemComposite customComposite, int trackingMarker) {
     	
         super(parent, style);
         //composite = new Composite(parent, SWT.NONE);
@@ -80,36 +81,33 @@ public class PlotSystem1Composite extends Composite {
         
         
         
-        this.createContents(model, gm, customComposite, correctionSelection); 
+        this.createContents(model, gm, customComposite, correctionSelection, trackingMarker); 
 //        System.out.println("Test line");
         
     }
      
     public void createContents(ExampleModel model
     		, GeometricParametersModel gm, PlotSystemComposite customComposite,
-    		int cS) {
+    		int cS, int trackingMarker) {
         
         
         Group methodSetting = new Group(this, SWT.NULL);
-        GridLayout methodSettingLayout = new GridLayout(3, true);
+        GridLayout methodSettingLayout = new GridLayout(2, true);
 //		methodSettingLayout.numColumns = 3;
 	    GridData methodSettingData = new GridData(GridData.BEGINNING);
 	    methodSettingData .minimumWidth = 50;
 	    methodSetting.setLayout(methodSettingLayout);
 	    methodSetting.setLayoutData(methodSettingData);
 	    
-	    
-	    new Label(methodSetting, SWT.LEFT).setText("Methodology");
-	    new Label(methodSetting, SWT.LEFT).setText("Fit Power");
-	    new Label(methodSetting, SWT.LEFT).setText("Boundary Box");
-	    //Combo comboSimple = new Combo(this, SWT.SIMPLE | SWT.BORDER);
-	    
 	    comboDropDown0 = new Combo(methodSetting, SWT.DROP_DOWN | SWT.BORDER | SWT.LEFT);
+	    comboDropDown0.setText("Methodology"); 
 	   	comboDropDown1 = new Combo(methodSetting, SWT.DROP_DOWN | SWT.BORDER | SWT.RIGHT);
+	   	comboDropDown1.setText("Fit Power");
+	   	comboDropDown2 = new Combo(methodSetting, SWT.DROP_DOWN | SWT.BORDER | SWT.RIGHT);
+	   	comboDropDown2.setText("Tracker");
 	    boundaryBoxText = new Text(methodSetting, SWT.SINGLE);
-	    
-	    
-	    
+	    boundaryBoxText.setText("Boundary Box");
+
 	    for(Methodology  t: AnalaysisMethodologies.Methodology.values()){
 	    	comboDropDown0.add(AnalaysisMethodologies.toString(t));
 	    }
@@ -189,7 +187,7 @@ public class PlotSystem1Composite extends Composite {
 			}
 			
 			j.squeeze();
-			IDataset output = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, cS, selection);
+			IDataset output = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, cS, selection, trackingMarker);
 			plotSystem1.createPlot2D(output, null, null);
 			} else {
 			}
@@ -208,7 +206,7 @@ public class PlotSystem1Composite extends Composite {
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
 			    		IDataset image1 = i;
-						IDataset output = DummyProcessingClass.DummyProcess(sm ,i, model, dm,gm, customComposite, cS, selection);
+						IDataset output = DummyProcessingClass.DummyProcess(sm ,i, model, dm,gm, customComposite, cS, selection, trackingMarker);
 						plotSystem1.createPlot2D(output, null, null);
 			    	}
 				
@@ -228,7 +226,7 @@ public class PlotSystem1Composite extends Composite {
 			    		slice.setSlice(0, selection, selection+1, 1);
 			    		IDataset i = model.getDatImages().getSlice(slice);
 			    		i.squeeze();
-						IDataset output = DummyProcessingClass.DummyProcess(sm, i, model, dm, gm, customComposite, cS, selection);
+						IDataset output = DummyProcessingClass.DummyProcess(sm, i, model, dm, gm, customComposite, cS, selection, trackingMarker);
 						plotSystem1.createPlot2D(output, null, null);
 						plotSystem1.repaint();
 			    	}

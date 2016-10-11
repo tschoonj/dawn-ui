@@ -13,11 +13,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
+//import org.dawnsci.spectrum.ui.wizard.operationJob1.MovieJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -57,7 +56,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
-import uk.ac.diamond.scisoft.analysis.processing.operations.utils.ProcessingUtils;
 
 public class ExampleDialog extends Dialog {
 	
@@ -75,7 +73,7 @@ public class ExampleDialog extends Dialog {
 	private ArrayList<GeometricParametersModel> gms;
 	private SuperModel sm;
 	private DatDisplayer datDisplayer;
-	private PrintWriter	writer;
+	private PrintWriter writer;
 	private GeometricParametersWindows paramField;
 	
 	
@@ -201,7 +199,7 @@ public class ExampleDialog extends Dialog {
 	    
 	    customComposite1 = new PlotSystem1Composite(container, 
 	    		SWT.NONE, models, dms, sm, gms.get(sm.getSelection()), 
-	    		customComposite);
+	    		customComposite, 0);
 	    customComposite1.setLayout(new GridLayout());
 	    customComposite1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -305,6 +303,8 @@ public class ExampleDialog extends Dialog {
 
 				dms.get(sm.getSelection()).resetAll();
 				operationJob1 oJ = new operationJob1();
+				oJ.setCustomComposite(customComposite);
+				oJ.setCustomComposite1(customComposite1);
 				oJ.setCorrectionSelection(paramField.getTabFolder().getSelectionIndex());
 				oJ.setOutputCurves(outputCurves);
 				oJ.setSuperModel(sm);
@@ -357,7 +357,7 @@ public class ExampleDialog extends Dialog {
 				try{
 				outputCurves.resetCurve();
 				dms.get(sm.getSelection()).resetAll();
-				
+				models.get(sm.getSelection()).setInput(null);
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -394,8 +394,11 @@ public class ExampleDialog extends Dialog {
              	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
              	models.get(sm.getSelection()).setLenPt(currentLenPt);
 		             	
-             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),dms.get(sm.getSelection()), 
-             			gms.get(sm.getSelection()), customComposite, paramField.getTabFolder().getSelectionIndex(), customComposite.getSliderPos());
+             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),
+             			dms.get(sm.getSelection()), 
+             			gms.get(sm.getSelection()), customComposite, 
+             			paramField.getTabFolder().getSelectionIndex(), 
+             			customComposite.getSliderPos(), 0);
 		             	
              	customComposite1.getPlotSystem().createPlot2D(j, null, null);
              	dms.get(sm.getSelection()).resetAll();
@@ -434,6 +437,7 @@ public class ExampleDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				MovieJob movieJob = new MovieJob();
+				movieJob.setOutputMovie(outputMovie);
 				movieJob.setData(dms.get(sm.getSelection()).getOutputDatArray());
 				movieJob.setTime(Integer.parseInt(outputMovie.getTimeConstant().getText()));
 				if(movieJob.getState() == Job.RUNNING) {
@@ -558,7 +562,7 @@ public class ExampleDialog extends Dialog {
 						
 						IDataset background = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 								dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-								customComposite, paramField.getTabFolder().getSelectionIndex(), sel);
+								customComposite, paramField.getTabFolder().getSelectionIndex(), sel, 0);
 						dms.get(sm.getSelection()).setSlicerBackground(background);
 						
 						ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
@@ -970,7 +974,7 @@ public class ExampleDialog extends Dialog {
 				
 				IDataset output = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 						dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-						customComposite, paramField.getTabFolder().getSelectionIndex(), selection);
+						customComposite, paramField.getTabFolder().getSelectionIndex(), selection, 0);
 				customComposite1.getPlotSystem().createPlot2D(output, null, null);
 				}
 
@@ -1015,7 +1019,7 @@ public class ExampleDialog extends Dialog {
 				
 				IDataset background = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
 						dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-						customComposite, paramField.getTabFolder().getSelectionIndex(), selection);
+						customComposite, paramField.getTabFolder().getSelectionIndex(), selection, 0);
 				dms.get(sm.getSelection()).setSlicerBackground(background);
 				
 				ILineTrace lt1 = VerticalHorizontalSlices.horizontalslice(customComposite2);
@@ -1231,7 +1235,7 @@ public class ExampleDialog extends Dialog {
 	  protected boolean isResizable() {
 	    return true;
 	}
-	
+}	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	class operationJob3 extends Job {
@@ -1315,7 +1319,9 @@ public class ExampleDialog extends Dialog {
 		private DataModel dm;
 		private PlotSystemComposite plotSystemComposite;
 		private int imageNo;
-	
+		private MultipleOutputCurves outputCurves;
+		
+		
 		public void setPlotSystemComposite(PlotSystemComposite customComposite) {
 			this.plotSystemComposite = customComposite;
 		}
@@ -1370,28 +1376,38 @@ public class ExampleDialog extends Dialog {
 	
 	class operationJob1 extends Job {
 
-		private IDataset input;
-		@Inject 
-		UISynchronize sync;
-		DataModel dm;
-		ExampleModel model;
-		IPlottingSystem<Composite> plotSystem;
-		MultipleOutputCurves outputCurves;
-		GeometricParametersModel gm;
-		SuperModel sm;
-		int correctionSelection;
+		private DataModel dm;
+		private ExampleModel model;
+		private IPlottingSystem<Composite> plotSystem;
+		private MultipleOutputCurves outputCurves;
+		private GeometricParametersModel gm;
+		private SuperModel sm;
+		private PlotSystem1Composite customComposite1;
+		private PlotSystemComposite customComposite;
+		private int correctionSelection;
 
 		public operationJob1() {
 			super("updating image...");
 		}
 
+		
+		
+		
+		public void setCustomComposite(PlotSystemComposite customComposite) {
+			this.customComposite = customComposite;
+		}
+		
+		
+		public void setCustomComposite1(PlotSystem1Composite customComposite1) {
+			this.customComposite1 = customComposite1;
+		}
+		
 		public void setOutputCurves(MultipleOutputCurves outputCurves) {
 			this.outputCurves = outputCurves;
 		}
 		
 		
 		public void setData(IDataset input) {
-			this.input = input;
 		}
 		
 		public void setCorrectionSelection(int cS) {
@@ -1427,84 +1443,256 @@ public class ExampleDialog extends Dialog {
 			model.setBoundaryBox(ab[2]);
 			dm.resetAll();
 			
-				outputCurves.resetCurve();
-				int k =0;
-				for ( k = model.getSliderPos(); k<model.getDatImages().getShape()[0]; k++){
+			outputCurves.resetCurve();
+			
+			System.out.println("number of images:   " + model.getDatImages().getShape()[0]);
+			
+			int k =0;
+				
+			if (model.getSliderPos() == 0){ 
+				for ( k = 0; k<model.getDatImages().getShape()[0]; k++){
 					
+					System.out.println("k value :   " + k);
+					
+					int trackingMarker = 0;
 					IDataset j = null;
 					SliceND slice = new SliceND(model.getDatImages().getShape());
 					slice.setSlice(0, k, k+1, 1);
-					
+						
 					SliceND slicex = new SliceND(model.getDatX().getShape());
 					slicex.setSlice(0, k, k+1, 1);
-					
+						
 					if(sm.getCorrectionSelection() == 0){
 						try {
 							//slice.setSlice(0, 0, 1, 1);
-							dm.addxList((model.getDatX().getSlice(slicex)).getDouble(0));
+							dm.addxList(model.getDatImages().getShape()[0], k,(model.getDatX().getSlice(slicex)).getDouble(0));
 							
 							System.out.println("Added to xList:  " + k);
-							
+								
 						} catch (DatasetException e2) {
-							// TODO Auto-generated catch block
+								// TODO Auto-generated catch block
 							e2.printStackTrace();
 						}
 					}
 					else if (sm.getCorrectionSelection() == 1){
 						try {
-							//slice.setSlice(0, 0, 1, 1);
-							dm.addxList((model.getDatX().getSlice(slicex)).getDouble(0));
+								//slice.setSlice(0, 0, 1, 1);
+							dm.addxList(model.getDatImages().getShape()[0], k,(model.getDatX().getSlice(slicex)).getDouble(0));
 							
 							System.out.println("Added to xList:  " + k);
 							
 						} catch (DatasetException e2) {
-							// TODO Auto-generated catch block
+								// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}
+						
+					try {
+						j = model.getDatImages().getSlice(slice);
+					} 
+					catch (Exception e1) {
+					}
+							
+					j.squeeze();
+						
+					customComposite.getBoxPosition();
+						
+					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k-1, trackingMarker);
+							
+//					System.out.println("Added to yList:  " + k);
+	
+					Display.getDefault().syncExec(new Runnable() {
+							
+						@Override
+						public void run() {
+							plotSystem.clear();
+							plotSystem.updatePlot2D(output1, null,monitor);
+				    		plotSystem.repaint(true);
+				    		outputCurves.updateCurve(dm, outputCurves.getIntensity().getSelection(), sm);
+				    		
+			    		
+						}
+					});
+				}
+			
+			} else if (model.getSliderPos() != 0){
+				
+				
+			////////////////////////inside second loop scenario@@@@@@@@@@@@@@@@@@@@@@@@@@@@///////////
+				//k=(model.getSliderPos()-1);
+				
+				for (k = (model.getSliderPos()); k >= 1; k-- ){
+					
+					System.out.println("k value :   " + k);
+					
+					if (k == (model.getSliderPos()-1)){
+						model.setInput(null);
+					}
+					int trackingMarker = 1;
+					
+					IDataset j = null;
+					SliceND slice = new SliceND(model.getDatImages().getShape());
+					slice.setSlice(0, k-1, k, 1);
+						
+					SliceND slicex = new SliceND(model.getDatX().getShape());
+					slicex.setSlice(0, k-1, k, 1);
+					
+					if(sm.getCorrectionSelection() == 0){
+						try {
+							//slice.setSlice(0, 0, 1, 1);
+							
+							IDataset nom = (model.getDatX().getSlice(slicex));
+							
+							double nim = nom.getDouble(0);
+							
+							dm.addxList(model.getDatImages().getShape()[0], k-1,nim);
+							
+							System.out.println("Added to xList:  " + k);
+								
+						} catch (DatasetException e2) {
+								// TODO Auto-generated catch block
 							e2.printStackTrace();
 						}
 					}
 					
+					else if (sm.getCorrectionSelection() == 1){
+						try {
+								//slice.setSlice(0, 0, 1, 1);
+							dm.addxList(model.getDatImages().getShape()[0], k-1,(model.getDatX().getSlice(slicex)).getDouble(0));
+							
+//							System.out.println("Added to xList:  " + k);
+							
+						} catch (DatasetException e2) {
+								// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}
+						
 					try {
 						j = model.getDatImages().getSlice(slice);
-						} 
-						catch (Exception e1) {
-						}
-						
-					j.squeeze();
-					
-					customComposite.getBoxPosition();
-					
-					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k);
-						
-					System.out.println("Added to yList:  " + k);
-
-					Display.getDefault().syncExec(new Runnable() {
-						
-						@Override
-							public void run() {
-						plotSystem.clear();
-						plotSystem.updatePlot2D(output1, null,monitor);
-			    		plotSystem.repaint(true);
-			    		outputCurves.updateCurve(dm, outputCurves.getIntensity().getSelection(), sm);
-			    		
-		    		
+					} 
+					catch (Exception e1) {
 					}
-				});
+							
+					j.squeeze();
+						
+					customComposite.getBoxPosition();
+						
+					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k-1, trackingMarker);
+							
+//					System.out.println("Added to yList:  " + k);
+	
+					Display.getDefault().syncExec(new Runnable() {
+							
+						@Override
+						public void run() {
+							plotSystem.clear();
+							plotSystem.updatePlot2D(output1, null,monitor);
+				    		plotSystem.repaint(true);
+				    		outputCurves.updateCurve(dm, outputCurves.getIntensity().getSelection(), sm);
+				    		
+			    		
+						}
+					});
+				}
+			
+			
+				
+				
+				
+				for ( k = model.getSliderPos(); k<model.getDatImages().getShape()[0]; k++){
+					
+					int trackingMarker = 2;
+					
+					System.out.println("k value :   " + k);
+					
+					if (k==model.getSliderPos()){
+						model.setInput(null);
+					}
+					
+					IDataset j = null;
+					SliceND slice = new SliceND(model.getDatImages().getShape());
+					slice.setSlice(0, k, k+1, 1);
+						
+					SliceND slicex = new SliceND(model.getDatX().getShape());
+					slicex.setSlice(0, k, k+1, 1);
+						
+					if(sm.getCorrectionSelection() == 0){
+						try {
+							//slice.setSlice(0, 0, 1, 1);
+							dm.addxList(model.getDatImages().getShape()[0], k,(model.getDatX().getSlice(slicex)).getDouble(0));
+							
+//							System.out.println("Added to xList:  " + k);
+								
+						} catch (DatasetException e2) {
+								// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}
+					else if (sm.getCorrectionSelection() == 1){
+						try {
+								//slice.setSlice(0, 0, 1, 1);
+							dm.addxList(model.getDatImages().getShape()[0], k,(model.getDatX().getSlice(slicex)).getDouble(0));
+							
+//							System.out.println("Added to xList:  " + k);
+							
+						} catch (DatasetException e2) {
+								// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+					}
+						
+					try {
+						j = model.getDatImages().getSlice(slice);
+					} 
+					catch (Exception e1) {
+					}
+							
+					j.squeeze();
+						
+					customComposite.getBoxPosition();
+						
+					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, 
+							customComposite, correctionSelection, k, trackingMarker);
+							
+					System.out.println("Added to yList:  " + k);
+	
+					Display.getDefault().syncExec(new Runnable() {
+							
+						@Override
+						public void run() {
+							plotSystem.clear();
+							plotSystem.updatePlot2D(output1, null,monitor);
+				    		plotSystem.repaint(true);
+				    		outputCurves.updateCurve(dm, outputCurves.getIntensity().getSelection(), sm);
+				    		
+			    		
+						}
+					});
 				}
 				
+				
 			
+			
+			}
+				
+				
 	    		try {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+	    		
 	    		System.out.println("Length of xlist: " + dm.getxList().size());
 	    		System.out.println("Length of ylist: " + dm.getyList().size());
 			
 			
 		return Status.OK_STATUS;
 
-	   }
+		
+		
+		}
 	}
 	
 /////////////////////////////////////////////////////////////////////	
@@ -1516,9 +1704,15 @@ public class ExampleDialog extends Dialog {
 	
 	private List<IDataset> outputDatArray;
 	private int time;
+	private OutputMovie outputMovie;
+	
 	
 	public MovieJob() {
 		super("Playing movie...");
+	}
+	
+	public void setOutputMovie(OutputMovie outputMovie) {
+		this.outputMovie = outputMovie;
 	}
 	
 	public void setData(List outputDatArray) {
@@ -1551,8 +1745,8 @@ public class ExampleDialog extends Dialog {
 			}
 	return Status.OK_STATUS;
 	}
-	}
 }
+
 
 
 

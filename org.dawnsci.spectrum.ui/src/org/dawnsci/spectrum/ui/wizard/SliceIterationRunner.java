@@ -28,7 +28,7 @@ public class SliceIterationRunner {
 	private SuperModel sm;
 	
 	public IDataset sliceIterationRunner1 (SuperModel sm, ExampleModel model, 
-			DataModel dm, IPlottingSystem<Composite> plotSystem, PlotSystemComposite customComposite, int correctionSelection){
+			DataModel dm, IPlottingSystem<Composite> plotSystem, PlotSystemComposite customComposite, int correctionSelection, int trackingMarker){
 		
 		this.sm = sm;
 		this.customComposite = customComposite;
@@ -54,12 +54,13 @@ public class SliceIterationRunner {
 	class operationJob extends Job {
 
 		private IDataset input;@Inject 
-		UISynchronize sync;
-		DataModel dm;
-		ExampleModel model;
-		IPlottingSystem<Composite> plotSystem;
-		GeometricParametersModel gm;
-		int correctionSelection;
+		private UISynchronize sync;
+		private DataModel dm;
+		private ExampleModel model;
+		private IPlottingSystem<Composite> plotSystem;
+		private GeometricParametersModel gm;
+		private int correctionSelection;
+		private int trackingMarker;
 		
 		public operationJob() {
 			super("updating image...");
@@ -71,6 +72,10 @@ public class SliceIterationRunner {
 		
 		public void setCorrectionSelection(int cS) {
 			this.correctionSelection = cS;
+		}
+		
+		public void setTrackingMarker(int trackingMarker) {
+			this.trackingMarker = trackingMarker;
 		}
 		
 		public void setDm(DataModel dm) {
@@ -105,7 +110,7 @@ public class SliceIterationRunner {
 					
 				j.squeeze();
 				
-				final IDataset output1 = DummyProcessingClass.DummyProcess(sm ,j, model,dm, gm, customComposite, correctionSelection, k);
+				final IDataset output1 = DummyProcessingClass.DummyProcess(sm ,j, model,dm, gm, customComposite, correctionSelection, k, trackingMarker);
 
 			plotSystem.clear();
 //			plotSystem.createPlot2D(output1, null, null);

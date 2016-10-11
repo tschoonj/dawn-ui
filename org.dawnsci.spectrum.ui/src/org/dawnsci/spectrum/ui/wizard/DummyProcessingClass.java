@@ -1,6 +1,5 @@
 package org.dawnsci.spectrum.ui.wizard;
 
-import org.eclipse.dawnsci.analysis.api.io.IDataHolder;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.january.DatasetException;
 import org.eclipse.january.dataset.Dataset;
@@ -11,15 +10,12 @@ import org.eclipse.january.dataset.ILazyDataset;
 import org.eclipse.january.dataset.Maths;
 import org.eclipse.swt.widgets.Composite;
 
-import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
-import uk.ac.diamond.scisoft.analysis.processing.operations.utils.ProcessingUtils;
-
 public class DummyProcessingClass {
 	
 	
 	@SuppressWarnings("incomplete-switch")
 	public static IDataset DummyProcess(SuperModel sm, IDataset input, ExampleModel model
-			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector, int k){
+			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector, int k, int trackingMarker){
 		
 		IDataset output =null;
 		IPlottingSystem<Composite> pS = customComposite.getPlotSystem();
@@ -32,7 +28,7 @@ public class DummyProcessingClass {
 				else{
 				}				
 				TwoDTracking twoDTracking = new TwoDTracking();
-				output = twoDTracking.TwoDTracking1(input, model, dm);
+				output = twoDTracking.TwoDTracking1(input, model, dm, trackingMarker, k);
 				break;
 			case TWOD:
 				if (pS.getRegion("Background Region")!=null){
@@ -104,9 +100,9 @@ public class DummyProcessingClass {
 		Double intensity = (Double) DatasetUtils.cast(yValue,Dataset.FLOAT64).sum();
 		Double fhkl =Math.pow((Double) DatasetUtils.cast(yValue,Dataset.FLOAT64).sum(), 0.5);
 		
-		dm.addyList(intensity);
-		dm.addyListFhkl(fhkl);
-		dm.addOutputDatArray(output);
+		dm.addyList(model.getDatImages().getShape()[0], k ,intensity);
+		dm.addyListFhkl(model.getDatImages().getShape()[0], k ,fhkl);
+		dm.addOutputDatArray(model.getDatImages().getShape()[0], k ,output);
 		
 		return output;
 	}
