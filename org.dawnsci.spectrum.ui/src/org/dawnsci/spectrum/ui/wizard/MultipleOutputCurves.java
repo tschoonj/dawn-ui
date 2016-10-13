@@ -187,17 +187,17 @@ public class MultipleOutputCurves extends Composite {
 		} else if (intensity == true) {
 			lt.setData(dm1.xIDataset(), dm1.yIDataset());
 			lt.setName(dm1.getName()+ "_Intensity");
-			System.out.println("doin' intensity");
+//			System.out.println("doin' intensity");
 		
 		}else{
 			lt.setData(dm1.xIDataset(), dm1.yIDatasetFhkl());
 			lt.setName(dm1.getName()+ "_Fhkl");
-			System.out.println("doin' fhkl");
+//			System.out.println("doin' fhkl");
 		}
 		
-		System.out.println("IN MultipleOutput updateCuve");
-		System.out.println("dm1 xIDataset: " + dm1.xIDataset().getSize());
-		System.out.println("dm1 yIDataset: " + dm1.yIDataset().getSize());
+//		System.out.println("IN MultipleOutput updateCuve");
+//		System.out.println("dm1 xIDataset: " + dm1.xIDataset().getSize());
+//		System.out.println("dm1 yIDataset: " + dm1.yIDataset().getSize());
 		plotSystem4.clear();
 		plotSystem4.addTrace(lt);
 		plotSystem4.repaint();
@@ -242,18 +242,5 @@ public class MultipleOutputCurves extends Composite {
 	public Button getSave(){
 		return save;
 	}
-	
-	
-//	ASCIIDataWithHeadingSaver saver = new ASCIIDataWithHeadingSaver(fileName);
-//	
-//	DataHolder dh = new DataHolder();
-//	dh.addDataset("Export", outds);
-//	try {
-//		saver.saveFile(dh);
-//	} catch (ScanFileHolderException e) {
-//		throw new OperationException(this, "Error saving text file! (Do you have write access?)");
-//	}
-	
-	
 	
 }

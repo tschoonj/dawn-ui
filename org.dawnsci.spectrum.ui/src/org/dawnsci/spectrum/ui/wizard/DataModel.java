@@ -135,14 +135,12 @@ public class DataModel {
 		if (yList==null){
 			yList = new ArrayList<Double>();
 		}
-		System.out.println("Hey, ylist got added to.");
+
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		yList1 = (ArrayList<Double>) yList.clone();
 		yList1.add(y);
 		firePropertyChange("yList", this.yList,
 				this.yList= yList1);
-		
-		System.out.println("Hey, ylist length is :  " +yList.size());
 	}
 	
 	public void addyList(int l, int k, double y){
@@ -152,14 +150,12 @@ public class DataModel {
 				  yList.add(0.0);
 				}
 		}
-		System.out.println("Hey, ylist got added to.");
+
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		yList1 = (ArrayList<Double>) yList.clone();
 		yList1.set(k, y);
 		firePropertyChange("yList", this.yList,
 				this.yList= yList1);
-		
-		System.out.println("Hey, ylist length is :  " +yList.size());
 	}
 	
 	
@@ -167,14 +163,11 @@ public class DataModel {
 		if (yListFhkl==null){
 			yListFhkl = new ArrayList<Double>();
 		}
-		System.out.println("Hey, ylistFhkl got added to.");
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		yList1 = (ArrayList<Double>) yListFhkl.clone();
 		yList1.add(y);
 		firePropertyChange("yListFhkl", this.yListFhkl,
 				this.yListFhkl= yList1);
-		
-		System.out.println("Hey, ylistFhkl length is :  " +yListFhkl.size());
 	}
 	
 	public void addyListFhkl(int l, int k, double y){
@@ -184,7 +177,7 @@ public class DataModel {
 				  yListFhkl.add(0.0);
 				}
 		}
-		System.out.println("Hey, ylistFhkl got added to.");
+		
 		ArrayList<Double> yList1 = new ArrayList<Double>();
 		
 		yList1 = (ArrayList<Double>) yListFhkl.clone();
@@ -192,8 +185,6 @@ public class DataModel {
 		
 		firePropertyChange("yListFhkl", this.yListFhkl,
 				this.yListFhkl= yList1);
-		
-		System.out.println("Hey, ylistFhkl length is :  " +yListFhkl.size());
 	}
 
 

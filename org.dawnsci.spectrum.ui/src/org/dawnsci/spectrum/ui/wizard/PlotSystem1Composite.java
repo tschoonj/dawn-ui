@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.dawb.common.ui.widgets.ActionBarWrapper;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
+import org.dawnsci.spectrum.ui.wizard.TrackingMethodology.TrackerType1;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -41,17 +42,13 @@ public class PlotSystem1Composite extends Composite {
     private IDataset image1;
     private Button button; 
     private Button button1;
-    private Button button2;
+//    private Button button2;
     private Combo comboDropDown0;
 	private Combo comboDropDown1;
 	private Combo comboDropDown2;
     private Text boundaryBoxText;
-    private ArrayList<ExampleModel> models;
     private SuperModel sm;
-    private GeometricParametersModel gm;
-    private ArrayList<DataModel> dms;
     private DataModel dm;
-    private PlotSystemComposite customComposite;
 	
     private ExampleModel model;
     
@@ -61,16 +58,11 @@ public class PlotSystem1Composite extends Composite {
     		PlotSystemComposite customComposite, int trackingMarker) {
     	
         super(parent, style);
-        //composite = new Composite(parent, SWT.NONE);
-
         new Label(this, SWT.NONE).setText("Operation Window");
         
-        this.gm = gm;
-        this.models = models;
         this.sm =sm;
         this.model = models.get(sm.getSelection());
         this.dm =dms.get(sm.getSelection());
-        this.customComposite = customComposite;
         int correctionSelection = sm.getCorrectionSelection();
         try {
         	
@@ -78,11 +70,8 @@ public class PlotSystem1Composite extends Composite {
 		} catch (Exception e2) {
 			logger.error("Can't make plotting system", e2);
 		}
-        
-        
-        
+
         this.createContents(model, gm, customComposite, correctionSelection, trackingMarker); 
-//        System.out.println("Test line");
         
     }
      
@@ -93,7 +82,6 @@ public class PlotSystem1Composite extends Composite {
         
         Group methodSetting = new Group(this, SWT.NULL);
         GridLayout methodSettingLayout = new GridLayout(2, true);
-//		methodSettingLayout.numColumns = 3;
 	    GridData methodSettingData = new GridData(GridData.BEGINNING);
 	    methodSettingData .minimumWidth = 50;
 	    methodSetting.setLayout(methodSettingLayout);
@@ -114,6 +102,10 @@ public class PlotSystem1Composite extends Composite {
 	    
 	    for(FitPower  i: AnalaysisMethodologies.FitPower.values()){
 	    	comboDropDown1.add(String.valueOf(AnalaysisMethodologies.toInt(i)));
+	    }
+	    
+	    for(TrackerType1  i: TrackingMethodology.TrackerType1.values()){
+	    	comboDropDown2.add(TrackingMethodology.toString(i));
 	    }
 	    
 	    comboDropDown0.addSelectionListener(new SelectionListener() {
@@ -142,6 +134,19 @@ public class PlotSystem1Composite extends Composite {
 
 	      });
 	    
+	    comboDropDown2.addSelectionListener(new SelectionListener() {
+	    	@Override
+	    	public void widgetSelected(SelectionEvent e) {
+	          int selection2 = comboDropDown2.getSelectionIndex();
+	          model.setTrackerType(TrackingMethodology.TrackerType1.values()[selection2]);
+	        }
+	    	@Override
+	        public void widgetDefaultSelected(SelectionEvent e) {
+	          
+	        }
+
+	      });
+	    
 	    boundaryBoxText.addModifyListener(new ModifyListener(){
 
 			@Override
@@ -154,7 +159,7 @@ public class PlotSystem1Composite extends Composite {
         Group controlButtons = new Group(this, SWT.NULL);
         controlButtons.setText("Control Buttons");
         GridLayout gridLayoutButtons = new GridLayout();
-        gridLayoutButtons.numColumns =3;
+        gridLayoutButtons.numColumns =2;
         controlButtons.setLayout(gridLayoutButtons);
         GridData gridDataButtons = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         gridDataButtons.horizontalSpan = 1;
@@ -164,35 +169,32 @@ public class PlotSystem1Composite extends Composite {
         button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         button1 = new Button (controlButtons, SWT.PUSH);
         button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        button2 = new Button (controlButtons, SWT.PUSH);
-        button2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        
-        
-        
+
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
         plotSystem1.createPlotPart(this, "ExamplePlot1", actionBarComposite, PlotType.IMAGE, null);
         
 		button.setText ("Proceed?");
-	SliceND slice = new SliceND(model.getDatImages().getShape());
-		
-	button.addListener (SWT.Selection, e -> {
-		if (button.getSelection()) {
-			int selection = model.getImageNumber();
-			slice.setSlice(0, selection, selection+1, 1);
-			IDataset j = null;
-			try {
-				j = model.getDatImages().getSlice(slice);
-			} catch (Exception e1){
-				e1.printStackTrace();
-			}
+		SliceND slice = new SliceND(model.getDatImages().getShape());
 			
-			j.squeeze();
-			IDataset output = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, cS, selection, trackingMarker);
-			plotSystem1.createPlot2D(output, null, null);
-			} else {
+		button.addListener (SWT.Selection, e -> {
+			if (button.getSelection()) {
+				int selection = model.getImageNumber();
+				slice.setSlice(0, selection, selection+1, 1);
+				IDataset j = null;
+				try {
+					j = model.getDatImages().getSlice(slice);
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
+				
+				j.squeeze();
+				IDataset output = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, cS, selection, trackingMarker);
+				plotSystem1.createPlot2D(output, null, null);
+				}
+			else {
 			}
 		});
-        
+	        
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 			
 			@SuppressWarnings("unused")
@@ -242,7 +244,7 @@ public class PlotSystem1Composite extends Composite {
 	       
         button1.setText("Run");
         
-        button2.setText("Reset Tracker");
+//        button2.setText("Reset Tracker");
 
 
         final GridData gd_firstField = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -296,9 +298,9 @@ public class PlotSystem1Composite extends Composite {
 	   return button1;
    }
    
-	public Button getButton2() {
-		return button2;
-	}
+//	public Button getButton2() {
+//		return button2;
+//	}
 	
 	
 	public Button getProceedButton(){

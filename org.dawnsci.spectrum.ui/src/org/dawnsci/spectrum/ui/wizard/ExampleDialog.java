@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.dawnsci.fileviewer.FileViewer;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
 //import org.dawnsci.spectrum.ui.wizard.operationJob1.MovieJob;
@@ -167,10 +168,15 @@ public class ExampleDialog extends Dialog {
 				}
 			}
 		});
-		
-		
-
-		
+////////////////////////////Window 0/////////////////////////////////////////////		
+//		try{
+//			FileViewer fV = new FileViewer();
+//			
+//		}
+//		catch(Exception e7){
+//			
+//		}
+//		
 
 ///////////////////////////Window 1////////////////////////////////////////////////////
 		try {
@@ -301,6 +307,56 @@ public class ExampleDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
+				try{
+					outputCurves.resetCurve();
+					dms.get(sm.getSelection()).resetAll();
+					models.get(sm.getSelection()).setInput(null);
+				} catch (Exception e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+
+			        
+		            int selection = models.get(sm.getSelection()).getSliderPos();
+		            System.out.println("Slider position in reset:  " + selection);
+		            SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
+		            slice.setSlice(0, selection, selection+1, 1);
+					IDataset i = null;
+					try {
+						i = models.get(sm.getSelection()).getDatImages().getSlice(slice);
+					} catch (DatasetException e1) {
+							// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					i.squeeze();
+					customComposite.getBoxPosition();
+	            	IROI region = models.get(sm.getSelection()).getROI();
+	             	IRectangularROI currentBox = region.getBounds();
+	             	int[] currentLen = currentBox.getIntLengths();
+	             	int[] currentPt = currentBox.getIntPoint();
+	             	int[][] currentLenPt = {currentLen, currentPt};
+			        double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
+					(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
+			             	
+			        int[] ab =customComposite1.getMethodology();
+			        models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
+			       	models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
+			       	models.get(sm.getSelection()).setBoundaryBox(ab[2]);
+							
+			             	
+	             	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
+	             	models.get(sm.getSelection()).setLenPt(currentLenPt);
+			             	
+	             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),
+	             			dms.get(sm.getSelection()), 
+	             			gms.get(sm.getSelection()), customComposite, 
+	             			paramField.getTabFolder().getSelectionIndex(), 
+	             			customComposite.getSliderPos(), 0);
+			             	
+	             	customComposite1.getPlotSystem().createPlot2D(j, null, null);
+	             	dms.get(sm.getSelection()).resetAll();
+				
+				
 				dms.get(sm.getSelection()).resetAll();
 				operationJob1 oJ = new operationJob1();
 				oJ.setCustomComposite(customComposite);
@@ -313,6 +369,7 @@ public class ExampleDialog extends Dialog {
 				oJ.setGeoModel(gm);;
 				oJ.setPlotSystem(customComposite1.getPlotSystem());
 				oJ.schedule();	
+//				oJ.run(null);
 			}
 
 			@Override
@@ -350,68 +407,68 @@ public class ExampleDialog extends Dialog {
 		});
 ////////////////////////////////////////////////////////////////////////////////
 	    ////////THE RESET///////////////////
-	    customComposite1.getButton2().addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-				outputCurves.resetCurve();
-				dms.get(sm.getSelection()).resetAll();
-				models.get(sm.getSelection()).setInput(null);
-			} catch (Exception e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-
-		        
-	            int selection = models.get(sm.getSelection()).getSliderPos();
-	            System.out.println("Slider position in reset:  " + selection);
-	            SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
-	            slice.setSlice(0, selection, selection+1, 1);
-				IDataset i = null;
-				try {
-					i = models.get(sm.getSelection()).getDatImages().getSlice(slice);
-				} catch (DatasetException e1) {
-						// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				i.squeeze();
-				customComposite.getBoxPosition();
-            	IROI region = models.get(sm.getSelection()).getROI();
-             	IRectangularROI currentBox = region.getBounds();
-             	int[] currentLen = currentBox.getIntLengths();
-             	int[] currentPt = currentBox.getIntPoint();
-             	int[][] currentLenPt = {currentLen, currentPt};
-		        double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
-				(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
-		             	
-		        int[] ab =customComposite1.getMethodology();
-		        models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
-		       	models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
-		       	models.get(sm.getSelection()).setBoundaryBox(ab[2]);
-						
-		             	
-             	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
-             	models.get(sm.getSelection()).setLenPt(currentLenPt);
-		             	
-             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),
-             			dms.get(sm.getSelection()), 
-             			gms.get(sm.getSelection()), customComposite, 
-             			paramField.getTabFolder().getSelectionIndex(), 
-             			customComposite.getSliderPos(), 0);
-		             	
-             	customComposite1.getPlotSystem().createPlot2D(j, null, null);
-             	dms.get(sm.getSelection()).resetAll();
-		        
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-	    
+//	    customComposite1.getButton2().addSelectionListener(new SelectionListener() {
+//			
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				try{
+//				outputCurves.resetCurve();
+//				dms.get(sm.getSelection()).resetAll();
+//				models.get(sm.getSelection()).setInput(null);
+//			} catch (Exception e2) {
+//				// TODO Auto-generated catch block
+//				e2.printStackTrace();
+//			}
+//
+//		        
+//	            int selection = models.get(sm.getSelection()).getSliderPos();
+//	            System.out.println("Slider position in reset:  " + selection);
+//	            SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
+//	            slice.setSlice(0, selection, selection+1, 1);
+//				IDataset i = null;
+//				try {
+//					i = models.get(sm.getSelection()).getDatImages().getSlice(slice);
+//				} catch (DatasetException e1) {
+//						// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				i.squeeze();
+//				customComposite.getBoxPosition();
+//            	IROI region = models.get(sm.getSelection()).getROI();
+//             	IRectangularROI currentBox = region.getBounds();
+//             	int[] currentLen = currentBox.getIntLengths();
+//             	int[] currentPt = currentBox.getIntPoint();
+//             	int[][] currentLenPt = {currentLen, currentPt};
+//		        double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
+//				(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
+//		             	
+//		        int[] ab =customComposite1.getMethodology();
+//		        models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
+//		       	models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
+//		       	models.get(sm.getSelection()).setBoundaryBox(ab[2]);
+//						
+//		             	
+//             	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
+//             	models.get(sm.getSelection()).setLenPt(currentLenPt);
+//		             	
+//             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),
+//             			dms.get(sm.getSelection()), 
+//             			gms.get(sm.getSelection()), customComposite, 
+//             			paramField.getTabFolder().getSelectionIndex(), 
+//             			customComposite.getSliderPos(), 0);
+//		             	
+//             	customComposite1.getPlotSystem().createPlot2D(j, null, null);
+//             	dms.get(sm.getSelection()).resetAll();
+//		        
+//			}
+//			
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//	    
 ////////////////////////////////////////////////////////////////////////////////
 	    
 	    outputMovie.getOutputControl().addSelectionListener(new SelectionListener() {
@@ -742,6 +799,7 @@ public class ExampleDialog extends Dialog {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				
 				StitchedOutput.curveStitch(outputCurves.getPlotSystem(),
 						outputCurves.getDatSelector(),
 						dms, sm, datDisplayer);
@@ -955,27 +1013,55 @@ public class ExampleDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				
-				int[] ab =customComposite1.getMethodology();
-				models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
-				models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
-				models.get(sm.getSelection()).setBoundaryBox(ab[2]);
+				try{
+					outputCurves.resetCurve();
+					dms.get(sm.getSelection()).resetAll();
+					models.get(sm.getSelection()).setInput(null);
+				} catch (Exception e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 	
-				SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
-				int selection = models.get(sm.getSelection()).getImageNumber();
-				slice.setSlice(0, selection, selection+1, 1);
-				IDataset j = null;
+		        
+	            int selection = models.get(sm.getSelection()).getSliderPos();
+	            System.out.println("Slider position in reset:  " + selection);
+	            SliceND slice = new SliceND(models.get(sm.getSelection()).getDatImages().getShape());
+	           slice.setSlice(0, selection, selection+1, 1);
+	           IDataset i = null;
 				try {
-					j = models.get(sm.getSelection()).getDatImages().getSlice(slice);
-				} catch (Exception e1){
+					i = models.get(sm.getSelection()).getDatImages().getSlice(slice);
+				} catch (DatasetException e1) {
+						// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
-				j.squeeze();
-				
-				IDataset output = DummyProcessingClass.DummyProcess(sm, j, models.get(sm.getSelection()),
-						dms.get(sm.getSelection()), gms.get(sm.getSelection()), 
-						customComposite, paramField.getTabFolder().getSelectionIndex(), selection, 0);
-				customComposite1.getPlotSystem().createPlot2D(output, null, null);
+				i.squeeze();
+				customComposite.getBoxPosition();
+	          	IROI region = models.get(sm.getSelection()).getROI();
+	           	IRectangularROI currentBox = region.getBounds();
+             	int[] currentLen = currentBox.getIntLengths();
+             	int[] currentPt = currentBox.getIntPoint();
+	            int[][] currentLenPt = {currentLen, currentPt};
+			    double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
+			    		(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
+			             	
+		        int[] ab =customComposite1.getMethodology();
+		        models.get(sm.getSelection()).setMethodology((Methodology.values()[ab[0]]));
+		       	models.get(sm.getSelection()).setFitPower(FitPower.values()[ab[1]]);
+		       	models.get(sm.getSelection()).setBoundaryBox(ab[2]);
+							
+			             	
+             	models.get(sm.getSelection()).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
+             	models.get(sm.getSelection()).setLenPt(currentLenPt);
+			             	
+             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(sm.getSelection()),
+	             		dms.get(sm.getSelection()), 
+             			gms.get(sm.getSelection()), customComposite, 
+             			paramField.getTabFolder().getSelectionIndex(), 
+             			customComposite.getSliderPos(), 0);
+			             	
+	            customComposite1.getPlotSystem().createPlot2D(j, null, null);
+	            dms.get(sm.getSelection()).resetAll();
+			        
 				}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -1134,6 +1220,101 @@ public class ExampleDialog extends Dialog {
 				
 			}
 		});
+	    
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////Mass Runner//////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////	    
+	    
+	    datDisplayer.getMassRunner().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				
+				for (int g =0; g<sm.getFilepaths().length; g++){
+					try{
+						outputCurves.resetCurve();
+						dms.get(g).resetAll();
+						models.get(g).setInput(null);
+					} catch (Exception e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+	
+				        
+			            int selection = models.get(g).getSliderPos();
+			            System.out.println("Slider position in reset:  " + selection);
+			            SliceND slice = new SliceND(models.get(g).getDatImages().getShape());
+			            slice.setSlice(0, selection, selection+1, 1);
+						IDataset i = null;
+						try {
+							i = models.get(g).getDatImages().getSlice(slice);
+						} catch (DatasetException e1) {
+								// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						i.squeeze();
+						customComposite.getBoxPosition(g);
+		            	IROI region = models.get(g).getROI();
+		             	IRectangularROI currentBox = region.getBounds();
+		             	int[] currentLen = currentBox.getIntLengths();
+		             	int[] currentPt = currentBox.getIntPoint();
+		             	int[][] currentLenPt = {currentLen, currentPt};
+				        double[] currentTrackerPos = new double[] {(double) currentPt[1],(double)currentPt[0], (double) (currentPt[1] +currentLen[1]),(double) (currentPt[0]),(double) currentPt[1],
+						(double) currentPt[0]+currentLen[0], (double) (currentPt[1]+currentLen[1]),(double) (currentPt[0]+currentLen[0])};
+				             	
+				        int[] ab =customComposite1.getMethodology();
+				        models.get(g).setMethodology((Methodology.values()[ab[0]]));
+				       	models.get(g).setFitPower(FitPower.values()[ab[1]]);
+				       	models.get(g).setBoundaryBox(ab[2]);
+								
+				             	
+		             	models.get(g).setTrackerCoordinates(new double[] {currentTrackerPos[1], currentTrackerPos[0]});
+		             	models.get(g).setLenPt(currentLenPt);
+				             	
+		             	IDataset j = DummyProcessingClass.DummyProcess(sm, i, models.get(g),
+		             			dms.get(g), 
+		             			gms.get(g), customComposite, 
+		             			paramField.getTabFolder().getSelectionIndex(), 
+		             			customComposite.getSliderPos(), 0);
+				             	
+		             	customComposite1.getPlotSystem().createPlot2D(j, null, null);
+		             	dms.get(g).resetAll();
+					
+					
+					dms.get(g).resetAll();
+					operationJob1 oJ = new operationJob1();
+					oJ.setCustomComposite(customComposite);
+					oJ.setCustomComposite1(customComposite1);
+					oJ.setCorrectionSelection(paramField.getTabFolder().getSelectionIndex());
+					oJ.setOutputCurves(outputCurves);
+					oJ.setSuperModel(sm);
+					oJ.setDm(dms.get(g));
+					oJ.setModel(models.get(g));
+					oJ.setGeoModel(gm);;
+					oJ.setPlotSystem(customComposite1.getPlotSystem());
+					oJ.run(null);	
+					System.out.println("g value: " + g);
+//					do{
+//						
+//					}
+//					while(oJ.getState() == Job.RUNNING);
+//					try {
+//						oJ.join();
+//					} catch (InterruptedException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	    
 	    
 ///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////Intensity/Fhkl switch///////////////////////
@@ -1497,7 +1678,7 @@ public class ExampleDialog extends Dialog {
 						
 					customComposite.getBoxPosition();
 						
-					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k-1, trackingMarker);
+					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, customComposite, correctionSelection, k, trackingMarker);
 							
 //					System.out.println("Added to yList:  " + k);
 	
@@ -1523,7 +1704,7 @@ public class ExampleDialog extends Dialog {
 				
 				for (k = (model.getSliderPos()); k >= 1; k-- ){
 					
-					System.out.println("k value :   " + k);
+//					System.out.println("k value :   " + k);
 					
 					if (k == (model.getSliderPos()-1)){
 						model.setInput(null);
@@ -1547,7 +1728,7 @@ public class ExampleDialog extends Dialog {
 							
 							dm.addxList(model.getDatImages().getShape()[0], k-1,nim);
 							
-							System.out.println("Added to xList:  " + k);
+//							System.out.println("Added to xList:  " + k);
 								
 						} catch (DatasetException e2) {
 								// TODO Auto-generated catch block
@@ -1604,7 +1785,7 @@ public class ExampleDialog extends Dialog {
 					
 					int trackingMarker = 2;
 					
-					System.out.println("k value :   " + k);
+//					System.out.println("k value :   " + k);
 					
 					if (k==model.getSliderPos()){
 						model.setInput(null);
@@ -1655,7 +1836,7 @@ public class ExampleDialog extends Dialog {
 					IDataset output1 = DummyProcessingClass.DummyProcess(sm, j, model,dm, gm, 
 							customComposite, correctionSelection, k, trackingMarker);
 							
-					System.out.println("Added to yList:  " + k);
+//					System.out.println("Added to yList:  " + k);
 	
 					Display.getDefault().syncExec(new Runnable() {
 							
@@ -1678,14 +1859,14 @@ public class ExampleDialog extends Dialog {
 				
 				
 	    		try {
-					Thread.sleep(300);
+					Thread.sleep(75);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	    		
-	    		System.out.println("Length of xlist: " + dm.getxList().size());
-	    		System.out.println("Length of ylist: " + dm.getyList().size());
+//	    		System.out.println("Length of xlist: " + dm.getxList().size());
+//	    		System.out.println("Length of ylist: " + dm.getyList().size());
 			
 			
 		return Status.OK_STATUS;

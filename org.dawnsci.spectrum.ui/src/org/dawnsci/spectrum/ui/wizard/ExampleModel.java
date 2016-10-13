@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
+import org.dawnsci.spectrum.ui.wizard.TrackingMethodology.TrackerType1;
 import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.FitPower;
 import org.eclipse.dawnsci.analysis.api.roi.IROI;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
@@ -41,6 +42,7 @@ public class ExampleModel {
 	private ILazyDataset qdcd;
 	private ILazyDataset flux;
 	private ILazyDataset theta;
+	private TrackerType1 trackerType;
 	
 	public IDataset getInput() {
 		return input;
@@ -263,6 +265,14 @@ public class ExampleModel {
 
 	public void setTheta(ILazyDataset theta) {
 		this.theta = theta;
+	}
+
+	public TrackerType1 getTrackerType() {
+		return trackerType;
+	}
+
+	public void setTrackerType(TrackerType1 trackerType) {
+		this.trackerType = trackerType;
 	}
 	
 	

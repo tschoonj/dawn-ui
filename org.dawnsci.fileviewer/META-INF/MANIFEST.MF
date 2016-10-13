@@ -24,3 +24,4 @@ Import-Package: javax.inject;version="1.0.0",
  org.slf4j;version="1.7.6",
  uk.ac.diamond.sda.navigator.views
 Bundle-ActivationPolicy: lazy
+Export-Package: org.dawnsci.fileviewer

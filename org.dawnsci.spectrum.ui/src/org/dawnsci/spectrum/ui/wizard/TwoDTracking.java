@@ -57,7 +57,7 @@ public class TwoDTracking {
 						(double) (pt[0]), (double) pt[1], (double) pt[0] + len[0], (double) (pt[1] + len[1]),
 						(double) (pt[0] + len[0]) };
 				try {
-					tracker.initialize(input, initialLocation, TrackerType.TLD);
+					tracker.initialize(input, initialLocation, TrackingMethodology.toTT(model.getTrackerType()));
 				} catch (Exception e) {
 
 				}
@@ -73,7 +73,7 @@ public class TwoDTracking {
 				try {
 
 					tracker = BoofCVImageTrackerServiceCreator.createImageTrackerService();
-					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackerType.TLD);
+					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackingMethodology.toTT(model.getTrackerType()));
 					location = tracker.track(input);
 					if (location != null) {
 						model.setTrackerCoordinates(location);
@@ -111,7 +111,7 @@ public class TwoDTracking {
 						(double) (pt[0]), (double) pt[1], (double) pt[0] + len[0], (double) (pt[1] + len[1]),
 						(double) (pt[0] + len[0]) };
 				try {
-					tracker.initialize(input, initialLocation, TrackerType.TLD);
+					tracker.initialize(input, initialLocation, TrackingMethodology.toTT(model.getTrackerType()));
 				} catch (Exception e) {
 
 				}
@@ -127,7 +127,7 @@ public class TwoDTracking {
 				try {
 
 					tracker = BoofCVImageTrackerServiceCreator.createImageTrackerService();
-					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackerType.TLD);
+					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackingMethodology.toTT(model.getTrackerType()));
 					location = tracker.track(input);
 					if (location != null) {
 						model.setTrackerCoordinates(location);
@@ -164,7 +164,7 @@ public class TwoDTracking {
 
 				try {
 					
-					tracker.initialize(dm.getInitialDataset(), initialLocation, TrackerType.TLD);
+					tracker.initialize(dm.getInitialDataset(), initialLocation, TrackingMethodology.toTT(model.getTrackerType()));
 					
 					//tracker.initialize(dm.getInitialDataset(), initialLocation, TrackerType.TLD);
 					location = tracker.track(input);
@@ -188,7 +188,7 @@ public class TwoDTracking {
 				try {
 
 					tracker = BoofCVImageTrackerServiceCreator.createImageTrackerService();
-					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackerType.TLD);
+					tracker.initialize(model.getInput(), model.getTrackerCoordinates(), TrackingMethodology.toTT(model.getTrackerType()));
 					location = tracker.track(input);
 					if (location != null) {
 						model.setTrackerCoordinates(location);
@@ -218,13 +218,19 @@ public class TwoDTracking {
 		len = model.getLenPt()[0];
 		pt = model.getLenPt()[1];
 
+//		in1 = BoxSlicerRodScanUtilsForDialog.rOIHalfBox(input, len, pt);
 		in1 = BoxSlicerRodScanUtilsForDialog.rOIBox(input, len, pt);
 
+		//in1 = (Dataset) PlotSystem2DataSetter.PlotSystem2DataSetter1(model);
+		
 		if (g2 == null)
 			g2 = new Polynomial2D(AnalaysisMethodologies.toInt(model.getFitPower()));
 		if ((int) Math.pow(AnalaysisMethodologies.toInt(model.getFitPower()) + 1, 2) != g2.getNoOfParameters())
 			g2 = new Polynomial2D(AnalaysisMethodologies.toInt(model.getFitPower()));
 
+//		Dataset[] fittingBackground = BoxSlicerRodScanUtilsForDialog.LeftRightTopBottomHalfBoxes(input, len, pt,
+//				model.getBoundaryBox());
+		
 		Dataset[] fittingBackground = BoxSlicerRodScanUtilsForDialog.LeftRightTopBottomBoxes(input, len, pt,
 				model.getBoundaryBox());
 

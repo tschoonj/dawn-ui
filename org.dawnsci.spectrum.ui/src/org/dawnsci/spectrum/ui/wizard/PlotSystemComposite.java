@@ -176,7 +176,9 @@ public class PlotSystemComposite extends Composite {
 		models.get(sm.getSelection()).setROI(region.getROI());
 	}
 	
-	
+	public void getBoxPosition(int g){
+		models.get(g).setROI(region.getROI());
+	}
 	
 	public void setModels(ExampleModel model1){
 		this.model= model1;

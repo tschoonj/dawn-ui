@@ -5,6 +5,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -13,12 +14,13 @@ import org.eclipse.swt.widgets.Label;
 public class DatDisplayer extends Composite {
    
     private Combo comboDropDown0;
+    private Button massRunner;
         
     public DatDisplayer (Composite parent, int style,
     		SuperModel sm) {
         super(parent, style);
         
-        new Label(this, SWT.NONE).setText("Selection Box");
+        new Label(this, SWT.NONE).setText("Source Data");
         
         this.createContents(sm); 
 
@@ -41,6 +43,8 @@ public class DatDisplayer extends Composite {
 	    
 	    comboDropDown0 = new Combo(datSelector, SWT.DROP_DOWN | SWT.BORDER | SWT.LEFT);
 	   	
+	    massRunner = new Button(this, SWT.NULL);
+	    massRunner.setText("Run all");
 	    
 	    for(String t: sm.getFilepaths()){
 	    	comboDropDown0.add(StringUtils.substringAfterLast(t, "/"));
@@ -60,8 +64,13 @@ public class DatDisplayer extends Composite {
 	          
 	        }
 
-	      });        
-		}
+      });        
+		
+	 
+	  
+    
+    
+    }
     
    public Composite getComposite(){   	
 	   return this;
@@ -70,5 +79,9 @@ public class DatDisplayer extends Composite {
    public Combo getSelector() {
 		return comboDropDown0;
 	}
+   
+   public Button getMassRunner(){
+	   return massRunner;
+   }
 }
    

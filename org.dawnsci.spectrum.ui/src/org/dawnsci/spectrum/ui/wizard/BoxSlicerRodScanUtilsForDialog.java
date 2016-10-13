@@ -40,6 +40,16 @@ public class BoxSlicerRodScanUtilsForDialog {
 		Dataset in1 = DatasetUtils.convertToDataset(small1);
 		return in1;
 	}
+	
+	public static Dataset rOIHalfBox(IDataset input , int[] len, int[] pt) throws OperationException{ 
+		//// This creates in1, which is the ROI of interest
+			SliceND slice1 = new SliceND(input.getShape());
+			slice1.setSlice(1, (int) Math.round((pt[0]-0.5*len[0])), (int) Math.round(pt[0] + 0.5*len[0]), 1);
+			slice1.setSlice(0, (int) Math.round(pt[1]-0.5*len[1]), (int) Math.round(pt[1] + 0.5*len[1]), 1);
+			IDataset small1 = input.getSlice(slice1);
+			Dataset in1 = DatasetUtils.convertToDataset(small1);
+			return in1;
+		}
 
 	
 	@SuppressWarnings("incomplete-switch")
@@ -91,6 +101,21 @@ public class BoxSlicerRodScanUtilsForDialog {
 		   	SliceND slice0 = new SliceND(input.getShape());
 			slice0.setSlice(1, pt[0]-boundaryBox, pt[0]+len[0]+boundaryBox, 1);
 			slice0.setSlice(0, pt[1]-boundaryBox, pt[1] + len[1] + boundaryBox, 1);
+			IDataset small0 = input.getSlice(slice0);
+			Dataset small0d = DatasetUtils.cast(small0, Dataset.FLOAT64);
+			
+		
+		
+		return small0d;
+	}
+	
+	public static Dataset regionOfRegardHalf (IDataset input , 
+			int[] len, int[] pt, int boundaryBox) throws OperationException{
+		   
+	
+		   	SliceND slice0 = new SliceND(input.getShape());
+			slice0.setSlice(1, (int) Math.round(pt[0]-0.5*len[0]-boundaryBox), (int) Math.round(pt[0]+0.5*len[0]+boundaryBox), 1);
+			slice0.setSlice(0, (int) Math.round(pt[1]-0.5*len[1]-boundaryBox), (int) Math.round(pt[1] + 0.5*len[1] + boundaryBox), 1);
 			IDataset small0 = input.getSlice(slice0);
 			Dataset small0d = DatasetUtils.cast(small0, Dataset.FLOAT64);
 			
@@ -151,6 +176,49 @@ public class BoxSlicerRodScanUtilsForDialog {
 
 	return output;
 	}	
+	
+	
+	public static Dataset[] LeftRightTopBottomHalfBoxes (IDataset input , 
+			int[] len, int[] pt, int boundaryBox) throws OperationException{
+		
+		
+		Dataset regionOfRegard = regionOfRegardHalf(input, len, pt, boundaryBox);
+		
+		int noOfPoints = (len[1] + 2*boundaryBox)*(len[0] +2*boundaryBox) - len[1]*len[0];
+		
+		
+		DoubleDataset xset = DatasetFactory.zeros(noOfPoints);
+		DoubleDataset yset = DatasetFactory.zeros(noOfPoints);
+		DoubleDataset zset = DatasetFactory.zeros(noOfPoints);
+		
+		int l =0;
+				
+		for (int i =0; i<(len[1]+2*boundaryBox); i++){
+			for (int j = 0; j<(len[0] + 2*boundaryBox);j++){
+
+				if ((j<boundaryBox || j>=(boundaryBox+len[0]))||(i<boundaryBox || i>=(boundaryBox+len[1]))){
+					xset.set(i, l);
+					yset.set(j, l);
+					zset.set(regionOfRegard.getDouble(i, j), l);
+					l++;
+				}
+				else{
+					}
+				}
+		}	
+		
+		Dataset[] output = new Dataset[3];
+		
+		output[0] = xset;
+		output[1] = yset;
+		output[2] = zset;
+		
+
+	return output;
+	}
+	
+	
+	
 	
 	public static Dataset[] subRange (IDataset input , 
 			int[] len, int[] pt, int boundaryBox) throws OperationException{

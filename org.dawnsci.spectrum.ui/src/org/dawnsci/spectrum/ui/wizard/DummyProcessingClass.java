@@ -18,6 +18,7 @@ public class DummyProcessingClass {
 			, DataModel dm, GeometricParametersModel gm, PlotSystemComposite customComposite, int correctionSelector, int k, int trackingMarker){
 		
 		IDataset output =null;
+		@SuppressWarnings("unchecked")
 		IPlottingSystem<Composite> pS = customComposite.getPlotSystem();
 		
 		switch(model.getMethodology()){
@@ -66,11 +67,7 @@ public class DummyProcessingClass {
 		}
 		
 		else if (correctionSelector ==1){
-			
-			ILazyDataset flux = null;
-			ILazyDataset theta = null;
-			ILazyDataset[] fluxData = new Dataset[2]; 
-			
+
 			try {
 				correction = DatasetFactory.createFromObject(GeometricCorrectionsReflectivityMethod.reflectivityCorrectionsBatch(model.getDcdtheta(), k, sm, input, gm.getAngularFudgeFactor(), 
 						gm.getBeamHeight(), gm.getFootprint()));
@@ -87,7 +84,7 @@ public class DummyProcessingClass {
 			
 		}
 		try {
-			Thread.sleep(250);
+			Thread.sleep(75);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

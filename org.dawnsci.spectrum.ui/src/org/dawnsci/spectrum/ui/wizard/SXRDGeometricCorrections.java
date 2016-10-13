@@ -137,7 +137,7 @@ public class SXRDGeometricCorrections {
 		
 		Dataset lorentzcor = Maths.multiply(Maths.cos(d),(Maths.sin(Maths.subtract(g, a)))); 
 		
-		System.out.println("lorentzcor rank: " + lorentzcor.getRank());
+//		System.out.println("lorentzcor rank: " + lorentzcor.getRank());
 		
 		return lorentzcor;
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
-import org.eclipse.dawnsci.plotting.api.trace.ILineTrace;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DatasetUtils;
@@ -14,11 +13,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 public class StitchedOutput {
-
+	
+	private static double attenuationFactor;
+	private static double attenuationFactorFhkl;
+//	private static double correctionRatio;
+//	private static double correctionRatioFhkl;
+	
 	public  static IDataset[][] curveStitch (IPlottingSystem<Composite> plotSystem, ArrayList<Button> datSelector
 			, ArrayList<DataModel> dms, SuperModel sm, DatDisplayer datDisplayer ){
-		
-		//ILineTrace lt1 = plotSystem.createLineTrace("Concatenated Curve Test");
 		
 		ArrayList<IDataset> xArrayList = new ArrayList<>();
 		ArrayList<IDataset> yArrayList = new ArrayList<>();
@@ -58,20 +60,20 @@ public class StitchedOutput {
 		
 		IDataset[][] attenuatedDatasetsFhkl = new IDataset[2][];
 		
+		int d = xArray.length;
 		
-		double[][] maxMinArray = OverlapFinderSXRD.overlapFinderOperation(xArray);
-				
-		double attenuationFactor =1;
-		double attenuationFactorFhkl =1;
-				
-		double[] correctionRatioArray = new double[xArray.length];
-		double[] correctionRatioArrayFhkl = new double[xArray.length];
+		double[][] maxMinArray = new double[d][2];
 		
-		correctionRatioArray[0]=1;
-		correctionRatioArrayFhkl[0]=1;
+		for(int k =0;k<d;k++){
+				maxMinArray[k][0] = (double) xArray[k].max(null);
+				maxMinArray[k][1] = (double) xArray[k].min(null);
+		}
 				
-				//TEST
+		attenuationFactor =1;
+		attenuationFactorFhkl =1;
+				
 				for (int k=0; k<xArray.length-1;k++){
+			
 					
 					ArrayList<Integer> overlapLower = new ArrayList<Integer>();
 					ArrayList<Integer> overlapHigher = new ArrayList<Integer>();
@@ -87,7 +89,6 @@ public class StitchedOutput {
 							overlapHigher.add(m);
 						}
 					}
-					
 							
 					Dataset[] xLowerDataset =new Dataset[1];
 					Dataset yLowerDataset =null;
@@ -103,34 +104,39 @@ public class StitchedOutput {
 					ArrayList<Double> yHigherList =new ArrayList<>();
 					ArrayList<Double> yHigherListFhkl =new ArrayList<>();
 					
-					for (int l=0; l<overlapLower.size(); l++){
-						xLowerList.add(xArray[k].getDouble(overlapLower.get(l)));
-						yLowerList.add(yArray[k].getDouble(overlapLower.get(l)));
-						yLowerListFhkl.add(yArrayFhkl[k].getDouble(overlapLower.get(l)));
-						
-						xLowerDataset[0] = DatasetFactory.createFromObject(xLowerList);
-						yLowerDataset = DatasetFactory.createFromObject(yLowerList);
-						yLowerDatasetFhkl = DatasetFactory.createFromObject(yLowerListFhkl);
-					}
+					if (overlapLower.size() > 0 && overlapHigher.size() > 0){
+					
+						for (int l=0; l<overlapLower.size(); l++){
+							xLowerList.add(xArray[k].getDouble(overlapLower.get(l)));
+							yLowerList.add(yArray[k].getDouble(overlapLower.get(l)));
+							yLowerListFhkl.add(yArrayFhkl[k].getDouble(overlapLower.get(l)));
 							
-					for (int l=0; l<overlapHigher.size(); l++){
-						xHigherList.add(xArray[k+1].getDouble(overlapHigher.get(l)));
-						yHigherList.add(yArray[k+1].getDouble(overlapHigher.get(l)));
-						yHigherListFhkl.add(yArrayFhkl[k+1].getDouble(overlapHigher.get(l)));
+							xLowerDataset[0] = DatasetFactory.createFromObject(xLowerList);
+							yLowerDataset = DatasetFactory.createFromObject(yLowerList);
+							yLowerDatasetFhkl = DatasetFactory.createFromObject(yLowerListFhkl);
+						}
+								
+						for (int l=0; l<overlapHigher.size(); l++){
+							xHigherList.add(xArray[k+1].getDouble(overlapHigher.get(l)));
+							yHigherList.add(yArray[k+1].getDouble(overlapHigher.get(l)));
+							yHigherListFhkl.add(yArrayFhkl[k+1].getDouble(overlapHigher.get(l)));
+							
+							xHigherDataset[0] = DatasetFactory.createFromObject(xHigherList);
+							yHigherDataset = DatasetFactory.createFromObject(yHigherList);
+							yHigherDatasetFhkl = DatasetFactory.createFromObject(yHigherListFhkl);
+						}
+							
+						double correctionRatio = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDataset, 
+								xHigherDataset, yHigherDataset, attenuationFactor,4);
 						
-						xHigherDataset[0] = DatasetFactory.createFromObject(xHigherList);
-						yHigherDataset = DatasetFactory.createFromObject(yHigherList);
-						yHigherDatasetFhkl = DatasetFactory.createFromObject(yHigherListFhkl);
+						double  correctionRatioFhkl = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDatasetFhkl, 
+								xHigherDataset, yHigherDatasetFhkl, attenuationFactorFhkl,4);
+					
+						attenuationFactor = correctionRatio;
+						attenuationFactorFhkl = correctionRatioFhkl;
+					
 					}
-						
-					double correctionRatio = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDataset, 
-							xHigherDataset, yHigherDataset, attenuationFactor,4);
-					
-					double correctionRatioFhkl = PolynomialOverlapSXRD.correctionRatio(xLowerDataset, yLowerDatasetFhkl, 
-							xHigherDataset, yHigherDatasetFhkl, attenuationFactorFhkl,4);
-					
-					attenuationFactor = correctionRatio;
-					attenuationFactorFhkl = correctionRatioFhkl;
+//					////////////////need to deal with the lack of overlap here
 						
 					yArrayCorrected[k+1] = Maths.multiply(yArray[k+1],attenuationFactor);
 					yArrayCorrectedFhkl[k+1] = Maths.multiply(yArrayFhkl[k+1],attenuationFactorFhkl);
@@ -140,15 +146,13 @@ public class StitchedOutput {
 					System.out.println("attenuation factor Fhkl:  " + attenuationFactorFhkl + "   k:   " +k);
 						
 					}
-			
+
 		attenuatedDatasets[0] = yArrayCorrected;
 		attenuatedDatasets[1] = xArrayCorrected;
 			
 		attenuatedDatasetsFhkl[0] = yArrayCorrectedFhkl;
 		attenuatedDatasetsFhkl[1] = xArrayCorrected;
-		
-		
-		
+
 		Dataset[] sortedAttenuatedDatasets = new Dataset[3];
 		
 		sortedAttenuatedDatasets[0]=DatasetUtils.convertToDataset(DatasetUtils.concatenate(attenuatedDatasets[0], 0));
@@ -164,11 +168,6 @@ public class StitchedOutput {
 		sm.setSplicedCurveY(sortedAttenuatedDatasets[0]);
 		sm.setSplicedCurveX(sortedAttenuatedDatasets[1]);
 		sm.setSplicedCurveYFhkl(sortedAttenuatedDatasets[2]);
-		
-		
-		
-		//plotSystem.addTrace(lt1);
-//		plotSystem.repaint();	
 		
 		return null;
 	}

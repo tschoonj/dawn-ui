@@ -43,7 +43,7 @@ public class OverlapFinderSXRD{
 			
 			overlap[k][1]=(double) xArray[k].getDouble(Collections.min(overlapLower));
 			overlap[k][0]=(double) maxMinArray[k][0];		
-				}
+			}
 		
 		return overlap;
 	}
