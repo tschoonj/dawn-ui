@@ -42,7 +42,8 @@ public class PlotSystem1Composite extends Composite {
     private IDataset image1;
     private Button button; 
     private Button button1;
-//    private Button button2;
+    private Button button2;
+    private Button button3;
     private Combo comboDropDown0;
 	private Combo comboDropDown1;
 	private Combo comboDropDown2;
@@ -169,6 +170,10 @@ public class PlotSystem1Composite extends Composite {
         button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         button1 = new Button (controlButtons, SWT.PUSH);
         button1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        button2 = new Button (controlButtons, SWT.PUSH);
+        button2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        button3 = new Button (controlButtons, SWT.PUSH);
+        button3.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         ActionBarWrapper actionBarComposite = ActionBarWrapper.createActionBars(this, null);
         plotSystem1.createPlotPart(this, "ExamplePlot1", actionBarComposite, PlotType.IMAGE, null);
@@ -244,6 +249,8 @@ public class PlotSystem1Composite extends Composite {
 	       
         button1.setText("Run");
         
+        button2.setText("Save Parameters");
+        button3.setText("Load Parameters");
 //        button2.setText("Reset Tracker");
 
 
@@ -296,6 +303,14 @@ public class PlotSystem1Composite extends Composite {
    
    public Button getRunButton(){
 	   return button1;
+   }
+   
+   public Button getSaveButton(){
+	   return button2;
+   }
+   
+   public Button getLoadButton(){
+	   return button3;
    }
    
 //	public Button getButton2() {

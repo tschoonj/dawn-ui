@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import uk.ac.diamond.scisoft.analysis.io.LoaderFactory;
@@ -844,7 +845,7 @@ public class ExampleDialog extends Dialog {
 			}
 		});
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////Save Spliced Curve GenX/////////////////////////////////////////////////
 	    outputCurves.getSave().addSelectionListener(new SelectionListener() {
 			
 			@Override
@@ -1071,7 +1072,70 @@ public class ExampleDialog extends Dialog {
 	    	
 	    });
 	    
-/////////////////////////////////////////////////////////////////////////////////////
+	    
+////////////////////////////////Load Fit Parameters////////////////////////////////////////
+	    
+	    customComposite1.getLoadButton().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fd = new FileDialog(getParentShell(), SWT.OPEN); 
+				
+				String title = "r";
+				
+				if (fd.open() != null) {
+					 title = fd.getFileName();
+				}
+				
+				FittingParametersInputReader.reader(title);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	    
+////////////////////////////////Save Fit Parameters////////////////////////////////////////
+	    
+		customComposite1.getSaveButton().addSelectionListener(new SelectionListener() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fd = new FileDialog(getParentShell(), SWT.SAVE); 
+				
+				ExampleModel m = models.get(sm.getSelection());
+	
+				String stitle = "r";
+				
+				if (fd.open() != null) {
+					stitle = fd.getFileName();
+				}
+
+				
+				
+				
+				String s = gms.get(sm.getSelection()).getSavePath();
+				String title = s + File.separator + stitle + "_Output.txt";
+						
+				FittingParametersOutput.FittingParametersOutputTest(title, 
+						m.getLenPt()[1][0], m.getLenPt()[1][1],
+						m.getLenPt()[0][0], m.getLenPt()[0][1], 
+						m.getMethodology(), m.getTrackerType(), m.getFitPower(), m.getBoundaryBox());
+		}
+		
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+		// TODO Auto-generated method stub
+		
+		}
+		});	    
+			    
+			    
+			    
+			    
+///////////////////////////////////////////////////////////////////////////////////////////////
 	    customComposite2.getLeft().addControlListener(new ControlListener() {
 			
 			@Override

@@ -1,5 +1,6 @@
 package org.dawnsci.spectrum.ui.wizard;
 
+import org.dawnsci.spectrum.ui.wizard.AnalaysisMethodologies.Methodology;
 import org.eclipse.dawnsci.analysis.api.image.IImageTracker.TrackerType;
 
 public class TrackingMethodology {
@@ -25,6 +26,24 @@ public class TrackingMethodology {
 		}
 		return null;
 	}
+	
+	public static TrackerType1 toTracker1(String in){
+			
+		if (in.equals("TLD")){
+			return TrackerType1.TLD;
+		}
+		else if (in.equals("Circulant")){
+			return TrackerType1.CIRCULANT;
+		}
+		else if (in.equals("Sparse Flow")){
+			return TrackerType1.SPARSEFLOW;
+		}
+		else if (in.equals("MEANSHIFTCOMANICIU2003")){
+			return TrackerType1.SPARSEFLOW;
+		}
+		return null;
+	}
+
 
 	public static TrackerType toTT (TrackerType1 tt){
 		
