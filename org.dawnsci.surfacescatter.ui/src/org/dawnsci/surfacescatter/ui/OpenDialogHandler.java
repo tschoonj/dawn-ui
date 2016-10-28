@@ -2,16 +2,15 @@ package org.dawnsci.surfacescatter.ui;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.dawnsci.spectrum.ui.file.IContain1DData;
+import org.dawnsci.surfacescatter.ExampleDialog;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.PlatformUI;
 
 public class OpenDialogHandler extends AbstractHandler {
@@ -22,7 +21,9 @@ public class OpenDialogHandler extends AbstractHandler {
 		if (selection instanceof StructuredSelection) {
 			StructuredSelection ss = (StructuredSelection)selection;
 			
-			List<String> selectedFile = new ArrayList<String>();
+			ArrayList<String> selectedFile = new ArrayList<String>();
+			
+			
 			
 			Iterator it = ss.iterator();
 			
@@ -33,11 +34,27 @@ public class OpenDialogHandler extends AbstractHandler {
 				}
 			}
 			
+			
+			
+			Object[] datFilenames1 = selectedFile.toArray();
+			String[] datFilenames = new String[datFilenames1.length];
+			
+			for (int i =0; i< datFilenames1.length; i++){
+				datFilenames[i]=(String) datFilenames1[i];
+			}
+			
+			
+			
 			if (!selectedFile.isEmpty()) {
-				String string = selectedFile.get(0);
-				MessageBox box = new MessageBox(Display.getCurrent().getActiveShell());
-				box.setMessage(string);
-				box.open();
+//				String string = selectedFile.get(0);
+//				MessageBox box = new MessageBox(Display.getCurrent().getActiveShell());
+//				box.setMessage(string);
+//				box.open();
+				
+				ExampleDialog ed = new ExampleDialog(Display.getCurrent().getActiveShell(), datFilenames);
+//				
+				ed.open();
+//				ed.createDialogArea(Display.getCurrent().getActiveShell().getParent());
 			}
 
 		}

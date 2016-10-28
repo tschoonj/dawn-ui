@@ -32,7 +32,7 @@ import org.dawnsci.spectrum.ui.processing.SubtractionProcess;
 import org.dawnsci.spectrum.ui.utils.Contain1DDataImpl;
 import org.dawnsci.spectrum.ui.utils.SpectrumUtils;
 import org.dawnsci.spectrum.ui.wizard.CropWizardPage;
-import org.dawnsci.spectrum.ui.wizard.ExampleDialog;
+//import org.dawnsci.spectrum.ui.wizard.ExampleDialog;
 import org.dawnsci.spectrum.ui.wizard.IntegerInputDialog;
 import org.dawnsci.spectrum.ui.wizard.SpectrumSubtractionWizardPage;
 import org.dawnsci.spectrum.ui.wizard.SpectrumWizard;
@@ -349,8 +349,8 @@ public class ProcessMenuManager {
 				String[] filenames = new String[list.size()];
 				for (int i = 0; i < list.size(); i++) filenames[i] = list.get(i).getLongName();
 				
-				ExampleDialog d = new ExampleDialog(Display.getDefault().getActiveShell(),filenames);
-				d.open();
+//				ExampleDialog d = new ExampleDialog(Display.getDefault().getActiveShell(),filenames);
+//				d.open();
 			}
 		};
 		
