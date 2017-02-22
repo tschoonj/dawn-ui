@@ -402,7 +402,6 @@ public class PeakPrepopulateTool extends Dialog {
 		public void setBkgFunction(IFunction bkgInFunction) {
 			fitBkgFunction = bkgInFunction;
 		}
-
 		
 		public void setPeakCompoundFunction(Add peakFn) {
 			peakCompFunction = peakFn;
