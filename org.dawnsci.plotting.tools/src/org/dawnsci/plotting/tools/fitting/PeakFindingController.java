@@ -49,22 +49,21 @@ public class PeakFindingController {
 	//The table viewer should exist here
 	//TODO:Move these control values
 	
-	
 	// Peak Details
 	List<Peak> peaks = new ArrayList<Peak>();
+	
 	//TODO: decide on one of them
 	Dataset peaksY;
 	Dataset peaksX;
 
-	//Controls
+	//Controls for user picking the peaks
 	public Boolean isRemoving = false; 
 	public Boolean isAdding = false;
 	
 	
-	//GEt set
+	//Bound limits for searching 
 	private Double upperBnd;
 	private Double lowerBnd;
-	
 	
 	private Double searchScaleIntensity;
 	
@@ -128,7 +127,7 @@ public class PeakFindingController {
 		// TODO: Update with the new peaks
 		peakfindingtool.getPlottingSystem().repaint();
 
-		// Reset Peak finding searchable
+		// Reset peak finder 
 		if (!widget.runPeakSearch.isEnabled())
 			widget.runPeakSearch.setImage(Activator.getImageDescriptor("icons/peakSearch.png").createImage());
 		widget.runPeakSearch.setEnabled(true);
@@ -137,7 +136,8 @@ public class PeakFindingController {
 	
 	/**
 	 *
-	 * Exports found peaks in a xy formated file
+	 *TODO: move setup to export function
+	 * Exports found peaks in a .xy formated file
 	 *
 	 * @param path
 	 * @return

@@ -30,7 +30,7 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 
 /**
  * 
- * TODO: remove activator dependyc here and just get through controller
+ * TODO: remove activator dependecy here and just get through controller
  * TODO: finally call formatPeakSearch
  * 
  * @author Dean P. Ottewell
