@@ -32,7 +32,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.richbeans.widgets;bundle-version="1.0.0",
  uk.ac.diamond.org.mihalis.opal;bundle-version="0.9.5",
  uk.ac.diamond.scisoft.analysis.peakfinding;bundle-version="1.0.0",
- org.dawnsci.plotting.tools
+ org.dawnsci.plotting.tools,
+ org.eclipse.swt
 Import-Package: javax.measure;version="4.3.1",
  javax.measure.converter;version="4.3.1",
  javax.measure.quantity;version="4.3.1",
