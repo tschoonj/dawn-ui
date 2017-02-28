@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.dawnsci.analysis.api.conversion.IConversionContext.ConversionScheme;
 import org.eclipse.dawnsci.analysis.api.fitting.functions.IDataBasedFunction;
 import org.eclipse.dawnsci.analysis.api.fitting.functions.IFunction;
 import org.eclipse.dawnsci.analysis.api.fitting.functions.IFunctionService;
@@ -51,6 +52,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -58,6 +61,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -184,7 +188,7 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 			findPeaksButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					openPeakPrepopulateTool();
+					openPeakPrepopulateWizard();
 				}
 			});
 		}
@@ -468,12 +472,32 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 
 	}
 
-	private void openPeakPrepopulateTool() {
+	private void openPeakPrepopulateWizard() {
+		
 		getPlottingSystem().removeTraceListener(traceListener);
-		Shell shell = Display.getDefault().getActiveShell();
-		PeakPrepopulateTool peakFindOptions = new PeakPrepopulateTool(shell, this, getFirstUserTraceROI());
-		peakFindOptions.open();
+		PeakPrepopulateWizard peakFindOptions = new PeakPrepopulateWizard(this, getFirstUserTraceROI());
+		
+		Wizard wiz = new Wizard() {
+			//set 
+			@Override
+			public boolean performFinish() {
+				//TODO: grab peaks
+				
+				return true;
+			}
+		};
+		
+		wiz.setNeedsProgressMonitor(true);
+		wiz.addPage(peakFindOptions);
+		
+		final WizardDialog wd = new WizardDialog(getSite().getShell(),wiz);
+		wd.setPageSize(new Point(900, 500));
+		wd.create();
+		wd.getCurrentPage();
+		if (wd.open() == WizardDialog.OK)
+		
 		getPlottingSystem().addTraceListener(traceListener);
+		
 	}
 
 	public void setInitialPeaks(Add initPeakCompFunc) {
