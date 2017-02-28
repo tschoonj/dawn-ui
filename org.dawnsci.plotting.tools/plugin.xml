@@ -115,7 +115,7 @@
             icon="icons/peakSearch.png"
             id="org.dawb.workbench.plotting.tools.PeakFindingTool"
             label="Peak Finding"
-            tooltip="A tool for finding peaks on data.">
+            tooltip="A tool for finding peaks on data currently plotted.">
       </plotting_tool_page>
       
       
