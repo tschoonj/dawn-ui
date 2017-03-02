@@ -496,8 +496,7 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 		wd.getCurrentPage();
 		if (wd.open() == WizardDialog.OK)
 		
-		getPlottingSystem().addTraceListener(traceListener);
-		
+		getPlottingSystem().addTraceListener(traceListener);	
 	}
 
 	public void setInitialPeaks(Add initPeakCompFunc) {
