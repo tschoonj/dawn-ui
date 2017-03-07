@@ -1,5 +1,6 @@
 package org.dawnsci.plotting.tools.finding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.january.dataset.IDataset;
@@ -8,8 +9,9 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 
 public class PeakOppurtunity implements IPeakOpportunity {
 
-	List<Peak> peaks;
-	IDataset xData;
+	//TODO: tmp default intialise
+	List<Peak> peaks = new ArrayList<Peak>();
+	IDataset xData; 
 	IDataset yData;
 	
 	@Override
