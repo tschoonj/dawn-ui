@@ -13,6 +13,10 @@ public interface IPeakOpportunityListener extends EventListener {
 	//TODO: primarily use the change event for now.
 	public void peaksChanged(PeakOpportunityEvent evt);
 	
+	public void boundsChanged(PeakOpportunityEvent evt);
+	
+	public void dataChanged(PeakOpportunityEvent evt);
+	
 	//public void isSearching(PeakOpportunityEvent evt);
 	
 	//TODO: rea;;y whats the difference between adding and removing event... is this distiction important?

@@ -18,6 +18,9 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	private IDataset xData; 
 	private IDataset yData;
 	
+	private double upperBound;
+	private double lowerBound;
+	
 	@Override
 	public List<Peak> getPeaks() {
 		return peaks;
@@ -46,5 +49,25 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	@Override
 	public void setYData(IDataset yData) {
 		this.yData = yData;
+	}
+
+	@Override
+	public double getUpperBound() {
+		return upperBound;
+	}
+
+	@Override
+	public double getLowerBound() {
+		return lowerBound;
+	}
+
+	@Override
+	public void setUpperBound(double upper) {
+		this.upperBound = upper;
+	}
+
+	@Override
+	public void setLowerBound(double lower) {
+		this.lowerBound = lower;
 	}
 }
