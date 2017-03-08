@@ -7,12 +7,16 @@ import org.eclipse.january.dataset.IDataset;
 
 import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 
+/**
+ * @author Dean P. Ottewell
+ *
+ */
 public class PeakOppurtunity implements IPeakOpportunity {
 
 	//TODO: tmp default intialise
 	List<Peak> peaks = new ArrayList<Peak>();
-	IDataset xData; 
-	IDataset yData;
+	private IDataset xData; 
+	private IDataset yData;
 	
 	@Override
 	public List<Peak> getPeaks() {
@@ -20,12 +24,12 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	}
 
 	@Override
-	public IDataset getRawXData() {
+	public IDataset getXData() {
 		return xData;
 	}
 
 	@Override
-	public IDataset getRawYData() {
+	public IDataset getYData() {
 		return yData;
 	}
 
@@ -35,12 +39,12 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	}
 
 	@Override
-	public void setRawXData(IDataset xData) {
+	public void setXData(IDataset xData) {
 		this.xData = xData;
 	}
 
 	@Override
-	public void getRawYData(IDataset yData) {
+	public void setYData(IDataset yData) {
 		this.yData = yData;
 	}
 }
