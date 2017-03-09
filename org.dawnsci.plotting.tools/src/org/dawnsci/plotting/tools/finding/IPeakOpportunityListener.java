@@ -19,5 +19,4 @@ public interface IPeakOpportunityListener extends EventListener {
 	
 	public void dataChanged(IDataset nXData, IDataset nYData);
 	
-	
 }

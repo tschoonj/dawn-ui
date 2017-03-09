@@ -76,19 +76,15 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 	protected Control createContents(final Composite parent) {
 		final Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayout(new GridLayout(1, false));
-		GridData gdc = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData gdc = new GridData(SWT.LEFT, SWT.FILL, false, true);
 		comp.setLayoutData(gdc);
 
 		Group algGroup = new Group(comp, SWT.NONE);
-		algGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		algGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		algGroup.setLayout(new GridLayout(2, false));
 		algGroup.setText("Peak Finding Algorithm Controls");
 		
-		specificFinderParams = new Group(comp, SWT.NONE);
-		specificFinderParams.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		specificFinderParams.setLayout(new GridLayout(2, false));
-		specificFinderParams.setText("Peak Finding Algorithm Controls");
-		
+
 //		TODO: probably plae here the algorithm btu automatic peak detector is the one really but could use the others anway and 
 //		just defautl to to this
 		Label algoLabel = new Label(algGroup, SWT.NONE);
@@ -97,6 +93,11 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 		algorithmCombo.setEditable(false);
 		algorithmCombo.setListVisible(true);
 		algorithmCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		specificFinderParams = new Group(comp, SWT.NONE);
+		specificFinderParams.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		specificFinderParams.setLayout(new GridLayout(2, false));
+		specificFinderParams.setText("Peak Finding Algorithm Controls");
 		
 		algorithmCombo.addModifyListener(new ModifyListener() {
 			
@@ -114,7 +115,7 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 //				for (Control childControl : specificFinderParams.getChildren()){
 //					childControl.pack();
 //				}
-				parent.pack();
+				specificFinderParams.pack();
 			}
 		});
 		
