@@ -73,7 +73,7 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 	}
 
 	@Override
-	protected Control createContents(Composite parent) {
+	protected Control createContents(final Composite parent) {
 		final Composite comp = new Composite(parent, SWT.NONE);
 		comp.setLayout(new GridLayout(1, false));
 		GridData gdc = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -108,12 +108,13 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 				}
 				
 				loadPeakFinderParams(specificFinderParams);
-				//specificFinderSetting.redraw();
-				//specificFinderSetting.pack();
-				comp.update();
-				comp.setSize(comp.getSize());
-				//comp.pack();
-				comp.redraw();
+				//specificFinderParams.redraw();
+				//specificFinderParams.update();
+				//specificFinderParams.pack();
+//				for (Control childControl : specificFinderParams.getChildren()){
+//					childControl.pack();
+//				}
+				parent.pack();
 			}
 		});
 		

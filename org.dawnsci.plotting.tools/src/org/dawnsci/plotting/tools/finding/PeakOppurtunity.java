@@ -21,6 +21,8 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	private double upperBound;
 	private double lowerBound;
 	
+	private boolean isSearching;
+	
 	@Override
 	public List<Peak> getPeaks() {
 		return peaks;
@@ -69,5 +71,15 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	@Override
 	public void setLowerBound(double lower) {
 		this.lowerBound = lower;
+	}
+
+	@Override
+	public void setSearching(boolean searching) {
+		this.isSearching = searching;
+	}
+
+	@Override
+	public boolean getSearchingStatus() {
+		return this.isSearching;
 	}
 }
