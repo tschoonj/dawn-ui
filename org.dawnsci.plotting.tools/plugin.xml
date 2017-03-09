@@ -110,7 +110,6 @@
       
       <plotting_tool_page
             category="org.dawnsci.plotting.tools.plotting_tool_category.fitting"
-            cheat_sheet_id="org.dawb.workbench.plotting.cheatsheet.peak"
             class="org.dawnsci.plotting.tools.finding.PeakFindingTool"
             icon="icons/peakSearch.png"
             id="org.dawb.workbench.plotting.tools.PeakFindingTool"
