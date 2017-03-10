@@ -12,7 +12,6 @@ import org.eclipse.january.dataset.IDataset;
  */
 public interface IPeakOpportunityListener extends EventListener {
 
-	//TODO: primarily use the change event for now.
 	public void peaksChanged(PeakOpportunityEvent  evt);
 	
 	public void boundsChanged(double upper, double lower);

@@ -13,7 +13,6 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
  */
 public class PeakOppurtunity implements IPeakOpportunity {
 
-	//TODO: tmp default intialise
 	List<Peak> peaks = new ArrayList<Peak>();
 	private IDataset xData; 
 	private IDataset yData;
