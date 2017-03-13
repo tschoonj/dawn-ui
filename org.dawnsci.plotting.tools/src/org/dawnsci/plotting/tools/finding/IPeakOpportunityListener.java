@@ -18,6 +18,7 @@ public interface IPeakOpportunityListener extends EventListener {
 	
 	public void dataChanged(IDataset nXData, IDataset nYData);
 	
-//	public void peakSearching();
-//	public void peakFinished();
+	public void isPeakFinding();
+	
+	public void finishedPeakFinding();
 }

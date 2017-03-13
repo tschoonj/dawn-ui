@@ -20,7 +20,7 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	private double upperBound;
 	private double lowerBound;
 	
-	private boolean isSearching;
+	private boolean isSearching = false;
 	
 	@Override
 	public List<Peak> getPeaks() {
