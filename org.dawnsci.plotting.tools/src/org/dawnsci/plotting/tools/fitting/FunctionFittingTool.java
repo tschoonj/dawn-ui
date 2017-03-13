@@ -52,6 +52,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -475,13 +476,17 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 	private void openPeakPrepopulateWizard() {
 		
 		getPlottingSystem().removeTraceListener(traceListener);
-		PeakPrepopulateWizard peakFindOptions = new PeakPrepopulateWizard(this, getFirstUserTraceROI());
+		PeakPrepopulateWizard peakFindOptions = new PeakPrepopulateWizard(this);
 		
-		Wizard wiz = new Wizard() {
+		final Wizard wiz = new Wizard() {
 			//set 
 			@Override
 			public boolean performFinish() {
 				//TODO: grab peaks
+				//IWizardPage peakFindpage = wiz.getStartingPage();
+				PeakPrepopulateWizard peakToolpage = (PeakPrepopulateWizard) this.getStartingPage();
+				
+				peakToolpage.gatherInitalPeaks();
 				
 				return true;
 			}
@@ -489,7 +494,7 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 		
 		wiz.setNeedsProgressMonitor(true);
 		wiz.addPage(peakFindOptions);
-		
+
 		final WizardDialog wd = new WizardDialog(getSite().getShell(),wiz);
 		wd.setPageSize(new Point(900, 500));
 		wd.create();
