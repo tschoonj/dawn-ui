@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
+
 import org.eclipse.dawnsci.analysis.api.peakfinding.IPeakFinderParameter;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -108,13 +110,8 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 					childControl.dispose();
 				}
 				
-				loadPeakFinderParams(specificFinderParams);
-				//specificFinderParams.redraw();
-				//specificFinderParams.update();
-				//specificFinderParams.pack();
-//				for (Control childControl : specificFinderParams.getChildren()){
-//					childControl.pack();
-//				}
+				loadPeakFinderParams(specificFinderParams, false);
+
 				specificFinderParams.pack();
 			}
 		});
@@ -133,24 +130,31 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 	}
 	
 	
-	private void loadPeakFinderParams(Group specificFinderSetting){
+	/**
+	 * @param specificFinderSetting
+	 * @param isDefault
+	 * 
+	 */
+	private void loadPeakFinderParams(Group specificFinderSetting, boolean isDefault){
 		String currPeakFinderID = algorithmCombo.getText();
 
 		//Well cannot clear preference values so therefore just load in every parameter as default
-
 		getPreferenceStore().setValue(PeakFindingConstants.PeakAlgorithm, currPeakFinderID);
 
 		//TODO: store params as constnats?
 		IPeakFindingService peakFindServ = (IPeakFindingService)Activator.getService(IPeakFindingService.class);
 		Map<String, IPeakFinderParameter> peakParams = peakFindServ.getPeakFinderParameters(currPeakFinderID);
-		
+
 		for (Entry<String, IPeakFinderParameter> peakParam : peakParams.entrySet()){
 			IPeakFinderParameter param = peakParam.getValue();
-			String curVal = getPreferenceStore().getString(peakParam.getKey());
-			Number val = Double.parseDouble(curVal);
-			if (param.isInt())
-				val = (int) val.doubleValue();
-			param.setValue(val);
+			
+			if(!isDefault){
+				String curVal = getPreferenceStore().getString(peakParam.getKey());
+				Number val = Double.parseDouble(curVal);
+				if (param.isInt())
+					val = (int) val.doubleValue();
+				param.setValue(val);
+			}
 			genParam(specificFinderSetting, param);
 		}
 		
@@ -172,7 +176,7 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 			public void modifyText(ModifyEvent e) {				
 				Number val = Double.parseDouble(valTxt.getText());
 				if(param.isInt())
-					val = (int)val.doubleValue();
+					val = (int)val.doubleValue();	
 				params.put(param.getName(), val);
 				
 			}
@@ -208,18 +212,25 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 			params.remove(param.getKey());
 		}
 		
-		
 		return true;
 	}
 	
 	private void initializePage() {
 		//Load in defaults
-		
+		performDefaults();
 	}
 
 	@Override
 	protected void performDefaults() {
 		isValid();
+			
+		getPreferenceStore().setValue(PeakFindingConstants.PeakAlgorithm, algorithmCombo.getText());
+		for (Control childControl : specificFinderParams.getChildren()){
+			childControl.dispose();
+		}
+		
+		loadPeakFinderParams(specificFinderParams,true);
+		specificFinderParams.pack();
 	}
 
 }
