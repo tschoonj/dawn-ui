@@ -13,14 +13,14 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
  */
 public class PeakOppurtunity implements IPeakOpportunity {
 
-	List<Peak> peaks = new ArrayList<Peak>();
+	List<Peak> peaks= null;
 	private IDataset xData; 
 	private IDataset yData;
 	
 	private double upperBound;
 	private double lowerBound;
 	
-	private boolean isSearching = false;
+	private Boolean isSearching = null;
 	
 	@Override
 	public List<Peak> getPeaks() {
@@ -78,7 +78,7 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	}
 
 	@Override
-	public boolean getSearchingStatus() {
+	public Boolean getSearchingStatus() {
 		return this.isSearching;
 	}
 }
