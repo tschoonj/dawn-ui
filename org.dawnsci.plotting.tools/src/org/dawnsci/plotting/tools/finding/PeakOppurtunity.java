@@ -1,10 +1,10 @@
 package org.dawnsci.plotting.tools.finding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.january.dataset.IDataset;
 
+import uk.ac.diamond.scisoft.analysis.fitting.functions.IdentifiedPeak;
 import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 
 /**
@@ -14,6 +14,8 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 public class PeakOppurtunity implements IPeakOpportunity {
 
 	List<Peak> peaks= null;
+	List<IdentifiedPeak> peaksId = null;
+	
 	private IDataset xData; 
 	private IDataset yData;
 	
@@ -80,5 +82,15 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	@Override
 	public Boolean getSearchingStatus() {
 		return this.isSearching;
+	}
+
+	@Override
+	public List<IdentifiedPeak> getPeaksId() {
+		return peaksId;
+	}
+
+	@Override
+	public void setPeaksId(List<IdentifiedPeak> peaks) {
+		this.peaksId = peaks;
 	}
 }

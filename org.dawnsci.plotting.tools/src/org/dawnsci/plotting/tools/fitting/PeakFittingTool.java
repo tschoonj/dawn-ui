@@ -241,7 +241,7 @@ public class PeakFittingTool extends AbstractFittingTool implements IRegionListe
 	
 	/**
 	 * Thread safe
-	 * @param peaks
+	 * @param peaksOld
 	 */
 	@Override
 	protected synchronized void createFittedFunctionUI(final FittedFunctions newBean) {
