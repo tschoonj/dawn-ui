@@ -488,12 +488,7 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 				//TODO: grab peaks
 				//IWizardPage peakFindpage = wiz.getStartingPage();
 				PeakPrepopulateWizard peakToolpage = (PeakPrepopulateWizard) this.getStartingPage();
-				
-				List<IdentifiedPeak> peaks = peakToolpage.gatherInitalPeaks();
-		
-				//setInitialPeaks(initPeakCompFunc);
-				FittingUtils.getInitialPeaks(peaks, xDataSet, yDataSet, Gaussian.class);
-				
+				setInitialPeaks(peakToolpage.gatherPeaksFunc());
 				return true;
 			}
 		};

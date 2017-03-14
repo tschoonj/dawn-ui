@@ -112,14 +112,15 @@ public class FittingUtils {
 	/**
 	 * A variate that takes a already fittin set of found peaks
 	 * 
+	 * Number of peaks fitted based on the found peaks size	
+	 * 
 	 * @param foundPeaks
 	 * @param xDataSet
 	 * @param yDataSet
-	 * @param nPeaks
 	 * @param peakClass
 	 * @return
 	 */
-	public static Add getSeededPeakFit(List<IdentifiedPeak> foundPeaks, Dataset xDataSet, Dataset yDataSet, Integer nPeaks, Class<? extends IPeak> peakClass) {
+	public static Add getSeededPeakFit(List<IdentifiedPeak> foundPeaks, Dataset xDataSet, Dataset yDataSet, Class<? extends IPeak> peakClass) {
 		
 		Add initialPeaks = new Add();
 		
@@ -139,8 +140,7 @@ public class FittingUtils {
 		}
 		
 		//How many peaks are we looking for (user specified, can be null)
-		Integer nrPeaks = nPeaks;
-		nrPeaks = foundPeaks.size();
+		Integer nrPeaks = foundPeaks.size() - 1;
 		if (nrPeaks == null || nrPeaks == 0) {
 			//In case no peaks were found
 			logger.error("Trying to fit on no peaks found!");
