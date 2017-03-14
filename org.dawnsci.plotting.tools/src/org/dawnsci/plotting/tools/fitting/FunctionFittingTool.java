@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.dawb.common.ui.util.GridUtils;
 import org.dawb.common.ui.widgets.ActionBarWrapper;
@@ -490,7 +491,8 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 				
 				List<IdentifiedPeak> peaks = peakToolpage.gatherInitalPeaks();
 		
-				
+				//setInitialPeaks(initPeakCompFunc);
+				FittingUtils.getInitialPeaks(peaks, xDataSet, yDataSet, Gaussian.class);
 				
 				return true;
 			}
