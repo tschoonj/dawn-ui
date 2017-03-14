@@ -219,26 +219,14 @@ public class Hyper2DTool extends AbstractToolPage {
 		for (IRegion re : regions) {
 			if (re.getName().equals(r.getName())) {
 				double value = 0;
-				IImageTrace next = (IImageTrace)getPlottingSystem().getTraces().iterator().next();
-				try {
-					if (isMainPlotUpdate && !right){
-						value = evt.getROI().getPointY();
-						double[] im = ((IImageTrace) next).getPointInAxisCoordinates(new double[] { Double.NaN, value });
-						IROI roi = re.getROI();
-						updateROI(roi, im[1], right, re, isMainPlotUpdate);
-					} else if (isMainPlotUpdate && right){
-						value = evt.getROI().getPointX();
-						double[] im = ((IImageTrace) next).getPointInAxisCoordinates(new double[] { value, Double.NaN });
-						IROI roi = re.getROI();
-						updateROI(roi, im[0], right,re, isMainPlotUpdate);
-					} else if (!isMainPlotUpdate) {
-						value = evt.getROI().getPointX();
-						IROI roi = re.getROI();
-						updateROI(roi, value, right,re, isMainPlotUpdate);
-					}
-				} catch (Exception e) {
-					logger.error("Could not update roi!",e);
+				if (isMainPlotUpdate && !right){
+					value = evt.getROI().getPointY();
+				} else {
+					value = evt.getROI().getPointX();
 				}
+				IROI roi = re.getROI();
+				updateROI(roi, value, right,re, isMainPlotUpdate);
+				return;
 			}
 		}
 	}
