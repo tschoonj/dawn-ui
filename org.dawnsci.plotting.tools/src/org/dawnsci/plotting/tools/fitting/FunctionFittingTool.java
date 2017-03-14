@@ -11,6 +11,7 @@ package org.dawnsci.plotting.tools.fitting;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
@@ -82,6 +83,7 @@ import uk.ac.diamond.scisoft.analysis.fitting.FittingConstants.FIT_ALGORITHMS;
 import uk.ac.diamond.scisoft.analysis.fitting.Generic1DFitter;
 import uk.ac.diamond.scisoft.analysis.fitting.functions.AFunction;
 import uk.ac.diamond.scisoft.analysis.fitting.functions.Add;
+import uk.ac.diamond.scisoft.analysis.fitting.functions.IdentifiedPeak;
 import uk.ac.diamond.scisoft.analysis.optimize.ApacheOptimizer;
 import uk.ac.diamond.scisoft.analysis.optimize.ApacheOptimizer.Optimizer;
 import uk.ac.diamond.scisoft.analysis.optimize.GeneticAlg;
@@ -486,7 +488,9 @@ public class FunctionFittingTool extends AbstractToolPage implements IFunctionSe
 				//IWizardPage peakFindpage = wiz.getStartingPage();
 				PeakPrepopulateWizard peakToolpage = (PeakPrepopulateWizard) this.getStartingPage();
 				
-				peakToolpage.gatherInitalPeaks();
+				List<IdentifiedPeak> peaks = peakToolpage.gatherInitalPeaks();
+		
+				
 				
 				return true;
 			}
