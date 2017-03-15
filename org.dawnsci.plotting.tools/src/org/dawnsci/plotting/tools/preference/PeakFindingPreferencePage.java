@@ -8,31 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
-
 import org.eclipse.dawnsci.analysis.api.peakfinding.IPeakFinderParameter;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.slf4j.Logger;
@@ -60,7 +50,12 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 	private static final Logger logger = LoggerFactory.getLogger(PeakFindingPreferencePage.class);
 	
 	private CCombo algorithmCombo; 	 	
-	private Group specificFinderParams;
+
+	private Composite contentPanel;
+	private StackLayout controlsLayout;
+	List<Composite> controlPages = new ArrayList<Composite>();
+	
+	
 	private Collection<String> peakFindersID;
 	Map<String,Number> params = new HashMap<String, Number>();
 
@@ -96,12 +91,12 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 		algGroup.setLayout(new GridLayout(2, false));
 		algGroup.setText("Peak Finding Algorithm Controls");
 		
-		final Composite contentPanel = new Composite(comp, SWT.BORDER);
+		contentPanel = new Composite(comp, SWT.BORDER);
 		contentPanel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		contentPanel.setLayout(new GridLayout(1, false));
-	    final StackLayout layout = new StackLayout();
-	    contentPanel.setLayout(layout);
 		
+		controlsLayout  = new StackLayout();
+	    contentPanel.setLayout(controlsLayout);
 		
 
 //		TODO: probably plae here the algorithm btu automatic peak detector is the one really but could use the others anway and 
@@ -112,33 +107,16 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 		algorithmCombo.setEditable(false);
 		algorithmCombo.setListVisible(true);
 		algorithmCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-//		
-//		specificFinderParams = new Group(comp, SWT.NONE);
-//		specificFinderParams.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-//		specificFinderParams.setLayout(new GridLayout(2, false));
-//		specificFinderParams.setText("Peak Finding Algorithm Controls");
-//		
-		List<Composite> pages = new ArrayList<Composite>();
+
 		algorithmCombo.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				if(algorithmCombo.getSelectionIndex() != -1){
-					layout.topControl =  pages.get(algorithmCombo.getSelectionIndex());
+					controlsLayout.topControl =  controlPages.get(algorithmCombo.getSelectionIndex());
 		        	contentPanel.layout();
 				}
-				
-				
-				//Dispose of those nasty brats
-//				for (Control childControl : specificFinderParams.getChildren()){
-//					childControl.dispose();
-//				}
-//				
-//				
-//				loadPeakFinderParams(specificFinderParams, false);
-//
-//				specificFinderParams.pack();
 			}
 			
 			@Override
@@ -147,7 +125,6 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 			}
 		});
 
-		
 		getPreferenceStore().getString(PeakFindingConstants.PeakAlgorithm);
 		
 		//Needed to initilize this premtively because load in services	
@@ -158,20 +135,16 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 			pageN.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 			pageN.setLayout(new GridLayout(2, false));
 			loadPeakFinderParams(pageN, false, finderID);
-		    pages.add(pageN);
+			controlPages.add(pageN);
 		}
 		algorithmCombo.select(0);
-		
+		controlsLayout.topControl =  controlPages.get(algorithmCombo.getSelectionIndex());
+    	contentPanel.layout();
+    	
 		return comp;
 	}
 	
-	
-	/**
-	 * @param specificFinderSetting
-	 * @param isDefault
-	 * 
-	 */
-	private void loadPeakFinderParams(Composite specificFinderSetting, boolean isDefault, String desiredFinder){
+	private void loadPeakFinderParams(Composite parentLayout, boolean isDefault, String desiredFinder){
 		String currPeakFinderID =  desiredFinder;//algorithmCombo.getText();
 
 		//Well cannot clear preference values so therefore just load in every parameter as default
@@ -184,14 +157,14 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 		for (Entry<String, IPeakFinderParameter> peakParam : peakParams.entrySet()){
 			IPeakFinderParameter param = peakParam.getValue();
 			
-			if(!isDefault){
+			if(isDefault){
 				String curVal = getPreferenceStore().getString(peakParam.getKey());
 				Number val = Double.parseDouble(curVal);
 				if (param.isInt())
 					val = (int) val.doubleValue();
 				param.setValue(val);
 			}
-			genParam(specificFinderSetting, param);
+			genParam(parentLayout, param);
 		}
 		
 	}
@@ -203,6 +176,7 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 		paramLab.setText(param.getName());
 		
 		FloatSpinner valSpn = new FloatSpinner(paramSetting, SWT.BORDER, 6, 2);
+		valSpn.setDouble(Double.parseDouble(value));
 		valSpn.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false));
 		valSpn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -252,13 +226,23 @@ public class PeakFindingPreferencePage extends PreferencePage implements IWorkbe
 	protected void performDefaults() {
 		isValid();
 			
-		getPreferenceStore().setValue(PeakFindingConstants.PeakAlgorithm, algorithmCombo.getText());
-//		for (Control childControl : specificFinderParams.getChildren()){
-//			childControl.dispose();
-//		}
-//		
-//		loadPeakFinderParams(specificFinderParams,true);
-//		specificFinderParams.pack();
+		//getPreferenceStore().setValue(PeakFindingConstants.PeakAlgorithm, algorithmCombo.getText());
+		
+		//Clear the previous pages
+		controlPages.clear();
+		
+		//reload pages with default values
+		peakFindersID = PeakFindingConstants.PEAKFINDERS;
+		for (String finderID : peakFindersID){
+		    final Composite pageN = new Composite(contentPanel, SWT.NONE);
+			pageN.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+			pageN.setLayout(new GridLayout(2, false));
+			loadPeakFinderParams(pageN, false, finderID);
+		    controlPages.add(pageN);
+		}
+		Object choicee = algorithmCombo.getSelectionIndex();
+		controlsLayout.topControl =  controlPages.get(algorithmCombo.getSelectionIndex());
+    	contentPanel.layout();
 	}
 
 }
