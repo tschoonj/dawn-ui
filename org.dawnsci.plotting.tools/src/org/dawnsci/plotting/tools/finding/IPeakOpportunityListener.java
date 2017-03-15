@@ -21,4 +21,6 @@ public interface IPeakOpportunityListener extends EventListener {
 	public void isPeakFinding();
 	
 	public void finishedPeakFinding();
+	
+	public void activateSearchRegion();
 }
