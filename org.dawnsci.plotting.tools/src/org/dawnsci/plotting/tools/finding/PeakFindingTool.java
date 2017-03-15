@@ -531,11 +531,18 @@ public class PeakFindingTool extends AbstractToolPage implements IRegionListener
 	private boolean isValidTraceForSearch(ITrace trace){
 		boolean valid = false;
 		
+		ILineTrace lineTrace = (ILineTrace) trace;
 		//Check against being a trace created for me
 		if (trace.getName() != BOUNDTRACENAME && trace.getName() != PEAKSTRACENAME) {
-			ILineTrace lineTrace = (ILineTrace) trace;
 			valid = true;
+
+			if(lineTrace.getXData() == null)
+				valid =false;
+			
+			if(lineTrace.getXData() == null)
+				valid =false;
 		}
+
 		return valid;
 	}
 
@@ -740,9 +747,9 @@ public class PeakFindingTool extends AbstractToolPage implements IRegionListener
 				getPlottingSystem().removeTrace(peaksTrace);
 
 		}
-		// TODO: icon removal
-		// TODO: clear peaks
+
 		// TODO: manager remove the manager listeners? destorying anwyay though
+		//TODO: just kill manager?
 		manager.destroyAllListeners();
 
 		Collection<IRegion> regions = getPlottingSystem().getRegions();

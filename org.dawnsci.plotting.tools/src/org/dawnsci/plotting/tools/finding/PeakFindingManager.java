@@ -194,11 +194,12 @@ public class PeakFindingManager {
 	}
 	
 	public void destroyAllListeners(){
-		Iterator<IPeakOpportunityListener> itr = listeners.iterator();
-		while(itr.hasNext()){
-			listeners.remove(itr);
-			itr.next();
-		}
+		listeners.clear();
+//		Iterator<IPeakOpportunityListener> itr = listeners.iterator();
+//		while(itr.hasNext()){
+//			listeners.remove(itr);
+//			itr.next();
+//		}
 	}
 
 	/**
