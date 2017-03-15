@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.january.dataset.IDataset;
 
 import uk.ac.diamond.scisoft.analysis.fitting.functions.IdentifiedPeak;
-import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
 
 /**
  * @author Dean P. Ottewell
@@ -13,7 +12,6 @@ import uk.ac.diamond.scisoft.analysis.peakfinding.Peak;
  */
 public class PeakOppurtunity implements IPeakOpportunity {
 
-	List<Peak> peaks= null;
 	List<IdentifiedPeak> peaksId = null;
 	
 	private IDataset xData; 
@@ -23,11 +21,6 @@ public class PeakOppurtunity implements IPeakOpportunity {
 	private double lowerBound;
 	
 	private Boolean isSearching = null;
-	
-	@Override
-	public List<Peak> getPeaks() {
-		return peaks;
-	}
 
 	@Override
 	public IDataset getXData() {
@@ -39,10 +32,6 @@ public class PeakOppurtunity implements IPeakOpportunity {
 		return yData;
 	}
 
-	@Override
-	public void setPeaks(List<Peak> peaks) {
-		this.peaks = peaks;
-	}
 
 	@Override
 	public void setXData(IDataset xData) {
