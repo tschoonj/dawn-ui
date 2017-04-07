@@ -57,7 +57,7 @@ public class PlotController {
 	private IPlottingService pService;
 	private IPlottingSystem<?> system;
 
-	private IPlotMode[] modes = new IPlotMode[]{new PlotModeXY(), new PlotModeImage(), new PlotModeSurface()};
+	private IPlotMode[] modes = new IPlotMode[]{new PlotModeXY(), new PlotModeImage(), new PlotModeSurface(), new PlotModeHyper()};
 	private IPlotMode currentMode;
 	
 	private IFileController fileController = ServiceManager.getFileController();
@@ -250,7 +250,23 @@ public class PlotController {
 			logger.error("Could not slice data for plotting", e);
 		}
 		
-		if (data == null) return;	
+		if (data == null) {
+			
+				Display.getDefault().syncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+				mode.displayData(null, traces.isEmpty() ? null : traces.toArray(new ITrace[traces.size()]), system, dataOp);
+				getPlottingSystem().repaint();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}});
+			
+			return;	
+		}
 		
 		SourceInformation si = new SourceInformation(dataOp.getFilePath(), dataOp.getName(), dataOp.getLazyDataset());
 		SliceInformation s = new SliceInformation(slice, slice, new SliceND(dataOp.getLazyDataset().getShape()), mode.getDataDimensions(options), 1, 0);
