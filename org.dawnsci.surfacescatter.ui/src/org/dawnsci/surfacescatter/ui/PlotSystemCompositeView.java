@@ -986,6 +986,19 @@ public class PlotSystemCompositeView extends Composite {
 		
 	}
 	
+	public void recursiveSetEnabled(Control ctrl, boolean enabled) {
+		   
+		if (ctrl instanceof Composite) {
+		      Composite comp = (Composite) ctrl;
+		      Control[] kids = comp.getChildren();
+		      for (Control c : kids)
+		         recursiveSetEnabled(c, enabled);
+		      if (kids == null || kids.length == 0) 
+		    	  ctrl.setEnabled(enabled);
+		 } else {
+		      ctrl.setEnabled(enabled);
+		 }
+	}
 	
 	public void roiStandard() {
 		double[] bgRegionROI = ssp.regionOfInterestSetter(region.getROI());
@@ -1004,6 +1017,7 @@ public class PlotSystemCompositeView extends Composite {
 	public TabItem getBackgroundSubtractedSubImage(){
 		return subBgI;
 	}
+	
 	
 	public void appendBackgroundSubtractedSubImage(){
 		
