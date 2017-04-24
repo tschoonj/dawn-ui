@@ -86,6 +86,7 @@ public class SurfaceScatterPresenter {
 	private boolean qConvert;
 	private double energy;
 	private Set<IPresenterStateChangeEventListener> listeners = new HashSet<>();
+	private Set<IPresenterStateChangeEventListener> ssps3cListeners = new HashSet<>();
 	private int DEBUG = 1;
 	private PrintWriter writer;
 	private Shell parentShell;
@@ -276,7 +277,7 @@ public class SurfaceScatterPresenter {
 			});
 		
 
-		updateAnalysisMethodology(0, 1, 0, "10");
+		updateAnalysisMethodology(0, 1, 0, "10", false);
 		
 		Dataset xArrayCon = DatasetFactory.zeros(1);
 		
@@ -397,6 +398,20 @@ public class SurfaceScatterPresenter {
 			sm.setSliderPos(sliderPos);
 		
 			fireStateListeners();
+			fireSsps3cStateListeners();
+		}
+	}
+	
+	public void sliderMovemementMainImage(int sliderPos,
+										  boolean fireListeners) {
+		if(sliderPos != sm.getSliderPos()){ 
+			sm.setSliderPos(sliderPos);
+		
+			fireStateListeners();
+			
+			if(fireListeners){ 
+				fireSsps3cStateListeners();
+			}
 		}
 	}
 	
@@ -635,6 +650,7 @@ public class SurfaceScatterPresenter {
 			
 			try{
 				fireStateListeners();
+				fireSsps3cStateListeners();
 			}
 			catch(Exception f){
 				
@@ -722,11 +738,11 @@ public class SurfaceScatterPresenter {
 					int[] len = sm.getInitialLenPt()[0]; 
 					int[] pt = sm.getInitialLenPt()[1];
 						
-					int pt0 = pt[0] + 25;
-					int pt1 = pt[1] + 25;
+					int pt0 = pt[0] - 10;
+					int pt1 = pt[1] - 10;
 						
-					int len0 = len[0] + 0;
-					int len1 = len[1] + 0;
+					int len0 = len[0] + 20;
+					int len1 = len[1] + 20;
 					
 					IRectangularROI newROI = new RectangularROI(pt0,pt1,len0,len1,0);
 					
@@ -754,7 +770,114 @@ public class SurfaceScatterPresenter {
 			centreButton.setEnabled(false);
 				
 		}
+		
+		fireSsps3cStateListeners();
 	}
+	
+	public void backgroundBoxesManager(IRegion r1, 
+									   IRegion r2, 
+									   Button centreButton,
+									   Methodology m ){
+		
+		Display display = Display.getCurrent();
+        Color magenta = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+        Color red = display.getSystemColor(SWT.COLOR_RED);
+
+		if (m == Methodology.SECOND_BACKGROUND_BOX ||
+			m == Methodology.OVERLAPPING_BACKGROUND_BOX){
+
+			r1.setVisible(false);
+			r2.setVisible(true);
+			r2.setUserRegion(true);
+			r2.setLineWidth(1);
+			r2.setMobile(true);
+			r2.setFill(true);
+			r2.setLineWidth(3);
+			
+			if (sm.getSecondBackgroundLenPt()!=null){
+			
+				int[][] redLenPt = sm.getBackgroundLenPt();
+				int[] redLen = redLenPt[0];
+				int[] redPt = redLenPt[1];
+				
+				
+				RectangularROI startROI = new RectangularROI(redPt[0],
+															 redPt[1],
+															 redLen[0],
+															 redLen[1],
+															 0);
+			
+				r2.setROI(startROI);
+				
+			}
+			
+			r2.setRegionColor(magenta);		
+			
+			centreButton.setEnabled(true);
+			
+			if (m == Methodology.OVERLAPPING_BACKGROUND_BOX){
+					
+				if (sm.getBoxOffsetLenPt()!=null){
+						
+					int[][] newOffsetLenPt =sm.getBoxOffsetLenPt();
+					int[] len = sm.getInitialLenPt()[0]; 
+					int[] pt = sm.getInitialLenPt()[1];
+						
+					int[] offsetLen = newOffsetLenPt[0];
+					int[] offsetPt = newOffsetLenPt[1];
+						
+					int pt0 = pt[0] + offsetPt[0];
+					int pt1 = pt[1] + offsetPt[1];
+						
+					int len0 = len[0] + offsetLen[0];
+					int len1 = len[1] + offsetLen[1];
+						
+					sm.setSecondBackgroundLenPt(new int[][] {{pt0,pt1},{len0,len1}});
+				}
+					
+					
+				else{
+						
+					int[] len = sm.getInitialLenPt()[0]; 
+					int[] pt = sm.getInitialLenPt()[1];
+						
+					int pt0 = pt[0] + 10;
+					int pt1 = pt[1] + 10;
+						
+					int len0 = len[0] + 20;
+					int len1 = len[1] + 20;
+					
+					IRectangularROI newROI = new RectangularROI(pt0,pt1,len0,len1,0);
+					
+					r2.setROI(newROI);
+						
+					sm.setSecondBackgroundLenPt(new int[][] {{len0,len1}, {pt0,pt1}});
+					sm.setBoxOffsetLenPt(new int[][] {{20,20}, {-10,-10}});
+				}
+					
+				r2.setRegionColor(red);		
+			}
+		}
+			
+		else{
+				
+			r1.setVisible(true);
+			r2.setVisible(false);
+				
+			r2.setRegionColor(magenta);
+			r2.setUserRegion(false);
+			r2.setLineWidth(1);
+			r2.setMobile(false);
+			r2.setFill(false);
+			r2.setLineWidth(0);
+			
+			centreButton.setEnabled(false);
+				
+		}
+	}
+	
+	
+	
 	
 	public void addToInterpolatorRegions(IRegion region){
 		sm.addToInterpolatorRegions(region);
@@ -776,7 +899,6 @@ public class SurfaceScatterPresenter {
 		sm.addToInterpolatorBoxes(box);
 		
 		ArrayList<double[][]> interpolatedLenPts = new ArrayList<>();
-		
 
 		if(sm.getInterpolatorBoxes().size() > 2 
 				&& getTrackerType() == TrackerType1.SPLINE_INTERPOLATION ){
@@ -789,7 +911,7 @@ public class SurfaceScatterPresenter {
 					sm.setInterpolatedLenPts(interpolatedLenPts);
 
 					return interpolatedLenPts;
-			}
+		}
 
 		if(sm.getInterpolatorBoxes().size() > 1){
 				
@@ -799,10 +921,6 @@ public class SurfaceScatterPresenter {
 		
 					return interpolatedLenPts;
 		}
-		
-			
-		
-		
 		
 		return null;
 	}
@@ -1068,16 +1186,17 @@ public class SurfaceScatterPresenter {
 					
 			try{
 				fireStateListeners();
+				fireSsps3cStateListeners();
 			}
 			catch(Exception f){			
 			}			
 		}
 	}
 
-	public void sliderZoomedArea(int sliderPos, IROI box, IPlottingSystem<Composite>... pS) {
-		Dataset image = this.getImage(sliderPos);
-		Dataset subImage = (Dataset) PlotSystem2DataSetter.PlotSystem2DataSetter1(box, image);
-	}
+//	public void sliderZoomedArea(int sliderPos, IROI box) {
+//		Dataset image = this.getImage(sliderPos);
+//		Dataset subImage = (Dataset) PlotSystem2DataSetter.PlotSystem2DataSetter1(box, image);
+//	}
 	
 	public void resetCorrectionsSelection(int  correctionSelection){
 		sm.setCorrectionSelection(MethodSetting.toMethod(correctionSelection));
@@ -1166,8 +1285,7 @@ public class SurfaceScatterPresenter {
 	}
 
 	public IDataset presenterDummyProcess(int selection, 
-										  IDataset image, 
-										  IPlottingSystem<Composite> pS,
+										  IDataset image,
 										  int trackingMarker) {
 
 		int j = sm.getFilepathsSortedArray()[selection];
@@ -1179,15 +1297,14 @@ public class SurfaceScatterPresenter {
 													 models.get(j), 
 													 dms.get(j), 
 													 gm, 
-													 pS,
 													 MethodSetting.toInt(sm.getCorrectionSelection()), 
 													 imagePosInOriginalDat[selection], 
 													 trackingMarker,
 													 selection);	
 			
-			
-			sm.addBackgroundDatArray(sm.getImages().length, selection, output);
-			
+			if(trackingMarker != 3){
+				sm.addBackgroundDatArray(sm.getImages().length, selection, output);
+			}
 			return output;
 			
 		}
@@ -1323,7 +1440,7 @@ public class SurfaceScatterPresenter {
 				model.setTrackerType(TrackingMethodology.intToTracker1(trackerSelection));
 			}
 			
-			double r = 0;
+			double r = 10;
 			try{
 				r = Double.parseDouble(boundaryBox);
 			}
@@ -1335,6 +1452,40 @@ public class SurfaceScatterPresenter {
 		}
 		
 		fireStateListeners();
+		fireSsps3cStateListeners();
+	}
+	
+	
+	public void updateAnalysisMethodology(int methodologySelection, int fitPowerSelection, int trackerSelection,
+			String boundaryBox, boolean firestatelisteners) {
+
+		for (ExampleModel model : models) {
+			
+			if(methodologySelection !=-1){
+				model.setMethodology(Methodology.values()[methodologySelection]);
+		       }
+			if(fitPowerSelection !=-1){
+				model.setFitPower(AnalaysisMethodologies.toFitPower(fitPowerSelection));
+		       }
+			if(trackerSelection !=-1){
+				model.setTrackerType(TrackingMethodology.intToTracker1(trackerSelection));
+			}
+			
+			double r = 10;
+			try{
+				r = Double.parseDouble(boundaryBox);
+			}
+			catch (Exception e1){
+				this.numberFormatWarning();
+			}
+			
+			model.setBoundaryBox((int) Math.round(r));
+		}
+		
+		if(firestatelisteners){
+			fireStateListeners();
+			fireSsps3cStateListeners();
+		}
 	}
 	
 	public ArrayList<IRegion> getInterpolatorRegions(){
@@ -2499,8 +2650,16 @@ public class SurfaceScatterPresenter {
 		listeners.add(listener);
 	}
 	
+	public void addSsps3cStateListener(IPresenterStateChangeEventListener ssps3cListener){
+		ssps3cListeners.add(ssps3cListener);
+	}
+	
 	private void fireStateListeners(){
 		for (IPresenterStateChangeEventListener l : listeners) l.update();
+	}
+	
+	private void fireSsps3cStateListeners(){
+		for (IPresenterStateChangeEventListener l : ssps3cListeners) l.update();
 	}
 	
 	public SurfaceScatterPresenter(){
@@ -2511,4 +2670,12 @@ public class SurfaceScatterPresenter {
 		gm = new GeometricParametersModel();
 	}
 
+	
+	public void setSecondBackgroundLenPt(int[][] secondBackgroundLenPt){
+		sm.setSecondBackgroundLenPt(secondBackgroundLenPt);
+	}
+	
+	public int[][] getSecondBackgroundLenPt(){
+		return sm.getSecondBackgroundLenPt();
+	}
 }

@@ -26,9 +26,6 @@ public class AnalysisTabRightPane extends Dialog {
 
 	
 	private SuperSashPlotSystem3Composite customComposite2;
-//	private SashForm right;
-//	private SashForm left;
-//	private PlotSystem1CompositeView customComposite1;
 	private SurfaceScatterPresenter ssp;
 	private SurfaceScatterViewStart ssvs;
 	private boolean modify = true;
@@ -282,7 +279,6 @@ public class AnalysisTabRightPane extends Dialog {
 				
 				IDataset output = ssp.presenterDummyProcess(selection,
 						ssp.getImage(selection),
-						ssvs.getPlotSystemCompositeView().getPlotSystem(),
 						3);
 		
 				ILineTrace lt3 = VerticalHorizontalSlices.horizontalsliceBackgroundSubtracted(
@@ -330,108 +326,6 @@ public class AnalysisTabRightPane extends Dialog {
 			customComposite2.getPlotSystem3().repaint();
 	}
 		
-	
-//	public void rOIUpdate(){
-//		
-//		int[][] LenPt = new int[2][2];
-//		
-//		modify = false;
-//		ssvs.setModify(false);
-//		
-//		double do0 = 0;
-//		try{
-//			do0 = Double.parseDouble(customComposite.getXCoord().getText());
-//		}
-//		catch (Exception e1){
-//			ssp.numberFormatWarning();
-//		}
-//		
-//		long f =  ((int) Math.round(do0));
-//		
-//		int w =  ((int) Math.round(do0));
-//		
-//		LenPt[1][0] = w;
-//		
-//		
-//		double do1 = 0;
-//		try{
-//			do1 = Double.parseDouble(customComposite.getXLen().getText());
-//		}
-//		catch (Exception e1){
-//			ssp.numberFormatWarning();
-//		}
-//		
-//		LenPt[0][0] = (int) Math.round(do1);
-//		
-//		double do2 = 0;
-//		try{
-//			do2 = Double.parseDouble(customComposite.getYCoord().getText());
-//		}
-//		catch (Exception e1){
-//			ssp.numberFormatWarning();
-//		}
-//		
-//		LenPt[1][1] = (int) Math.round(do2);
-//		
-//		
-//		double do3 = 0;
-//		try{
-//			do3 = Double.parseDouble(customComposite.getYLen().getText());
-//		}
-//		catch (Exception e1){
-//			ssp.numberFormatWarning();
-//		}
-//		
-//		LenPt[0][1] = (int) Math.round(do3);
-//		
-//		
-//		
-//		ssp.regionOfInterestSetter(LenPt);
-//		
-//		ssvs.getPlotSystemCompositeView().setRegion(LenPt);
-//		
-//		customComposite.setRegion(LenPt);
-//		
-//		modify = true;
-//		ssvs.setModify(true);
-//		
-//		
-//	}
-//	
-//	public void roiReset(int[][] LenPt){
-//		
-//		modify = false;
-//		customComposite.setRegion(LenPt);		
-//		
-//		String[] values = new String[4];
-//		
-//		values[0] = String.valueOf(LenPt[1][0]);
-//		values[1] = String.valueOf(LenPt[0][0]);
-//		values[2] = String.valueOf(LenPt[1][1]);
-//		values[3] = String.valueOf(LenPt[0][1]);
-//		
-//		customComposite.setROITexts(values);
-//		
-//		modify = true;
-//		
-//	}
-//	
-//	
-////	public Slider getSlider(){
-////		
-////		return customComposite.getSlider();
-////	}
-//
-//	public void dummyProcessTrigger(){
-//		
-//		int y = customComposite.getSliderPos();
-//		
-//		ssp.presenterDummyProcess(y, 
-//								  ssp.getImage(y), 
-//								  customComposite.getPlotSystem(),
-//								  0);
-//	}
-//	
 
 	private void debug(String output) {
 		if (DEBUG == 1) {

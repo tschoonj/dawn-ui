@@ -1,5 +1,7 @@
 package org.dawnsci.surfacescatter.ui;
 
+import java.util.Arrays;
+
 import org.dawb.common.ui.widgets.ActionBarWrapper;
 import org.dawnsci.surfacescatter.VerticalHorizontalSlices;
 import org.eclipse.dawnsci.analysis.api.roi.IRectangularROI;
@@ -33,8 +35,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
     private IRegion verticalSlice;
     private IRegion horizontalSlice;
     private IDataset image2;
-//    private SashForm right; 
-//    private SashForm left;
 	private MultipleOutputCurvesTableView outputCurves;
 	private SurfaceScatterPresenter ssp;
     private Group topRight;
@@ -42,23 +42,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
     private Button resetCrossHairs;
 	private SurfaceScatterViewStart ssvs;
 	
-	
-	public SurfaceScatterPresenter getSsp() {
-		return ssp;
-	}
-
-	public void setSsp(SurfaceScatterPresenter ssp) {
-		this.ssp = ssp;
-	}
-
-	public SurfaceScatterViewStart getSsvs() {
-		return ssvs;
-	}
-
-	public void setSsvs(SurfaceScatterViewStart ssvs) {
-		this.ssvs = ssvs;
-	}
-
 	public SuperSashPlotSystem3Composite(Composite parent, int style,
 			SurfaceScatterViewStart ssvs, SurfaceScatterPresenter ssp) throws Exception {
         super(parent, style);
@@ -84,27 +67,29 @@ public class SuperSashPlotSystem3Composite extends Composite{
         catch (Exception e2) {
 			e2.printStackTrace();
 		}
+        
 
+		this.ssp.addSsps3cStateListener(new IPresenterStateChangeEventListener() {
+
+			@Override
+			public void update() {
+
+				
+				try{
+					SuperSashPlotSystem3Composite.this.generalUpdate();
+				}
+				catch(Exception o){
+					System.out.println(o.getMessage());
+				}
+			}
+		});
+
+        
         this.createContents(); 
         
     }
 	
 	 public void createContents() throws Exception {
-
-		 ssp.addStateListener(new  IPresenterStateChangeEventListener() {
-				
-				@Override
-				public void update() {
-					try{
-						generalUpdate();
-					}
-					catch(Exception r){
-						
-					}
-					
-				}
-			});
-		 
 		 
 		outputCurves =null;
 		 
@@ -129,8 +114,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
 	
 		GridData ld1 = new GridData(SWT.FILL, SWT.FILL, true, true);
 
-//		ActionBarWrapper actionBarCompositeTop = ActionBarWrapper.createActionBars(topImage, null);;
-        
 		plotSystem1.createPlotPart(topImage, "Horizontal Slice", null, PlotType.IMAGE, null);
 		plotSystem1.getPlotComposite().setLayoutData(ld1);
 		
@@ -180,7 +163,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
 		topRight.setLayoutData(topRightData);
 		
 		addOutPutCurvesWindow();
-//		ssvs.appendListenersToOutputCurves();
 		isOutputCurvesVisible(false);
 		
         Group sideImage = new Group(right, SWT.NONE);
@@ -191,9 +173,7 @@ public class SuperSashPlotSystem3Composite extends Composite{
 		sideImage.setLayoutData(sideImageData);
 		
 		GridData ld3 = new GridData(SWT.FILL, SWT.FILL, true, true);
-		
-//		ActionBarWrapper actionBarCompositeSide= ActionBarWrapper.createActionBars(sideImage, null);;
-        
+		 
 		plotSystem3.createPlotPart(sideImage, "Side Image", null, PlotType.IMAGE, null);
 		plotSystem3.getPlotComposite().setLayoutData(ld3);
 		
@@ -208,7 +188,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
 		try {
 			verticalSlice = plotSystem2.createRegion("Vertical Slice", RegionType.XAXIS);
 			
-			
 			int[] ad = image2.getShape();
 			
 			horizontalSlice = plotSystem2.createRegion("Horizontal Slice", RegionType.YAXIS);
@@ -216,14 +195,9 @@ public class SuperSashPlotSystem3Composite extends Composite{
 			RectangularROI horizROI = new RectangularROI(0,(int) Math.round(ad[0]/4),ad[1],(int) Math.round(ad[0]*0.5),0);
 			horizontalSlice.setROI(horizROI);
 
-			
 			RectangularROI vertROI = new RectangularROI((int) Math.round(ad[1]/4),0,(int) Math.round(ad[1]*0.5),ad[0],0);
 			verticalSlice.setROI(vertROI);
-//			
-//			horizontalSlice.setROI(horizROI);
-//			horizontalSlice.setActive(true);
-//			horizontalSlice.setMobile(true);
-			
+
 			plotSystem2.addRegion(horizontalSlice);
 			plotSystem2.addRegion(verticalSlice);
 
@@ -379,7 +353,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
 				@SuppressWarnings("unchecked")
 				IDataset output = ssp.presenterDummyProcess(selection,
 																ssp.getImage(selection),
-																ssvs.getPlotSystemCompositeView().getPlotSystem(),
 																3);
 			
 				ILineTrace lt3 = VerticalHorizontalSlices.horizontalsliceBackgroundSubtracted(
@@ -464,7 +437,6 @@ public class SuperSashPlotSystem3Composite extends Composite{
 			@SuppressWarnings("unchecked")
 			IDataset output = ssp.presenterDummyProcess(selection,
 						ssp.getImage(selection),
-						ssvs.getPlotSystemCompositeView().getPlotSystem(),
 						3);
 		
 			ILineTrace lt3 = VerticalHorizontalSlices.horizontalsliceBackgroundSubtracted(
@@ -594,6 +566,23 @@ public class SuperSashPlotSystem3Composite extends Composite{
         topRight.setText("");
         topRight.redraw();
 	}
+	
+	public SurfaceScatterPresenter getSsp() {
+		return ssp;
+	}
+
+	public void setSsp(SurfaceScatterPresenter ssp) {
+		this.ssp = ssp;
+	}
+
+	public SurfaceScatterViewStart getSsvs() {
+		return ssvs;
+	}
+
+	public void setSsvs(SurfaceScatterViewStart ssvs) {
+		this.ssvs = ssvs;
+	}
+
 }
 		
 		

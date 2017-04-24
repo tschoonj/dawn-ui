@@ -396,31 +396,31 @@ public class PlotSystemCompositeView extends Composite {
 
 			@Override
 			public void roiDragged(ROIEvent evt) {
-				roiStandard(evt);
+				roiStandard();
 			}
 
 			@Override
 			public void roiChanged(ROIEvent evt) {
-				roiStandard(evt);
+				roiStandard();
 			}
 
 			@Override
 			public void roiSelected(ROIEvent evt) {
-				roiStandard(evt);
+				roiStandard();
 			}
 			
-			public void roiStandard(ROIEvent evt) {
-				double[] bgRegionROI = ssp.regionOfInterestSetter(region.getROI());
-				
-				RectangularROI bgROI = new RectangularROI(bgRegionROI[0],
-						  bgRegionROI[1],
-						  bgRegionROI[2],
-						  bgRegionROI[3],
-						  bgRegionROI[4]);
-				
-				bgRegion.setROI(bgROI);
-				
-			}
+//			public void roiStandard(ROIEvent evt) {
+//				double[] bgRegionROI = ssp.regionOfInterestSetter(region.getROI());
+//				
+//				RectangularROI bgROI = new RectangularROI(bgRegionROI[0],
+//						  bgRegionROI[1],
+//						  bgRegionROI[2],
+//						  bgRegionROI[3],
+//						  bgRegionROI[4]);
+//				
+//				bgRegion.setROI(bgROI);
+//				
+//			}
 		});
         
 		slider.addSelectionListener(new SelectionListener() {
@@ -985,6 +985,21 @@ public class PlotSystemCompositeView extends Composite {
 		setRegion(ssp.getLenPt());
 		
 	}
+	
+	
+	public void roiStandard() {
+		double[] bgRegionROI = ssp.regionOfInterestSetter(region.getROI());
+		
+		RectangularROI bgROI = new RectangularROI(bgRegionROI[0],
+				  bgRegionROI[1],
+				  bgRegionROI[2],
+				  bgRegionROI[3],
+				  bgRegionROI[4]);
+		
+		bgRegion.setROI(bgROI);
+		
+	}
+	
 	
 	public TabItem getBackgroundSubtractedSubImage(){
 		return subBgI;

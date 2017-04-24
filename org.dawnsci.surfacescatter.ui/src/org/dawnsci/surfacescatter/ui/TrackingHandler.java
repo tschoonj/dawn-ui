@@ -26,8 +26,6 @@ import org.eclipse.swt.widgets.ProgressBar;
 
 public class TrackingHandler {
 	
-	
-	
 	private ArrayList<DataModel> dms;
 	private ArrayList<ExampleModel> models;
 	private IPlottingSystem<Composite> plotSystem;
@@ -38,7 +36,7 @@ public class TrackingHandler {
 	private int correctionSelection;
 	private int noImages;
 	private SurfaceScatterPresenter ssp;
-	private int DEBUG = 0;
+	private int DEBUG = 1;
 	private ProgressBar progressBar;
 	private TrackingProgressAndAbortView tpaav;
 	private Thread t;
@@ -104,17 +102,9 @@ public class TrackingHandler {
 		this.plotSystem = plotSystem;
 	}
 
-//	public void setTimeStep(int timeStep) {
-//		this.timeStep = timeStep;
-//	}
-
 	public void setSsp(SurfaceScatterPresenter ssp) {
 		this.ssp = ssp;
 	}
-
-//	public void setSsvsPS(IPlottingSystem<Composite> ssvsPS) {
-//		this.ssvsPS = ssvsPS;
-//	}
 	
 	public void setps(IPlottingSystem<Composite> plotSystem) {
 		this.plotSystem = plotSystem;
@@ -177,7 +167,6 @@ public class TrackingHandler {
 									IDataset j = ssp.getImage(imageNumber);
 									int jok = sm.getFilepathsSortedArray()[imageNumber];
 									DataModel dm = dms.get(jok);
-//									GeometricParametersModel gm = gm;
 									ExampleModel model = models.get(jok);
 
 									dm.addxList(sm.getSortedX().getDouble(imageNumber));
@@ -191,9 +180,7 @@ public class TrackingHandler {
 																						 j,
 																						 model, 
 																						 dm, 
-																						 gm, 
-																						 plotSystem,
-//																						 ssvsPS,
+																						 gm,
 																						 correctionSelection, 
 																						 imagePosInOriginalDat[imageNumber], 
 																						 trackingMarker, 
@@ -275,8 +262,6 @@ public class TrackingHandler {
 																			 model, 
 																			 dm, 
 																			 gm, 
-																			 plotSystem,
-//																			 ssvsPS,
 																			 correctionSelection, 
 																			 imagePosInOriginalDat[k], 
 																			 trackingMarker, 
@@ -337,8 +322,6 @@ public class TrackingHandler {
 																				 model, 
 																				 dm, 
 																				 gm, 
-																				 plotSystem,
-//																				 ssvsPS,
 																				 correctionSelection, 
 																				 imagePosInOriginalDat[k], 
 																				 trackingMarker, 
@@ -414,14 +397,14 @@ public class TrackingHandler {
 		public void updateTrackingDisplay(IDataset tempImage, int imageNumber){
 			
 			ssvs.getPlotSystemCompositeView().getFolder().setSelection(2);
-			ssp.sliderMovemementMainImage(imageNumber);
+			ssp.sliderMovemementMainImage(imageNumber, false);
 //			ssp.updateSliders(ssvs.getPlotSystemCompositeView().getSlider(), imageNumber);
 			ssvs.updateIndicators(imageNumber);
 			ssvs.getPlotSystemCompositeView().getPlotSystem().updatePlot2D(tempImage, null, null);
 			ssvs.getPlotSystemCompositeView().getSubImageBgPlotSystem().updatePlot2D(sm.getBackgroundDatArray().get(imageNumber), null, null);
 			ssvs.getPlotSystemCompositeView().getPlotSystem().repaint(true);
 			ssvs.getPlotSystemCompositeView().getSubImageBgPlotSystem().repaint(true);
-			ssvs.getSsps3c().generalUpdate();
+//			ssvs.getSsps3c().generalUpdate();
 			ssp.stitchAndPresent1(ssvs.getSsps3c().getOutputCurves(), ssvs.getIds());
 			
 			double[] location = ssp.getLocationList().get((imageNumber));
@@ -441,7 +424,7 @@ public class TrackingHandler {
 			
 			ssvs.getSsps3c().generalUpdate(ssp.getLenPt());
 			
-			ssvs.getSsps3c().getOutputCurves().getIntensity().redraw();
+//			ssvs.getSsps3c().getOutputCurves().getIntensity().redraw();
 			
 			if(progressBar.isDisposed() != true){
 				progressBar.setSelection(progressBar.getSelection() +1);
@@ -565,7 +548,7 @@ class trackingJob2 {
 			dm.resetAll();
 		}
 
-		ssp.regionOfInterestSetter(ssvs.getPlotSystemCompositeView().getPlotSystem().getRegion("myRegion").getROI());
+//		ssp.regionOfInterestSetter(ssvs.getPlotSystemCompositeView().getPlotSystem().getRegion("myRegion").getROI());
 		
 		outputCurves.clear();
 
@@ -615,8 +598,6 @@ class trackingJob2 {
 																				 model, 
 																				 dm, 
 																				 gm, 
-																				 plotSystem,
-//																				 ssvsPS,
 																				 correctionSelection, 
 																				 imagePosInOriginalDat[k], 
 																				 trackingMarker, 
@@ -698,7 +679,9 @@ class trackingJob2 {
 									ExampleModel model = models.get(jokLocal);
 									
 									
-									if(dm.getLocationList() == null && models.get(0).getTrackerType() != TrackerType1.INTERPOLATION){
+									if(dm.getLocationList() == null && 
+									   models.get(0).getTrackerType() != TrackerType1.INTERPOLATION &&
+									   models.get(0).getTrackerType() != TrackerType1.SPLINE_INTERPOLATION){
 										
 										if (sm.getTrackerLocationList() == null  ){
 //											| sm.getTrackerLocationList().size() <= 10
@@ -751,7 +734,8 @@ class trackingJob2 {
 									}	
 									
 									
-									else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+									else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+											models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 										
 										int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 										int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -776,8 +760,6 @@ class trackingJob2 {
 																			   model, 
 																			   dm, 
 																			   gm, 
-																			   plotSystem,
-																			   ssvsPS,
 																			   correctionSelection, 
 																			   imagePosInOriginalDat[k], 
 																			   trackingMarker, 
@@ -811,9 +793,7 @@ class trackingJob2 {
 											
 											return;
 										}
-										});
-									
-
+									});
 								}
 								doneArray[nextjok] = "done";
 							}
@@ -882,7 +862,8 @@ class trackingJob2 {
 									
 									}
 									
-									else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+									else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+											models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 										
 										int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 										int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -909,8 +890,6 @@ class trackingJob2 {
 																			   model, 
 																			   dm, 
 																			   gm, 
-																			   plotSystem,
-																			   ssvsPS,
 																			   correctionSelection, 
 																			   imagePosInOriginalDat[k], 
 																			   trackingMarker, 
@@ -1012,7 +991,8 @@ class trackingJob2 {
 										
 										}	
 										
-										else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+										else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+												models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 											
 											int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 											int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -1039,8 +1019,6 @@ class trackingJob2 {
 																				   model, 
 																				   dm, 
 																				   gm, 
-																				   plotSystem,
-																				   ssvsPS,
 																				   correctionSelection, 
 																				   imagePosInOriginalDat[k], 
 																				   trackingMarker, 
@@ -1118,7 +1096,6 @@ class trackingJob2 {
 					int trackingMarker = 1;
 					IDataset j = ssp.getImage(k);
 					DataModel dm = dms.get(jok);
-//					GeometricParametersModel gm = gms.get(jok);
 					ExampleModel model = models.get(jok);
 
 					dm.addxList(model.getDatImages().getShape()[0], imagePosInOriginalDat[k],
@@ -1135,8 +1112,6 @@ class trackingJob2 {
 																		 model, 
 																		 dm, 
 																		 gm, 
-																		 plotSystem,
-//																		 ssvsPS,
 																		 correctionSelection, 
 																		 imagePosInOriginalDat[k], 
 																		 trackingMarker, 
@@ -1175,8 +1150,6 @@ class trackingJob2 {
 			models.get(jok).setInput(null);
 			
 			if(sm.getStartFrame() != noImages-1){
-				
-				
 				
 				for (int k = sm.getStartFrame(); k < noImages; k++) {
 					
@@ -1300,7 +1273,9 @@ class trackingJob2 {
 						ExampleModel model = models.get(jokLocal);
 						
 						
-						if(dm.getLocationList() == null && models.get(0).getTrackerType() != TrackerType1.INTERPOLATION){
+						if(dm.getLocationList() == null && 
+						   models.get(0).getTrackerType() != TrackerType1.INTERPOLATION &&
+						   models.get(0).getTrackerType() != TrackerType1.SPLINE_INTERPOLATION){
 							
 							if (sm.getTrackerLocationList() == null ){
 								
@@ -1354,7 +1329,8 @@ class trackingJob2 {
 						}	
 						
 						
-						else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+						else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+								models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 							
 							int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 							int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -1379,8 +1355,6 @@ class trackingJob2 {
 																   model, 
 																   dm, 
 																   gm, 
-																   plotSystem,
-																   ssvsPS,
 																   correctionSelection, 
 																   imagePosInOriginalDat[k], 
 																   trackingMarker, 
@@ -1449,7 +1423,9 @@ class trackingJob2 {
 //						GeometricParametersModel gm = gms.get(nextjok);
 						ExampleModel model = models.get(nextjok);
 						
-						if(dm.getLocationList() == null && models.get(0).getTrackerType() != TrackerType1.INTERPOLATION){
+						if(dm.getLocationList() == null && 
+						   models.get(0).getTrackerType() != TrackerType1.INTERPOLATION &&
+						   models.get(0).getTrackerType() != TrackerType1.SPLINE_INTERPOLATION){
 							
 							int seedIndex = 
 									ClosestNoFinder.closestNoWithLocation(sm.getSortedX().getDouble(k),
@@ -1518,7 +1494,8 @@ class trackingJob2 {
 							
 						}	
 						
-						else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+						else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+								models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 							
 							int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 							int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -1544,9 +1521,7 @@ class trackingJob2 {
 																   j, 
 																   model, 
 																   dm, 
-																   gm, 
-																   plotSystem,
-																   ssvsPS,
+																   gm,
 																   correctionSelection, 
 																   imagePosInOriginalDat[k], 
 																   trackingMarker, 
@@ -1607,8 +1582,9 @@ class trackingJob2 {
 //							GeometricParametersModel gm = gms.get(nextjok);
 							ExampleModel model = models.get(nextjok);
 	
-							
-							if(dm.getLocationList() == null && models.get(0).getTrackerType() != TrackerType1.INTERPOLATION){
+							if(dm.getLocationList() == null && 
+							   models.get(0).getTrackerType() != TrackerType1.INTERPOLATION &&
+							   models.get(0).getTrackerType() != TrackerType1.SPLINE_INTERPOLATION){
 								
 								int seedIndex = 
 										ClosestNoFinder.closestNoWithLocation(sm.getSortedX().getDouble(k),
@@ -1647,7 +1623,8 @@ class trackingJob2 {
 							
 							}	
 							
-							else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION){
+							else if(models.get(0).getTrackerType() == TrackerType1.INTERPOLATION ||
+									models.get(0).getTrackerType() == TrackerType1.SPLINE_INTERPOLATION){
 								
 								int[] len = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[0][1])};
 								int[]  pt = new int[] {(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][0]),(int) Math.round(sm.getInterpolatedLenPts().get(k)[1][1])};
@@ -1674,8 +1651,6 @@ class trackingJob2 {
 																	   model, 
 																	   dm, 
 																	   gm, 
-																	   plotSystem,
-																	   ssvsPS,
 																	   correctionSelection, 
 																	   imagePosInOriginalDat[k], 
 																	   trackingMarker, 
@@ -1732,14 +1707,14 @@ class trackingJob2 {
 		
 
 		ssvs.getPlotSystemCompositeView().getFolder().setSelection(2);
-		ssp.sliderMovemementMainImage(imageNumber);
+		ssp.sliderMovemementMainImage(imageNumber, false);
 //		ssp.updateSliders(ssvs.getPlotSystemCompositeView().getSlider(), imageNumber);
 		ssvs.updateIndicators(imageNumber);
 		ssvs.getPlotSystemCompositeView().getPlotSystem().updatePlot2D(tempImage, null, null);
 		ssvs.getPlotSystemCompositeView().getSubImageBgPlotSystem().updatePlot2D(sm.getBackgroundDatArray().get(imageNumber), null, null);
 		ssvs.getPlotSystemCompositeView().getPlotSystem().repaint(true);
 		ssvs.getPlotSystemCompositeView().getSubImageBgPlotSystem().repaint(true);
-		ssvs.getSsps3c().generalUpdate();
+//		ssvs.getSsps3c().generalUpdate();
 		ssp.stitchAndPresent1(ssvs.getSsps3c().getOutputCurves(), ssvs.getIds());
 
 		double[] location = ssp.getLocationList().get((imageNumber));
@@ -1761,9 +1736,8 @@ class trackingJob2 {
 		
 		ssvs.getSsps3c().generalUpdate(ssp.getLenPt());
 
-		ssvs.getSsps3c().getOutputCurves().getIntensity().redraw();
+//		ssvs.getSsps3c().getOutputCurves().getIntensity().redraw();
 
-		
 		if(progressBar.isDisposed() != true){
 			progressBar.setSelection(progressBar.getSelection() +1);
 	

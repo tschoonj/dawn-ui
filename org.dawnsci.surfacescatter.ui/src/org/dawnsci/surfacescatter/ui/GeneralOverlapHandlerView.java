@@ -24,7 +24,6 @@ import org.eclipse.ui.PlatformUI;
 
 public class GeneralOverlapHandlerView extends Dialog {
 	
-	private Shell parentShell;
 	private SashForm right; 
 	private SashForm left;
 	private ArrayList<IDataset> xArrayList;
@@ -56,7 +55,7 @@ public class GeneralOverlapHandlerView extends Dialog {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		
-		this.parentShell = parentShell;
+//		this.parentShell = parentShell;
 		this.xArrayList = xArrayList;
 		this.yArrayList = yArrayList;
 	    this.yArrayListError = yArrayListError;

@@ -326,12 +326,7 @@ public class PlotSystem1CompositeView extends Composite {
        ssvs.updateAnalysisMethodology(methodologySelection, 
      		  						 fitPowerSelection, 
      		  						 trackerSelection, 
-     		  						 boundaryBox);
-       
-       ssp.backgroundBoxesManager(ssvs.getPlotSystemCompositeView().getBgRegion(),
-    		   					  ssvs.getPlotSystemCompositeView().getSecondBgRegion(),
-    		   					  ssvs.getPlotSystemCompositeView().getCentreSecondBgRegion());
-       
+     		  						 boundaryBox);      
        
        double[] bgRegionROI = ssp.regionOfInterestSetter(ssvs.getPlotSystemCompositeView().getPlotSystem().
     			getRegion("myRegion").getROI());
