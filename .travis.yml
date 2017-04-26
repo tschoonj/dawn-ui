@@ -3,15 +3,15 @@ sudo: required
 
 # SonarQube
 # See https://docs.travis-ci.com/user/sonarqube/
-addons:
-  sonarqube:
-    token:
-      # See https://travis-ci.org/DawnScience/dawn-ui/settings, here be variables
-      # SONAR_TOKEN = SONAR_GITHUB_TOKEN = The sonar token at https://sonarqube.com/account/security/
-      secure: $SONAR_TOKEN 
-    github_token:
-      # GITHUB_READ_REPO = https://github.com/settings/tokens sonarqube-travis  token ('repo' and 'admin:repo_hook' permissions)
-      secure: $GITHUB_READ_REPO
+#addons:
+#  sonarqube:
+#    token:
+#      # See https://travis-ci.org/DawnScience/dawn-ui/settings, here be variables
+#      # SONAR_TOKEN = SONAR_GITHUB_TOKEN = The sonar token at https://sonarqube.com/account/security/
+#      secure: $SONAR_TOKEN 
+#    github_token:
+#      # GITHUB_READ_REPO = https://github.com/settings/tokens sonarqube-travis  token ('repo' and 'admin:repo_hook' permissions)
+#      secure: $GITHUB_READ_REPO
       
 language: java
 
@@ -20,9 +20,10 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
+  - jars
 
-services:
-  - docker
+#services:
+#  - docker
 
 # whitelist
 branches:
@@ -34,11 +35,23 @@ jdk:
 
  
 # Handle git submodules manually
-git:
-    submodules: false
+#git:
+#    submodules: false
 
  
 # compile and test
+before_script:
+- |
+  mkdir -p jars
+  pushd jars
+  if test ! -f org.eclipse.january_2.0.1.v201703300842.jar ; then
+    wget http://download.eclipse.org/january/releases/2.0.1/repository/plugins/org.eclipse.january_2.0.1.v201703300842.jar
+  fi
+  popd
+
 script: 
- - sonar-scanner
-  
+# - sonar-scanner
+- |
+  pushd org.dawnsci.datavis.api
+  ant -verbose -DECLIPSE_HOME=/usr/lib/eclipse -DJARS_HOME=`pwd`/jars build build-jar
+  popd
