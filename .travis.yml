@@ -54,5 +54,5 @@ script:
 # - sonar-scanner
 - |
   pushd org.dawnsci.datavis.api
-  ant -verbose -DECLIPSE_HOME=/usr/lib/eclipse -DJARS_HOME=`pwd`/jars build build-jar
+  ant -verbose -DECLIPSE_HOME=/usr/lib/eclipse -DJARS_HOME=`pwd`/../jars build build-jar || exit 1
   popd
