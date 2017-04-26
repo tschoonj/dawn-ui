@@ -29,6 +29,7 @@ cache:
 branches:
  only:
   - master
+  - travis-ci-full-build
 
 jdk:
  - oraclejdk8
